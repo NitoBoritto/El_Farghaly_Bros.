@@ -7,6 +7,7 @@ artifacts/
 configs
 docker
 tests
+data/
 setup_gx.py
 __pycache__/
 *.py[cod]
@@ -14,3 +15,4 @@ __pycache__/
 .DS_Store
 !src/serving/model/
 !src/serving/model/**
+__init__.py

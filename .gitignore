@@ -1,2 +1,16 @@
-.venv/
 .env
+.venv
+*.csv
+mlruns/
+great_expectations
+artifacts/
+configs
+docker
+tests
+setup_gx.py
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+!src/serving/model/
+!src/serving/model/**

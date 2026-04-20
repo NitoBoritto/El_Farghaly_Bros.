@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 
 from src.serving.inference import predict
-from src.app.schemas import customerdata
+from src.app.schemas import bankingdata
 
 app = FastAPI(
     title = 'Client term deposit predictor & classifier',
@@ -21,7 +21,7 @@ def root():
 
     
 @app.post('/predict')
-def get_prediction(data: customerdata):
+def get_prediction(data: bankingdata):
     """
     Main prediction output function
     

@@ -1,8 +1,8 @@
 import os
 from fastapi import FastAPI
-from pydantic import BaseModel
 
 from src.serving.inference import predict
+from src.app.schemas import bankingdata
 
 app = FastAPI(
     title = 'Client term deposit predictor & classifier',
@@ -19,17 +19,9 @@ def root():
     
     return {'status': 'ok'}
 
-class customerdata(BaseModel):
-    """
-    Customer data schema for prediction
-    
-    This schema defines X features and are required for prediction
-    All features must match the original dataset in structure and consistency
-    
-    """
     
 @app.post('/predict')
-def get_prediction(data: customerdata):
+def get_prediction(data: bankingdata):
     """
     Main prediction output function
     

@@ -27,3 +27,4 @@ azure-ai-ml
 sqlalchemy
 pyodbc
 kagglehub
+missingno

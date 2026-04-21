@@ -25,4 +25,6 @@ psutil
 azureml-mlflow
 azure-ai-ml
 sqlalchemy
+pyodbc
+kagglehub
 missingno

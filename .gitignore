@@ -7,7 +7,7 @@ artifacts/
 configs
 docker
 tests
-data/
+/data/
 setup_gx.py
 __pycache__/
 *.py[cod]
@@ -16,3 +16,4 @@ __pycache__/
 !src/serving/model/
 !src/serving/model/**
 __init__.py
+notebooks/*.png

@@ -5,35 +5,34 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
 
-# Grab the URL
-# Ensureing .env has the variable
-SQLALCHEMY_DATABASE_URL = os.getenv("AZURE_SQL_CONNECTION_STRING")
-
-# Create the Engine
-# fast_executemany = True is vital for performance goals with large datasets
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, 
-    fast_executemany = True
-)
-
-# Create the Session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-base = declarative_base()
-
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
+def get_db_engine():
+    """
+    Creates and returns a SQLAlchemy engine for connecting to the database.
+    
+    The connection parameters are read from environment variables:
+    - DB_USER: Database username
+    - DB_PASSWORD: Database password
+    - DB_HOST: Database host (e.g., localhost)
+    - DB_PORT: Database port (e.g., 5432 for PostgreSQL)
+    - DB_NAME: Database name
+    
+    Returns:
+    - engine: SQLAlchemy engine object for database connection
+    """
     try:
-        yield db
-    finally:
-        db.close()
+        db_user = os.getenv('DB_USER')
+        db_password = os.getenv('DB_PASSWORD')
+        db_host = os.getenv('DB_HOST', 'localhost')
+        db_port = os.getenv('DB_PORT', '5432')
+        db_name = os.getenv('DB_NAME')
 
+        if not all([db_user, db_password, db_name]):
+            raise ValueError("Database credentials (DB_USER, DB_PASSWORD, DB_NAME) must be set in environment variables.")
 
-if __name__ == "__main__":
-    try:
-        with engine.connect() as connection:
-            result = connection.execute(text("SELECT 1"))
-            print("Successfully connected to Azure SQL!")
+        connection_string = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+        engine = create_engine(connection_string)
+        print("Database engine created successfully.")
+        return engine
     except Exception as e:
-        print(f"Connection failed: {e}")
+        print(f"Error creating database engine: {str(e)}")
+        raise

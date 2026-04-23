@@ -1,3 +1,4 @@
+import pandas as pd
 def process_data_pipeline(df_input):
     """
     Master Pipeline to apply all string and temporal transformations in sequence

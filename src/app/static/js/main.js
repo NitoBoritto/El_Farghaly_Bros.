@@ -1,7 +1,7 @@
-﻿
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+/* ═══════════════════════════════════════════════
    LOADER
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════ */
 window.addEventListener('load', () => {
   setTimeout(() => {
     const loader = document.getElementById('loader');
@@ -11,9 +11,9 @@ window.addEventListener('load', () => {
   }, 2200);
 });
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════
    CURSOR
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════ */
 const cursor     = document.getElementById('cursor');
 const cursorRing = document.getElementById('cursor-ring');
 let mx = 0, my = 0, rx = 0, ry = 0;
@@ -27,9 +27,9 @@ function animateCursor() {
 }
 animateCursor();
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════
    PARTICLE CANVAS
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════ */
 const canvas = document.getElementById('particle-canvas');
 const ctx    = canvas.getContext('2d');
 
@@ -85,17 +85,17 @@ function drawParticles() {
 }
 drawParticles();
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════
    NAV SCROLL EFFECT
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════ */
 const nav = document.getElementById('main-nav');
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 50);
 });
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════
    SCROLL REVEAL
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════ */
 const revealEls = document.querySelectorAll('.reveal');
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -113,9 +113,9 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 revealEls.forEach(el => revealObserver.observe(el));
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════
    KPI CARD TILT
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════ */
 document.querySelectorAll('.kpi-card, .feature-card, .chart-card').forEach(card => {
   card.addEventListener('mousemove', e => {
     const rect  = card.getBoundingClientRect();
@@ -128,9 +128,9 @@ document.querySelectorAll('.kpi-card, .feature-card, .chart-card').forEach(card 
   });
 });
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════
    SMOOTH SCROLL
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════ */
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
@@ -138,9 +138,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════
    GLITCH EFFECT ON HERO TITLE (subtle)
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════ */
 const heroTitle = document.querySelector('.hero-title');
 setInterval(() => {
   if (Math.random() > 0.93) {
@@ -151,7 +151,7 @@ setInterval(() => {
 
 
 
-  /* â•â•â• 3D TEAM PARALLAX â•â•â• */
+  /* ═══ 3D TEAM PARALLAX ═══ */
   (function() {
     const stage = document.getElementById('teamStage');
     if (!stage) return;
@@ -206,10 +206,10 @@ setInterval(() => {
       }
     });
 
-    // â”€â”€ Parallax mouse interaction â”€â”€
+    // ── Parallax mouse interaction ──
     const people = [
       { el: document.getElementById('p1'), depth: 0.35, baseX: 0, baseY: 0 },
-      { el: document.getElementById('p2'), depth: 0.9,  baseX: 0, baseY: 0 }, // leader â€” most movement
+      { el: document.getElementById('p2'), depth: 0.9,  baseX: 0, baseY: 0 }, // leader — most movement
       { el: document.getElementById('p3'), depth: 0.6,  baseX: 0, baseY: 0 },
       { el: document.getElementById('p4'), depth: 0.45, baseX: 0, baseY: 0 },
     ];
@@ -251,7 +251,7 @@ setInterval(() => {
     }
     animateParallax();
 
-    // â”€â”€ Scroll-in bars â”€â”€
+    // ── Scroll-in bars ──
     const barObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -268,7 +268,7 @@ setInterval(() => {
   })();
 
 
-/* â•â•â• Fill person images from single source â•â•â• */
+/* ═══ Fill person images from single source ═══ */
 (function(){
   var src = document.getElementById('TEAM_SRC');
   if(!src) return;
@@ -276,24 +276,24 @@ setInterval(() => {
   if(src.complete) fill(); else src.onload = fill;
 })();
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   AI PREDICTION ENGINE â€” Full Interactive JS
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════════════════
+   AI PREDICTION ENGINE — Full Interactive JS
+═══════════════════════════════════════════════════════ */
 (function() {
 
-  /* â”€â”€ Utilities â”€â”€ */
+  /* ── Utilities ── */
   function rand(min, max) { return min + Math.random() * (max - min); }
   function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
   function lerp(a, b, t) { return a + (b - a) * t; }
 
-  /* â”€â”€ State â”€â”€ */
+  /* ── State ── */
   let horizon = 6;
   let currentModel = 'xgb';
   let chartInstances = {};
   let animFrame;
   let predRunning = false;
 
-  /* â”€â”€ Model performance data â”€â”€ */
+  /* ── Model performance data ── */
   const modelData = {
     xgb: { auc: 0.874, f1: 0.812, prec: 0.832, recall: 0.793, color: '#f0b429', name: 'XGBoost' },
     rf:  { auc: 0.861, f1: 0.798, prec: 0.814, recall: 0.783, color: '#00d4ff', name: 'Random Forest' },
@@ -301,7 +301,7 @@ setInterval(() => {
     nn:  { auc: 0.856, f1: 0.805, prec: 0.822, recall: 0.789, color: '#ff4c6a', name: 'Neural Network' },
   };
 
-  /* â”€â”€ Generate forecast data â”€â”€ */
+  /* ── Generate forecast data ── */
   function genForecast(months) {
     const base = 20.4;
     const predicted = [], upper = [], lower = [], labels = [];
@@ -321,7 +321,7 @@ setInterval(() => {
     return { labels, predicted, upper, lower };
   }
 
-  /* â”€â”€ Generate revenue data â”€â”€ */
+  /* ── Generate revenue data ── */
   function genRevenue(months) {
     const labels = [], noAction = [], withAction = [];
     const mnames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -338,7 +338,7 @@ setInterval(() => {
     return { labels, noAction, withAction };
   }
 
-  /* â”€â”€ Draw sparklines â”€â”€ */
+  /* ── Draw sparklines ── */
   function drawSparkline(canvasId, data, color) {
     const c = document.getElementById(canvasId);
     if (!c) return;
@@ -371,7 +371,7 @@ setInterval(() => {
     ctx.stroke();
   }
 
-  /* â”€â”€ Draw gauge â”€â”€ */
+  /* ── Draw gauge ── */
   function drawGauge(val) {
     const c = document.getElementById('gaugeCanvas');
     if (!c) return;
@@ -434,11 +434,11 @@ setInterval(() => {
     const gv = document.getElementById('gaugeVal');
     const gs = document.getElementById('gaugeStatus');
     if (gv) gv.textContent = val;
-    if (gs) gs.textContent = val < 40 ? 'LOW RISK â€” PORTFOLIO HEALTHY' : val < 65 ? 'MODERATE RISK â€” ACTION ADVISED' : 'HIGH RISK â€” URGENT INTERVENTION';
+    if (gs) gs.textContent = val < 40 ? 'LOW RISK — PORTFOLIO HEALTHY' : val < 65 ? 'MODERATE RISK — ACTION ADVISED' : 'HIGH RISK — URGENT INTERVENTION';
     if (gv) gv.style.color = color;
   }
 
-  /* â”€â”€ Build feature importance bars â”€â”€ */
+  /* ── Build feature importance bars ── */
   function buildFeatures() {
     const features = [
       { name: 'Age',            pct: 88, color: '#f0b429' },
@@ -470,7 +470,7 @@ setInterval(() => {
     });
   }
 
-  /* â”€â”€ Build risk table â”€â”€ */
+  /* ── Build risk table ── */
   function buildRiskTable() {
     const countries = ['Germany', 'France', 'Spain'];
     const actions = ['Call Now', 'Email Offer', 'VIP Upgrade', 'Rate Review', 'Flag Review'];
@@ -500,7 +500,7 @@ setInterval(() => {
     }
   }
 
-  /* â”€â”€ Build model comparison table â”€â”€ */
+  /* ── Build model comparison table ── */
   function buildModelTable() {
     const body = document.getElementById('modelTableBody');
     if (!body) return;
@@ -510,7 +510,7 @@ setInterval(() => {
       const tr = document.createElement('tr');
       if (isBest) tr.className = 'model-best';
       tr.innerHTML = `
-        <td class="model-name">${isBest ? 'â˜… ' : ''}${m.name}</td>
+        <td class="model-name">${isBest ? '★ ' : ''}${m.name}</td>
         <td>${m.auc.toFixed(3)} <span class="score-bar"><span class="score-fill ${key==='xgb'?'':'cyan'}" style="width:${m.auc*100}%"></span></span></td>
         <td>${m.f1.toFixed(3)}</td>
         <td>${m.prec.toFixed(3)}</td>
@@ -519,7 +519,7 @@ setInterval(() => {
     });
   }
 
-  /* â”€â”€ Chart.js defaults â”€â”€ */
+  /* ── Chart.js defaults ── */
   function chartDefaults() {
     if (!window.Chart) return;
     Chart.defaults.color = '#3a4a6b';
@@ -528,7 +528,7 @@ setInterval(() => {
     Chart.defaults.font.size = 10;
   }
 
-  /* â”€â”€ Destroy & create chart â”€â”€ */
+  /* ── Destroy & create chart ── */
   function makeChart(id, config) {
     if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
     const c = document.getElementById(id);
@@ -537,7 +537,7 @@ setInterval(() => {
     return chartInstances[id];
   }
 
-  /* â”€â”€ Draw churn forecast chart â”€â”€ */
+  /* ── Draw churn forecast chart ── */
   function drawChurnForecast() {
     const d = genForecast(horizon);
     const lbl = document.getElementById('horizonLabel');
@@ -565,7 +565,7 @@ setInterval(() => {
     });
   }
 
-  /* â”€â”€ Segment chart â”€â”€ */
+  /* ── Segment chart ── */
   function drawSegmentChart() {
     makeChart('segmentChart', {
       type: 'bar',
@@ -583,7 +583,7 @@ setInterval(() => {
     });
   }
 
-  /* â”€â”€ ROC Curve â”€â”€ */
+  /* ── ROC Curve ── */
   function drawROC() {
     function rocPoints(auc) {
       const pts = [{x:0,y:0}];
@@ -620,7 +620,7 @@ setInterval(() => {
     });
   }
 
-  /* â”€â”€ Revenue chart â”€â”€ */
+  /* ── Revenue chart ── */
   function drawRevenue(mode) {
     const months = mode === 'quarterly' ? 12 : mode === 'annual' ? 3 : 36;
     const d = genRevenue(months);
@@ -644,7 +644,7 @@ setInterval(() => {
     });
   }
 
-  /* â”€â”€ Geo chart â”€â”€ */
+  /* ── Geo chart ── */
   function drawGeo() {
     makeChart('geoChart', {
       type: 'doughnut',
@@ -660,7 +660,7 @@ setInterval(() => {
     });
   }
 
-  /* â”€â”€ Age distribution â”€â”€ */
+  /* ── Age distribution ── */
   function drawAgeDist() {
     const ages = Array.from({length: 12}, (_, i) => (i * 5) + 20);
     const churned = ages.map(a => Math.max(0, +(rand(2, 22) + (a > 40 ? (a - 40) * 0.6 : 0)).toFixed(1)));
@@ -682,9 +682,9 @@ setInterval(() => {
     });
   }
 
-  /* â”€â”€ Balance vs churn â”€â”€ */
+  /* ── Balance vs churn ── */
   function drawBalance() {
-    const buckets = ['$0â€“25K','$25â€“50K','$50â€“100K','$100â€“150K','$150â€“200K','$200K+'];
+    const buckets = ['$0–25K','$25–50K','$50–100K','$100–150K','$150–200K','$200K+'];
     const rates = [24.1, 21.8, 18.4, 22.6, 19.7, 25.3];
     makeChart('balanceChart', {
       type: 'bar',
@@ -700,7 +700,7 @@ setInterval(() => {
     });
   }
 
-  /* â”€â”€ Sparklines â”€â”€ */
+  /* ── Sparklines ── */
   function drawAllSparklines() {
     drawSparkline('spkChurn',  Array.from({length:12},()=>rand(18,24)),  'rgb(255,76,106)');
     drawSparkline('spkRetain', Array.from({length:12},()=>rand(7500,8200)), 'rgb(0,229,160)');
@@ -710,7 +710,7 @@ setInterval(() => {
     drawSparkline('spkPrec',   Array.from({length:12},()=>rand(79,88)),     'rgb(0,212,255)');
   }
 
-  /* â”€â”€ 3D Scatter (WebGL-free, canvas 3D projection) â”€â”€ */
+  /* ── 3D Scatter (WebGL-free, canvas 3D projection) ── */
   let scene3dData = [];
   let rotX = 0.3, rotY = 0, isDragging = false, lastMX = 0, lastMY = 0, autoRotate = true;
 
@@ -819,7 +819,7 @@ setInterval(() => {
     loop();
   }
 
-  /* â”€â”€ Global control functions (exposed to window) â”€â”€ */
+  /* ── Global control functions (exposed to window) ── */
   window.setHorizon = function(h, btn) {
     horizon = h;
     document.querySelectorAll('.ai-btn').forEach(b => b.classList.remove('active'));
@@ -845,7 +845,7 @@ setInterval(() => {
     if (predRunning) return;
     predRunning = true;
     const btn = document.querySelector('.ai-btn.gold');
-    if (btn) { btn.textContent = 'â³ RUNNING...'; btn.style.opacity = '0.6'; }
+    if (btn) { btn.textContent = '⏳ RUNNING...'; btn.style.opacity = '0.6'; }
 
     // Animate KPI updates
     const newChurn = (18 + Math.random() * 8).toFixed(1);
@@ -864,7 +864,7 @@ setInterval(() => {
       scene3dData = gen3DData(400);
       const gauge = randInt(35, 85);
       drawGauge(gauge);
-      if (btn) { btn.textContent = 'âœ“ COMPLETE'; setTimeout(() => { btn.textContent = 'âš¡ RUN PREDICTION'; btn.style.opacity = '1'; predRunning = false; }, 2000); }
+      if (btn) { btn.textContent = '✓ COMPLETE'; setTimeout(() => { btn.textContent = '⚡ RUN PREDICTION'; btn.style.opacity = '1'; predRunning = false; }, 2000); }
     }, 1200);
   };
 
@@ -875,7 +875,7 @@ setInterval(() => {
     drawChurnForecast();
   };
 
-  /* â”€â”€ Init everything â”€â”€ */
+  /* ── Init everything ── */
   function initAll() {
     if (!window.Chart) { setTimeout(initAll, 300); return; }
     chartDefaults();
@@ -908,10 +908,10 @@ setInterval(() => {
 })(); /* end AI engine */
 
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════
    THEME TOGGLE
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-/* â•â• THEME TOGGLE â€” clean, bulletproof â•â• */
+═══════════════════════════════════════════════ */
+/* ══ THEME TOGGLE — clean, bulletproof ══ */
 (function() {
   var btn = document.getElementById('themeToggle');
   if (!btn) return;
@@ -935,7 +935,7 @@ setInterval(() => {
   try { saved = localStorage.getItem('bankiq-theme') || ''; } catch(e){}
   if (saved === 'light') applyTheme(true);
 
-  // Toggle on click â€” use addEventListener, no onclick attribute
+  // Toggle on click — use addEventListener, no onclick attribute
   btn.addEventListener('click', function(e) {
     e.stopPropagation();
     var isNowLight = !document.body.classList.contains('light');
@@ -952,9 +952,9 @@ function updateMoneyTheme(isLight) {
   });
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════
    MONEY PARTICLE CANVAS ENHANCEMENT
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════ */
 (function() {
   // Enhance the existing particle canvas with money-colored nodes
   const originalDraw = window._particleDrawFn;
@@ -968,7 +968,7 @@ function updateMoneyTheme(isLight) {
       font-size:20px;transform:translate(-50%,-50%);
       animation:coinburst 0.7s ease-out forwards;
     `;
-    burst.textContent = ['ðŸ’°','ðŸ’µ','ðŸª™','ðŸ’´','ðŸ’¶'][Math.floor(Math.random()*5)];
+    burst.textContent = ['💰','💵','🪙','💴','💶'][Math.floor(Math.random()*5)];
     document.body.appendChild(burst);
     setTimeout(() => burst.remove(), 750);
   });
@@ -995,7 +995,7 @@ function updateMoneyTheme(isLight) {
     if (Math.random() > 0.92) {
       lastMoney = now;
       const el = document.createElement('div');
-      const signs = ['+$', 'â‚¬', 'Â£', 'Â¥', 'â‚¿', '+%'];
+      const signs = ['+$', '€', '£', '¥', '₿', '+%'];
       el.style.cssText = `
         position:fixed;left:${e.clientX + Math.random()*30 - 15}px;
         top:${e.clientY - 10}px;pointer-events:none;z-index:9997;
@@ -1024,6 +1024,4 @@ function updateMoneyTheme(isLight) {
 
 
 
-
-</script>>
 

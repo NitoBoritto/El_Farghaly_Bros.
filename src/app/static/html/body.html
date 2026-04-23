@@ -1,13 +1,17 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BankIQ — Data Intelligence Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet"/>
+
   <link href="../css/style.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
+
 <body>
+
 <!-- MONEY LAYER -->
 <!-- LOADING SCREEN -->
 <div id="loader">
@@ -42,8 +46,8 @@
     </ul>
     <button id="themeToggle" aria-label="Toggle light/dark mode">
       <div class="tt-track">
-        <span class="tt-icon tt-moon">ðŸŒ™</span>
-        <span class="tt-icon tt-sun">â˜€ï¸</span>
+        <span class="tt-icon tt-moon">🌙</span>
+        <span class="tt-icon tt-sun">☀️</span>
       </div>
       <div class="tt-knob"></div>
     </button>
@@ -55,21 +59,21 @@
 
 <div id="money-layer" aria-hidden="true">
   <!-- bills -->
-  <div class="money-bill" style="left:4%;animation-duration:14s;animation-delay:0s;--mr:-15deg;--mdx:40px;--mo:0.18">ðŸ’µ</div>
-  <div class="money-bill" style="left:11%;animation-duration:18s;animation-delay:3s;--mr:20deg;--mdx:-30px;--mo:0.14">ðŸ’´</div>
-  <div class="money-bill" style="left:21%;animation-duration:12s;animation-delay:7s;--mr:-8deg;--mdx:20px;--mo:0.16">ðŸ’µ</div>
-  <div class="money-bill" style="left:33%;animation-duration:16s;animation-delay:1s;--mr:12deg;--mdx:-45px;--mo:0.13">ðŸ’¶</div>
-  <div class="money-bill" style="left:44%;animation-duration:20s;animation-delay:5s;--mr:-22deg;--mdx:35px;--mo:0.15">ðŸ’µ</div>
-  <div class="money-bill" style="left:54%;animation-duration:15s;animation-delay:9s;--mr:18deg;--mdx:-25px;--mo:0.12">ðŸ’·</div>
-  <div class="money-bill" style="left:63%;animation-duration:13s;animation-delay:2s;--mr:-10deg;--mdx:50px;--mo:0.17">ðŸ’µ</div>
-  <div class="money-bill" style="left:73%;animation-duration:19s;animation-delay:6s;--mr:25deg;--mdx:-38px;--mo:0.13">ðŸ’´</div>
-  <div class="money-bill" style="left:82%;animation-duration:11s;animation-delay:4s;--mr:-18deg;--mdx:22px;--mo:0.16">ðŸ’µ</div>
-  <div class="money-bill" style="left:91%;animation-duration:17s;animation-delay:8s;--mr:8deg;--mdx:-18px;--mo:0.14">ðŸ’¶</div>
-  <div class="money-bill" style="left:7%;animation-duration:22s;animation-delay:11s;--mr:30deg;--mdx:60px;--mo:0.11">ðŸ’µ</div>
-  <div class="money-bill" style="left:17%;animation-duration:16s;animation-delay:14s;--mr:-25deg;--mdx:-42px;--mo:0.13">ðŸ’µ</div>
-  <div class="money-bill" style="left:38%;animation-duration:14s;animation-delay:12s;--mr:14deg;--mdx:28px;--mo:0.15">ðŸ’´</div>
-  <div class="money-bill" style="left:58%;animation-duration:21s;animation-delay:16s;--mr:-30deg;--mdx:-55px;--mo:0.12">ðŸ’µ</div>
-  <div class="money-bill" style="left:78%;animation-duration:13s;animation-delay:10s;--mr:22deg;--mdx:32px;--mo:0.16">ðŸ’¶</div>
+  <div class="money-bill" style="left:4%;animation-duration:14s;animation-delay:0s;--mr:-15deg;--mdx:40px;--mo:0.18">💵</div>
+  <div class="money-bill" style="left:11%;animation-duration:18s;animation-delay:3s;--mr:20deg;--mdx:-30px;--mo:0.14">💴</div>
+  <div class="money-bill" style="left:21%;animation-duration:12s;animation-delay:7s;--mr:-8deg;--mdx:20px;--mo:0.16">💵</div>
+  <div class="money-bill" style="left:33%;animation-duration:16s;animation-delay:1s;--mr:12deg;--mdx:-45px;--mo:0.13">💶</div>
+  <div class="money-bill" style="left:44%;animation-duration:20s;animation-delay:5s;--mr:-22deg;--mdx:35px;--mo:0.15">💵</div>
+  <div class="money-bill" style="left:54%;animation-duration:15s;animation-delay:9s;--mr:18deg;--mdx:-25px;--mo:0.12">💷</div>
+  <div class="money-bill" style="left:63%;animation-duration:13s;animation-delay:2s;--mr:-10deg;--mdx:50px;--mo:0.17">💵</div>
+  <div class="money-bill" style="left:73%;animation-duration:19s;animation-delay:6s;--mr:25deg;--mdx:-38px;--mo:0.13">💴</div>
+  <div class="money-bill" style="left:82%;animation-duration:11s;animation-delay:4s;--mr:-18deg;--mdx:22px;--mo:0.16">💵</div>
+  <div class="money-bill" style="left:91%;animation-duration:17s;animation-delay:8s;--mr:8deg;--mdx:-18px;--mo:0.14">💶</div>
+  <div class="money-bill" style="left:7%;animation-duration:22s;animation-delay:11s;--mr:30deg;--mdx:60px;--mo:0.11">💵</div>
+  <div class="money-bill" style="left:17%;animation-duration:16s;animation-delay:14s;--mr:-25deg;--mdx:-42px;--mo:0.13">💵</div>
+  <div class="money-bill" style="left:38%;animation-duration:14s;animation-delay:12s;--mr:14deg;--mdx:28px;--mo:0.15">💴</div>
+  <div class="money-bill" style="left:58%;animation-duration:21s;animation-delay:16s;--mr:-30deg;--mdx:-55px;--mo:0.12">💵</div>
+  <div class="money-bill" style="left:78%;animation-duration:13s;animation-delay:10s;--mr:22deg;--mdx:32px;--mo:0.16">💶</div>
   <!-- coins -->
   <div class="coin-spin" style="left:8%;animation-duration:9s;animation-delay:0s;background:radial-gradient(circle at 35% 35%,#ffd700,#b8860b)"></div>
   <div class="coin-spin" style="left:22%;animation-duration:12s;animation-delay:2s;background:radial-gradient(circle at 35% 35%,#ffe066,#c8940f)"></div>
@@ -88,22 +92,22 @@
   <div class="chart-bar-fly" style="left:62%;bottom:0;height:70px;animation-duration:13s;animation-delay:7s"></div>
   <div class="chart-bar-fly" style="left:85%;bottom:0;height:90px;animation-duration:7s;animation-delay:3s"></div>
   <!-- dollar matrix streams -->
-  <div class="dollar-stream" style="left:2.5%;animation-duration:12s;animation-delay:0s;--dmo:0.18">$<br>â‚¿<br>$<br>â‚¬<br>$<br>Â£<br>$<br>Â¥<br>$</div>
-  <div class="dollar-stream" style="left:13%;animation-duration:16s;animation-delay:4s;--dmo:0.14">â‚¬<br>$<br>$<br>â‚¿<br>Â£<br>$<br>â‚¬<br>$</div>
-  <div class="dollar-stream" style="left:25%;animation-duration:10s;animation-delay:8s;--dmo:0.16">$<br>$<br>Â£<br>$<br>â‚¬<br>Â¥<br>$<br>$</div>
-  <div class="dollar-stream" style="left:48%;animation-duration:14s;animation-delay:2s;--dmo:0.13">â‚¿<br>$<br>â‚¬<br>$<br>$<br>Â£<br>$<br>â‚¬</div>
-  <div class="dollar-stream" style="left:67%;animation-duration:18s;animation-delay:6s;--dmo:0.15">$<br>â‚¬<br>$<br>â‚¿<br>$<br>Â£<br>$<br>Â¥</div>
-  <div class="dollar-stream" style="left:79%;animation-duration:11s;animation-delay:3s;--dmo:0.14">Â£<br>$<br>$<br>â‚¬<br>$<br>$<br>â‚¿<br>$</div>
-  <div class="dollar-stream" style="left:93%;animation-duration:15s;animation-delay:9s;--dmo:0.17">$<br>Â¥<br>$<br>â‚¬<br>$<br>$<br>Â£<br>$</div>
+  <div class="dollar-stream" style="left:2.5%;animation-duration:12s;animation-delay:0s;--dmo:0.18">$<br>₿<br>$<br>€<br>$<br>£<br>$<br>¥<br>$</div>
+  <div class="dollar-stream" style="left:13%;animation-duration:16s;animation-delay:4s;--dmo:0.14">€<br>$<br>$<br>₿<br>£<br>$<br>€<br>$</div>
+  <div class="dollar-stream" style="left:25%;animation-duration:10s;animation-delay:8s;--dmo:0.16">$<br>$<br>£<br>$<br>€<br>¥<br>$<br>$</div>
+  <div class="dollar-stream" style="left:48%;animation-duration:14s;animation-delay:2s;--dmo:0.13">₿<br>$<br>€<br>$<br>$<br>£<br>$<br>€</div>
+  <div class="dollar-stream" style="left:67%;animation-duration:18s;animation-delay:6s;--dmo:0.15">$<br>€<br>$<br>₿<br>$<br>£<br>$<br>¥</div>
+  <div class="dollar-stream" style="left:79%;animation-duration:11s;animation-delay:3s;--dmo:0.14">£<br>$<br>$<br>€<br>$<br>$<br>₿<br>$</div>
+  <div class="dollar-stream" style="left:93%;animation-duration:15s;animation-delay:9s;--dmo:0.17">$<br>¥<br>$<br>€<br>$<br>$<br>£<br>$</div>
   <!-- large background money symbols -->
   <div class="money-symbol" style="left:5%;top:20%;font-size:120px;animation-duration:8s;animation-delay:1s">$</div>
-  <div class="money-symbol" style="left:42%;top:55%;font-size:180px;animation-duration:12s;animation-delay:4s">â‚¬</div>
-  <div class="money-symbol" style="right:8%;top:30%;font-size:100px;animation-duration:10s;animation-delay:2s">Â£</div>
+  <div class="money-symbol" style="left:42%;top:55%;font-size:180px;animation-duration:12s;animation-delay:4s">€</div>
+  <div class="money-symbol" style="right:8%;top:30%;font-size:100px;animation-duration:10s;animation-delay:2s">£</div>
   <div class="money-symbol" style="left:70%;top:75%;font-size:140px;animation-duration:9s;animation-delay:6s">$</div>
-  <div class="money-symbol" style="left:20%;top:70%;font-size:90px;animation-duration:11s;animation-delay:7s">â‚¿</div>
+  <div class="money-symbol" style="left:20%;top:70%;font-size:90px;animation-duration:11s;animation-delay:7s">₿</div>
   <!-- data particles -->
   <div class="data-particle" style="left:18%;top:40%;animation-duration:20s;animation-delay:0s;--ddx:80px;--ddy:-120px">+2.4% AUC</div>
-  <div class="data-particle" style="left:55%;top:60%;animation-duration:18s;animation-delay:5s;--ddx:-60px;--ddy:-100px">CHURNâ†“</div>
+  <div class="data-particle" style="left:55%;top:60%;animation-duration:18s;animation-delay:5s;--ddx:-60px;--ddy:-100px">CHURN↓</div>
   <div class="data-particle" style="left:80%;top:25%;animation-duration:22s;animation-delay:2s;--ddx:40px;--ddy:-80px">$1.2M SAVED</div>
   <div class="data-particle" style="left:30%;top:80%;animation-duration:16s;animation-delay:8s;--ddx:-50px;--ddy:-90px">F1: 0.83</div>
   <div class="data-particle" style="left:65%;top:45%;animation-duration:24s;animation-delay:3s;--ddx:70px;--ddy:-110px">AUC: 0.87</div>
@@ -117,7 +121,7 @@
     <div class="hero-orb hero-orb-1"></div>
     <div class="hero-orb hero-orb-2"></div>
     <div class="hero-orb hero-orb-3"></div>
-    <div class="hero-eyebrow">// Financial Intelligence Platform â€” v1.0</div>
+    <div class="hero-eyebrow">// Financial Intelligence Platform — v1.0</div>
     <h1 class="hero-title">
       <div class="line-gold">BANK</div>
       <div class="line-outline">ANALYTICS</div>
@@ -139,29 +143,29 @@
   <!-- TICKER -->
   <div class="ticker-bar">
     <div class="ticker-track">
-      <div class="ticker-item"><span class="label">CUSTOMERS</span><span class="value">â€”</span><span class="badge-up">PENDING</span></div>
-      <span class="ticker-sep">Â·</span>
-      <div class="ticker-item"><span class="label">CHURN RATE</span><span class="value">â€”</span><span class="badge-dn">AWAITING DATA</span></div>
-      <span class="ticker-sep">Â·</span>
-      <div class="ticker-item"><span class="label">AVG BALANCE</span><span class="value">â€”</span><span class="badge-up">PENDING</span></div>
-      <span class="ticker-sep">Â·</span>
-      <div class="ticker-item"><span class="label">ACTIVE PRODUCTS</span><span class="value">â€”</span><span class="badge-up">PENDING</span></div>
-      <span class="ticker-sep">Â·</span>
-      <div class="ticker-item"><span class="label">MODEL ACCURACY</span><span class="value">â€”</span><span class="badge-up">NOT TRAINED</span></div>
-      <span class="ticker-sep">Â·</span>
+      <div class="ticker-item"><span class="label">CUSTOMERS</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <span class="ticker-sep">·</span>
+      <div class="ticker-item"><span class="label">CHURN RATE</span><span class="value">—</span><span class="badge-dn">AWAITING DATA</span></div>
+      <span class="ticker-sep">·</span>
+      <div class="ticker-item"><span class="label">AVG BALANCE</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <span class="ticker-sep">·</span>
+      <div class="ticker-item"><span class="label">ACTIVE PRODUCTS</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <span class="ticker-sep">·</span>
+      <div class="ticker-item"><span class="label">MODEL ACCURACY</span><span class="value">—</span><span class="badge-up">NOT TRAINED</span></div>
+      <span class="ticker-sep">·</span>
       <div class="ticker-item"><span class="label">LAST SYNC</span><span class="value">NOT CONNECTED</span></div>
-      <span class="ticker-sep">Â·</span>
+      <span class="ticker-sep">·</span>
       <!-- duplicate for seamless loop -->
-      <div class="ticker-item"><span class="label">CUSTOMERS</span><span class="value">â€”</span><span class="badge-up">PENDING</span></div>
-      <span class="ticker-sep">Â·</span>
-      <div class="ticker-item"><span class="label">CHURN RATE</span><span class="value">â€”</span><span class="badge-dn">AWAITING DATA</span></div>
-      <span class="ticker-sep">Â·</span>
-      <div class="ticker-item"><span class="label">AVG BALANCE</span><span class="value">â€”</span><span class="badge-up">PENDING</span></div>
-      <span class="ticker-sep">Â·</span>
-      <div class="ticker-item"><span class="label">ACTIVE PRODUCTS</span><span class="value">â€”</span><span class="badge-up">PENDING</span></div>
-      <span class="ticker-sep">Â·</span>
-      <div class="ticker-item"><span class="label">MODEL ACCURACY</span><span class="value">â€”</span><span class="badge-up">NOT TRAINED</span></div>
-      <span class="ticker-sep">Â·</span>
+      <div class="ticker-item"><span class="label">CUSTOMERS</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <span class="ticker-sep">·</span>
+      <div class="ticker-item"><span class="label">CHURN RATE</span><span class="value">—</span><span class="badge-dn">AWAITING DATA</span></div>
+      <span class="ticker-sep">·</span>
+      <div class="ticker-item"><span class="label">AVG BALANCE</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <span class="ticker-sep">·</span>
+      <div class="ticker-item"><span class="label">ACTIVE PRODUCTS</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <span class="ticker-sep">·</span>
+      <div class="ticker-item"><span class="label">MODEL ACCURACY</span><span class="value">—</span><span class="badge-up">NOT TRAINED</span></div>
+      <span class="ticker-sep">·</span>
       <div class="ticker-item"><span class="label">LAST SYNC</span><span class="value">NOT CONNECTED</span></div>
     </div>
   </div>
@@ -211,7 +215,7 @@
         <!-- parallax world -->
         <div class="parallax-world" id="parallaxWorld">
 
-          <!-- PERSON 1 â€” far left â€” depth layer 1 (back) -->
+          <!-- PERSON 1 — far left — depth layer 1 (back) -->
           <div class="person-layer" id="p1"
                style="left:2%; bottom:50px; animation-delay:0.1s;"
                data-depth="0.4">
@@ -224,7 +228,7 @@
             <div class="person-tag" style="animation-delay:0.8s">Member 02</div>
           </div>
 
-          <!-- PERSON 4 â€” far right â€” depth layer 2 -->
+          <!-- PERSON 4 — far right — depth layer 2 -->
           <div class="person-layer" id="p4"
                style="right:2%; bottom:50px;"
                data-depth="0.5">
@@ -237,7 +241,7 @@
             <div class="person-tag" style="animation-delay:1.1s">Member 04</div>
           </div>
 
-          <!-- PERSON 3 â€” center right â€” depth layer 3 -->
+          <!-- PERSON 3 — center right — depth layer 3 -->
           <div class="person-layer" id="p3"
                style="right:22%; bottom:50px;"
                data-depth="0.65">
@@ -250,7 +254,7 @@
             <div class="person-tag" style="animation-delay:1.4s">Member 03</div>
           </div>
 
-          <!-- PERSON 2 â€” center left â€” LEADER â€” depth layer 4 (front) -->
+          <!-- PERSON 2 — center left — LEADER — depth layer 4 (front) -->
           <div class="person-layer leader" id="p2"
                style="left:22%; bottom:50px;"
                data-depth="0.85">
@@ -368,50 +372,50 @@
     <!-- OVERVIEW / KPIs -->
   <section id="overview">
     <div class="reveal">
-      <div class="section-label">// 01 â€” Key Metrics</div>
+      <div class="section-label">// 01 — Key Metrics</div>
       <h2 class="section-title">PERFORMANCE<br>OVERVIEW</h2>
       <p class="section-sub">Once you connect your bank dataset, these KPIs will populate in real time with your customer and financial metrics.</p>
     </div>
     <div class="kpi-grid reveal">
       <div class="kpi-card">
-        <div class="kpi-icon">ðŸ‘¥</div>
+        <div class="kpi-icon">👥</div>
         <div class="kpi-label">Total Customers</div>
-        <div class="kpi-value empty">â€” â€” â€”</div>
+        <div class="kpi-value empty">— — —</div>
         <div class="kpi-meta">Awaiting data source</div>
         <div class="kpi-pending">pending</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon">ðŸ“‰</div>
+        <div class="kpi-icon">📉</div>
         <div class="kpi-label">Churn Rate</div>
-        <div class="kpi-value empty">â€” â€”%</div>
+        <div class="kpi-value empty">— —%</div>
         <div class="kpi-meta">Predictive model inactive</div>
         <div class="kpi-pending">pending</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon">ðŸ’°</div>
+        <div class="kpi-icon">💰</div>
         <div class="kpi-label">Avg. Balance</div>
-        <div class="kpi-value empty">$â€” â€” â€”</div>
+        <div class="kpi-value empty">$— — —</div>
         <div class="kpi-meta">Calculated on connect</div>
         <div class="kpi-pending">pending</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon">ðŸŒ</div>
+        <div class="kpi-icon">🌍</div>
         <div class="kpi-label">Countries Covered</div>
-        <div class="kpi-value empty">â€” â€”</div>
+        <div class="kpi-value empty">— —</div>
         <div class="kpi-meta">Geographic scope</div>
         <div class="kpi-pending">pending</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon">ðŸ“¦</div>
+        <div class="kpi-icon">📦</div>
         <div class="kpi-label">Products / Customer</div>
-        <div class="kpi-value empty">â€”.â€”</div>
+        <div class="kpi-value empty">—.—</div>
         <div class="kpi-meta">Cross-sell indicator</div>
         <div class="kpi-pending">pending</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon">ðŸ¤–</div>
+        <div class="kpi-icon">🤖</div>
         <div class="kpi-label">Model Accuracy</div>
-        <div class="kpi-value empty">â€” â€”%</div>
+        <div class="kpi-value empty">— —%</div>
         <div class="kpi-meta">Classifier not trained</div>
         <div class="kpi-pending">pending</div>
       </div>
@@ -422,7 +426,7 @@
   <section id="analytics">
     <div class="analytics-header reveal">
       <div>
-        <div class="section-label">// 02 â€” Analytics</div>
+        <div class="section-label">// 02 — Analytics</div>
         <h2 class="section-title">DASHBOARD<br>INSIGHTS</h2>
         <p class="section-sub">Charts and visualizations will render here once your dataset is connected and processed.</p>
       </div>
@@ -461,7 +465,7 @@
             </div>
           </div>
           <div class="chart-overlay-msg">
-            <div class="lock-icon">ðŸ“Š</div>
+            <div class="lock-icon">📊</div>
             <p>Connect dataset to render</p>
           </div>
         </div>
@@ -478,9 +482,9 @@
         </div>
         <div class="chart-empty">
           <div class="empty-donut"></div>
-          <div class="await-label"><strong>â€”</strong>Geo data pending</div>
+          <div class="await-label"><strong>—</strong>Geo data pending</div>
           <div class="chart-overlay-msg">
-            <div class="lock-icon">ðŸŒ</div>
+            <div class="lock-icon">🌍</div>
             <p>Connect dataset to render</p>
           </div>
         </div>
@@ -509,7 +513,7 @@
             </svg>
           </div>
           <div class="chart-overlay-msg">
-            <div class="lock-icon">ðŸ“ˆ</div>
+            <div class="lock-icon">📈</div>
             <p>Connect dataset to render</p>
           </div>
         </div>
@@ -539,7 +543,7 @@
             </svg>
           </div>
           <div class="chart-overlay-msg">
-            <div class="lock-icon">ðŸ”µ</div>
+            <div class="lock-icon">🔵</div>
             <p>Connect dataset to render</p>
           </div>
         </div>
@@ -566,7 +570,7 @@
             </div>
           </div>
           <div class="chart-overlay-msg">
-            <div class="lock-icon">ðŸ“‰</div>
+            <div class="lock-icon">📉</div>
             <p>Connect dataset to render</p>
           </div>
         </div>
@@ -584,7 +588,7 @@
         <div class="chart-empty" style="min-height:160px">
           <div class="empty-donut"></div>
           <div class="chart-overlay-msg">
-            <div class="lock-icon">ðŸŽ‚</div>
+            <div class="lock-icon">🎂</div>
             <p>Connect dataset to render</p>
           </div>
         </div>
@@ -619,7 +623,7 @@
             <div style="height:28px;background:rgba(240,180,41,0.09);border-radius:2px"></div>
           </div>
           <div class="chart-overlay-msg">
-            <div class="lock-icon">ðŸ”¥</div>
+            <div class="lock-icon">🔥</div>
             <p>Connect dataset to render</p>
           </div>
         </div>
@@ -631,14 +635,14 @@
   <!-- FEATURES -->
   <section id="features">
     <div class="reveal">
-      <div class="section-label">// 03 â€” Capabilities</div>
+      <div class="section-label">// 03 — Capabilities</div>
       <h2 class="section-title">WHAT THIS<br>PLATFORM DOES</h2>
       <p class="section-sub">A complete suite of analytical tools built for banking data science workflows.</p>
     </div>
     <div class="features-grid reveal">
       <div class="feature-card">
         <div class="feature-num">01</div>
-        <div class="feature-icon">ðŸ”®</div>
+        <div class="feature-icon">🔮</div>
         <div class="feature-title">Churn Prediction Engine</div>
         <div class="feature-desc">ML-powered models predict which customers are likely to leave, with probability scores and contributing feature importance rankings.</div>
         <div class="feature-tags">
@@ -649,7 +653,7 @@
       </div>
       <div class="feature-card">
         <div class="feature-num">02</div>
-        <div class="feature-icon">ðŸŽ¯</div>
+        <div class="feature-icon">🎯</div>
         <div class="feature-title">Customer Segmentation</div>
         <div class="feature-desc">Cluster analysis groups customers by behavior, balance, and demographics. Identify your most valuable segments automatically.</div>
         <div class="feature-tags">
@@ -660,7 +664,7 @@
       </div>
       <div class="feature-card">
         <div class="feature-num">03</div>
-        <div class="feature-icon">ðŸ“Š</div>
+        <div class="feature-icon">📊</div>
         <div class="feature-title">Exploratory Analytics</div>
         <div class="feature-desc">Rich interactive charts for distribution analysis, correlation matrices, feature engineering, and multivariate exploration.</div>
         <div class="feature-tags">
@@ -671,7 +675,7 @@
       </div>
       <div class="feature-card">
         <div class="feature-num">04</div>
-        <div class="feature-icon">âš ï¸</div>
+        <div class="feature-icon">⚠️</div>
         <div class="feature-title">Risk Scoring</div>
         <div class="feature-desc">Credit risk models evaluate customer profiles and flag high-risk accounts using credit score, tenure, and financial behavior signals.</div>
         <div class="feature-tags">
@@ -682,7 +686,7 @@
       </div>
       <div class="feature-card">
         <div class="feature-num">05</div>
-        <div class="feature-icon">ðŸŒ</div>
+        <div class="feature-icon">🌐</div>
         <div class="feature-title">Geo Intelligence</div>
         <div class="feature-desc">Geographic distribution maps reveal regional performance gaps, concentration risks, and market penetration opportunities.</div>
         <div class="feature-tags">
@@ -693,7 +697,7 @@
       </div>
       <div class="feature-card">
         <div class="feature-num">06</div>
-        <div class="feature-icon">ðŸ“¤</div>
+        <div class="feature-icon">📤</div>
         <div class="feature-title">Report Generation</div>
         <div class="feature-desc">Export full analytical reports as interactive HTML dashboards or PDF documents, ready for stakeholder presentations.</div>
         <div class="feature-tags">
@@ -708,7 +712,7 @@
   <!-- DATA TABLE -->
   <section id="data">
     <div class="reveal">
-      <div class="section-label">// 04 â€” Data Preview</div>
+      <div class="section-label">// 04 — Data Preview</div>
       <h2 class="section-title">DATASET<br>EXPLORER</h2>
       <p class="section-sub">A preview of your bank dataset structure. This table will populate once your data is connected.</p>
     </div>
@@ -719,9 +723,9 @@
           <span class="table-badge">NO DATA</span>
         </div>
         <div class="table-actions">
-          <button class="tbl-btn">â¬† Import CSV</button>
-          <button class="tbl-btn">â¬‡ Export</button>
-          <button class="tbl-btn">âš™ Filter</button>
+          <button class="tbl-btn">⬆ Import CSV</button>
+          <button class="tbl-btn">⬇ Export</button>
+          <button class="tbl-btn">⚙ Filter</button>
         </div>
       </div>
       <table>
@@ -740,16 +744,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td><span class="cell-tag pending">Pending</span></td></tr>
-          <tr><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td><span class="cell-tag pending">Pending</span></td></tr>
-          <tr><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td><span class="cell-tag pending">Pending</span></td></tr>
-          <tr><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td><span class="cell-tag pending">Pending</span></td></tr>
-          <tr><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td class="cell-empty">â€”</td><td><span class="cell-tag pending">Pending</span></td></tr>
+          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
+          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
+          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
+          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
+          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
         </tbody>
       </table>
       <div class="table-footer">
-        <span>0 records loaded Â· awaiting data connection</span>
-        <span>Page 1 of â€”</span>
+        <span>0 records loaded · awaiting data connection</span>
+        <span>Page 1 of —</span>
       </div>
     </div>
   </section>
@@ -759,43 +763,43 @@
   <!-- PIPELINE -->
   <section id="pipeline">
     <div class="reveal">
-      <div class="section-label">// 05 â€” Workflow</div>
+      <div class="section-label">// 05 — Workflow</div>
       <h2 class="section-title">DATA SCIENCE<br>PIPELINE</h2>
-      <p class="section-sub">Your current project status in the analytics pipeline. Steps 1â€“2 are in progress.</p>
+      <p class="section-sub">Your current project status in the analytics pipeline. Steps 1–2 are in progress.</p>
     </div>
     <div class="pipeline-track reveal">
       <div class="pipe-step">
-        <div class="pipe-node done">ðŸ—„ï¸</div>
+        <div class="pipe-node done">🗄️</div>
         <div class="pipe-step-title">Data Collection</div>
         <div class="pipe-step-desc">Source bank dataset obtained</div>
         <div class="pipe-step-status done">Complete</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node active">ðŸ”¬</div>
+        <div class="pipe-node active">🔬</div>
         <div class="pipe-step-title">EDA & Cleaning</div>
         <div class="pipe-step-desc">Exploratory analysis in progress</div>
         <div class="pipe-step-status active">In Progress</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node pending">âš™ï¸</div>
+        <div class="pipe-node pending">⚙️</div>
         <div class="pipe-step-title">Feature Engineering</div>
         <div class="pipe-step-desc">Transform and encode variables</div>
         <div class="pipe-step-status pending">Pending</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node pending">ðŸ¤–</div>
+        <div class="pipe-node pending">🤖</div>
         <div class="pipe-step-title">Model Training</div>
         <div class="pipe-step-desc">Fit classifiers and tune hyperparams</div>
         <div class="pipe-step-status pending">Pending</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node pending">ðŸ“</div>
+        <div class="pipe-node pending">📐</div>
         <div class="pipe-step-title">Evaluation</div>
         <div class="pipe-step-desc">AUC, F1, Precision, Recall</div>
         <div class="pipe-step-status pending">Pending</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node pending">ðŸš€</div>
+        <div class="pipe-node pending">🚀</div>
         <div class="pipe-step-title">Deployment</div>
         <div class="pipe-step-desc">Connect to this dashboard</div>
         <div class="pipe-step-status pending">Pending</div>
@@ -811,9 +815,9 @@
       <div class="ai-header">
         <div>
           <h2 class="section-title" style="font-size:clamp(38px,5vw,60px)">PREDICTIVE<br>INTELLIGENCE</h2>
-          <p class="section-sub">ML-powered churn forecasting, risk scoring, and long-term banking trend analysis. Real-time simulation â€” connect your dataset to activate live predictions.</p>
+          <p class="section-sub">ML-powered churn forecasting, risk scoring, and long-term banking trend analysis. Real-time simulation — connect your dataset to activate live predictions.</p>
         </div>
-        <div class="ai-live-badge"><div class="ai-dot"></div>AI ENGINE ACTIVE Â· SIMULATION MODE</div>
+        <div class="ai-live-badge"><div class="ai-dot"></div>AI ENGINE ACTIVE · SIMULATION MODE</div>
       </div>
     </div>
 
@@ -833,8 +837,8 @@
         <option value="nn">Neural Network</option>
       </select>
       <div class="ai-divider"></div>
-      <button class="ai-btn gold" onclick="runPrediction()">âš¡ RUN PREDICTION</button>
-      <button class="ai-btn" onclick="simulateNewData()">â†º SIMULATE DATA</button>
+      <button class="ai-btn gold" onclick="runPrediction()">⚡ RUN PREDICTION</button>
+      <button class="ai-btn" onclick="simulateNewData()">↺ SIMULATE DATA</button>
     </div>
 
     <!-- PREDICTION KPIs -->
@@ -842,37 +846,37 @@
       <div class="pred-kpi warn">
         <div class="pk-label">Predicted Churn Rate</div>
         <div class="pk-value warn" id="pkChurn">21.4%</div>
-        <div class="pk-delta dn" id="pkChurnDelta">â–² +1.4% vs baseline</div>
+        <div class="pk-delta dn" id="pkChurnDelta">▲ +1.4% vs baseline</div>
         <canvas class="pk-sparkline" id="spkChurn" height="28"></canvas>
       </div>
       <div class="pred-kpi good">
         <div class="pk-label">Retained Customers</div>
         <div class="pk-value good" id="pkRetain">7,860</div>
-        <div class="pk-delta up" id="pkRetainDelta">â–² +2.1% with intervention</div>
+        <div class="pk-delta up" id="pkRetainDelta">▲ +2.1% with intervention</div>
         <canvas class="pk-sparkline" id="spkRetain" height="28"></canvas>
       </div>
       <div class="pred-kpi">
         <div class="pk-label">Model AUC Score</div>
         <div class="pk-value cyan" id="pkAuc">0.874</div>
-        <div class="pk-delta up">â–² Best performer: XGBoost</div>
+        <div class="pk-delta up">▲ Best performer: XGBoost</div>
         <canvas class="pk-sparkline" id="spkAuc" height="28"></canvas>
       </div>
       <div class="pred-kpi warn">
         <div class="pk-label">High Risk Customers</div>
         <div class="pk-value warn" id="pkRisk">1,247</div>
-        <div class="pk-delta dn">â–¼ Needs immediate action</div>
+        <div class="pk-delta dn">▼ Needs immediate action</div>
         <canvas class="pk-sparkline" id="spkRisk" height="28"></canvas>
       </div>
       <div class="pred-kpi good">
         <div class="pk-label">Revenue at Risk</div>
         <div class="pk-value warn" id="pkRevRisk">$4.2M</div>
-        <div class="pk-delta dn">â–¼ Annual exposure estimate</div>
+        <div class="pk-delta dn">▼ Annual exposure estimate</div>
         <canvas class="pk-sparkline" id="spkRev" height="28"></canvas>
       </div>
       <div class="pred-kpi">
         <div class="pk-label">Precision Score</div>
         <div class="pk-value cyan" id="pkPrec">83.2%</div>
-        <div class="pk-delta up">â–² Low false-positive rate</div>
+        <div class="pk-delta up">▲ Low false-positive rate</div>
         <canvas class="pk-sparkline" id="spkPrec" height="28"></canvas>
       </div>
     </div>
@@ -883,7 +887,7 @@
       <!-- CHURN FORECAST LINE CHART (wide) -->
       <div class="ai-card span8">
         <div class="ac-head">
-          <div><div class="ac-title">Churn Rate Forecast â€” Long-Term Trend</div><div class="ac-sub">Predicted monthly churn with confidence intervals Â· Horizon: <span id="horizonLabel">6 months</span></div></div>
+          <div><div class="ac-title">Churn Rate Forecast — Long-Term Trend</div><div class="ac-sub">Predicted monthly churn with confidence intervals · Horizon: <span id="horizonLabel">6 months</span></div></div>
           <div class="ac-tag live">LIVE SIM</div>
         </div>
         <div class="chart-canvas-wrap"><canvas class="ai-chart" id="churnForecastChart" height="220"></canvas></div>
@@ -895,31 +899,31 @@
         <div class="gauge-wrap">
           <canvas id="gaugeCanvas" width="220" height="130"></canvas>
           <div class="gauge-val" id="gaugeVal">62</div>
-          <div class="gauge-label" id="gaugeStatus">MODERATE RISK â€” ACTION ADVISED</div>
+          <div class="gauge-label" id="gaugeStatus">MODERATE RISK — ACTION ADVISED</div>
         </div>
       </div>
 
       <!-- CUSTOMER SEGMENT CHURN (stacked bar) -->
       <div class="ai-card span6">
-        <div class="ac-head"><div><div class="ac-title">Churn Probability by Segment</div><div class="ac-sub">Geographic Â· Age Â· Product cross-analysis</div></div><div class="ac-tag">SEGMENT</div></div>
+        <div class="ac-head"><div><div class="ac-title">Churn Probability by Segment</div><div class="ac-sub">Geographic · Age · Product cross-analysis</div></div><div class="ac-tag">SEGMENT</div></div>
         <div class="chart-canvas-wrap"><canvas class="ai-chart" id="segmentChart" height="200"></canvas></div>
       </div>
 
       <!-- ROC CURVE -->
       <div class="ai-card span6">
-        <div class="ac-head"><div><div class="ac-title">ROC Curve â€” Model Comparison</div><div class="ac-sub">True positive rate vs false positive rate</div></div><div class="ac-tag">EVALUATION</div></div>
+        <div class="ac-head"><div><div class="ac-title">ROC Curve — Model Comparison</div><div class="ac-sub">True positive rate vs false positive rate</div></div><div class="ac-tag">EVALUATION</div></div>
         <div class="chart-canvas-wrap"><canvas class="ai-chart" id="rocChart" height="200"></canvas></div>
       </div>
 
-      <!-- 3D SCATTER â€” Age/Balance/Churn -->
+      <!-- 3D SCATTER — Age/Balance/Churn -->
       <div class="ai-card span8">
-        <div class="ac-head"><div><div class="ac-title">3D Risk Space â€” Age Â· Balance Â· Churn Probability</div><div class="ac-sub">Drag to rotate Â· Each point = customer Â· Color = churn risk</div></div><div class="ac-tag live">3D Â· INTERACTIVE</div></div>
+        <div class="ac-head"><div><div class="ac-title">3D Risk Space — Age · Balance · Churn Probability</div><div class="ac-sub">Drag to rotate · Each point = customer · Color = churn risk</div></div><div class="ac-tag live">3D · INTERACTIVE</div></div>
         <div class="scene3d-wrap"><canvas id="scene3d"></canvas></div>
       </div>
 
       <!-- CONFUSION MATRIX -->
       <div class="ai-card span4">
-        <div class="ac-head"><div><div class="ac-title">Confusion Matrix</div><div class="ac-sub">XGBoost Â· Test set</div></div></div>
+        <div class="ac-head"><div><div class="ac-title">Confusion Matrix</div><div class="ac-sub">XGBoost · Test set</div></div></div>
         <div class="conf-matrix">
           <div class="cm-cell cm-tp"><div class="cm-val" id="cmTP">6,104</div><div class="cm-lbl">True Pos</div></div>
           <div class="cm-cell cm-fp"><div class="cm-val" id="cmFP">312</div><div class="cm-lbl">False Pos</div></div>
@@ -945,7 +949,7 @@
 
       <!-- REVENUE AT RISK AREA CHART -->
       <div class="ai-card span6">
-        <div class="ac-head"><div><div class="ac-title">Revenue at Risk â€” 36-Month Projection</div><div class="ac-sub">Without intervention vs. with retention strategy</div></div><div class="ac-tag live">FORECAST</div></div>
+        <div class="ac-head"><div><div class="ac-title">Revenue at Risk — 36-Month Projection</div><div class="ac-sub">Without intervention vs. with retention strategy</div></div><div class="ac-tag live">FORECAST</div></div>
         <div class="timeline-wrap">
           <div class="tl-tabs">
             <button class="tl-tab active" onclick="setRevTab('monthly',this)">Monthly</button>
@@ -973,13 +977,13 @@
 
       <!-- AGE DISTRIBUTION VIOLIN-STYLE -->
       <div class="ai-card span4">
-        <div class="ac-head"><div><div class="ac-title">Age Distribution Â· Churned vs Retained</div><div class="ac-sub">Density comparison</div></div><div class="ac-tag">DISTRIBUTION</div></div>
+        <div class="ac-head"><div><div class="ac-title">Age Distribution · Churned vs Retained</div><div class="ac-sub">Density comparison</div></div><div class="ac-tag">DISTRIBUTION</div></div>
         <div class="chart-canvas-wrap"><canvas class="ai-chart" id="ageDistChart" height="200"></canvas></div>
       </div>
 
       <!-- BALANCE BUCKET WATERFALL -->
       <div class="ai-card span4">
-        <div class="ac-head"><div><div class="ac-title">Balance vs Churn Rate</div><div class="ac-sub">Balance brackets Â· churn probability</div></div></div>
+        <div class="ac-head"><div><div class="ac-title">Balance vs Churn Rate</div><div class="ac-sub">Balance brackets · churn probability</div></div></div>
         <div class="chart-canvas-wrap"><canvas class="ai-chart" id="balanceChart" height="200"></canvas></div>
       </div>
 
@@ -990,28 +994,28 @@
       <div class="section-label" style="margin-bottom:20px">// AI-GENERATED INSIGHTS</div>
       <div class="insights-grid">
         <div class="insight-card critical">
-          <div class="insight-icon">ðŸš¨</div>
-          <div><div class="insight-title">Germany Shows Highest Churn Risk</div><div class="insight-desc">German customers exhibit 32% churn probability â€” 60% above average. Primary drivers: low product adoption and shorter tenure. Recommend targeted retention campaigns.</div></div>
+          <div class="insight-icon">🚨</div>
+          <div><div class="insight-title">Germany Shows Highest Churn Risk</div><div class="insight-desc">German customers exhibit 32% churn probability — 60% above average. Primary drivers: low product adoption and shorter tenure. Recommend targeted retention campaigns.</div></div>
         </div>
         <div class="insight-card warning">
-          <div class="insight-icon">âš ï¸</div>
-          <div><div class="insight-title">Age 40â€“50 Segment At Risk</div><div class="insight-desc">Mid-career customers with high balances but only 1 product are 2.4Ã— more likely to churn. Cross-sell investment products to deepen engagement.</div></div>
+          <div class="insight-icon">⚠️</div>
+          <div><div class="insight-title">Age 40–50 Segment At Risk</div><div class="insight-desc">Mid-career customers with high balances but only 1 product are 2.4× more likely to churn. Cross-sell investment products to deepen engagement.</div></div>
         </div>
         <div class="insight-card opportunity">
-          <div class="insight-icon">ðŸ’¡</div>
+          <div class="insight-icon">💡</div>
           <div><div class="insight-title">Credit Score is a Weak Predictor</div><div class="insight-desc">SHAP analysis reveals credit score has lower predictive power than expected. Balance and number of products are the dominant churn signals.</div></div>
         </div>
         <div class="insight-card opportunity">
-          <div class="insight-icon">ðŸ“ˆ</div>
+          <div class="insight-icon">📈</div>
           <div><div class="insight-title">Multi-Product Customers Are Loyal</div><div class="insight-desc">Customers with 3+ products have &lt;5% churn probability. Focus acquisition strategy on product bundles to build long-term retention from day one.</div></div>
         </div>
         <div class="insight-card warning">
-          <div class="insight-icon">ðŸ”„</div>
+          <div class="insight-icon">🔄</div>
           <div><div class="insight-title">Churn Peaks at Year 1 and Year 7</div><div class="insight-desc">Two critical dropout moments identified. Year 1 = early dissatisfaction. Year 7 = relationship fatigue. Design loyalty programs at exactly these touchpoints.</div></div>
         </div>
         <div class="insight-card critical">
-          <div class="insight-icon">ðŸ’°</div>
-          <div><div class="insight-title">$4.2M Annual Revenue at Risk</div><div class="insight-desc">Based on average balance Ã— churn probability Ã— margin model. A 5% churn reduction through targeted intervention would save approximately $1.05M annually.</div></div>
+          <div class="insight-icon">💰</div>
+          <div><div class="insight-title">$4.2M Annual Revenue at Risk</div><div class="insight-desc">Based on average balance × churn probability × margin model. A 5% churn reduction through targeted intervention would save approximately $1.05M annually.</div></div>
         </div>
       </div>
     </div>
@@ -1054,14 +1058,12 @@
   <!-- FOOTER -->
   <footer>
     <div class="footer-brand">BANKIQ</div>
-    <div>DATA INTELLIGENCE PLATFORM Â· BUILT FOR BANKING ANALYTICS</div>
-    <div>v1.0 Â· AWAITING DATA</div>
+    <div>DATA INTELLIGENCE PLATFORM · BUILT FOR BANKING ANALYTICS</div>
+    <div>v1.0 · AWAITING DATA</div>
   </footer>
 
 </div><!-- end site-wrapper -->
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>
-

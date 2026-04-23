@@ -18,6 +18,11 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+# Import local modules
+from src.data.extract_for_modeling import extract_for_modeling
+from src.features.build_features import build_preprocessing_pipeline, get_output_feature_names
+from src.models.tune import tune_model
+
 from sklearn.metrics import (
     classification_report,
     f1_score,
@@ -34,11 +39,6 @@ import mlflow
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
-# Import local modules
-from src.data.extract_for_modeling import extract_for_modeling
-from src.features.build_features import build_preprocessing_pipeline, get_output_feature_names
-from src.models.tune import tune_model
 
 
 def _prepare_target(y_series):
@@ -150,13 +150,13 @@ def main(args):
         print(f"[Train] Model fitted in {train_time:.2f}s")
         
         # ========== Feature Metadata ==========
-        print(f"\n[Features] Extracting feature names from fitted pipeline")
+        print("\n[Features] Extracting feature names from fitted pipeline")
         feature_names = get_output_feature_names(ml_pipeline.named_steps['features'])
         print(f"[Features] Total features: {len(feature_names)}")
         print(f"[Features] Feature sample: {feature_names[:10]}")
         
         # ========== Evaluation ==========
-        print(f"\n[Eval] Computing predictions on test set")
+        print("\n[Eval] Computing predictions on test set")
         y_pred_proba = ml_pipeline.predict_proba(X_test)[:, 1]
         y_pred = (y_pred_proba >= args.threshold).astype(int)
         
@@ -177,11 +177,11 @@ def main(args):
         print(f"[Eval] ROC-AUC: {roc_auc:.4f}")
         print(f"[Eval] Inference latency: {infer_latency_ms:.2f}ms per sample")
         
-        print(f"\n[Eval] Classification Report:")
+        print("\n[Eval] Classification Report:")
         print(classification_report(y_test, y_pred))
         
         # ========== MLflow Logging ==========
-        print(f"\n[MLflow] Logging parameters and metrics")
+        print("\n[MLflow] Logging parameters and metrics")
         
         # Log configuration parameters
         mlflow.log_param("table", args.table)
@@ -209,7 +209,7 @@ def main(args):
         mlflow.log_metric("inference_latency_ms", infer_latency_ms)
         
         # ========== Artifact Logging ==========
-        print(f"[MLflow] Logging artifacts")
+        print("[MLflow] Logging artifacts")
         
         # Create artifacts directory
         artifacts_dir = project_root / "artifacts"
@@ -257,7 +257,7 @@ def main(args):
         mlflow.log_artifact(str(metadata_file), artifact_path="metadata")
         
         # Save model
-        print(f"[MLflow] Logging model to artifact path 'model'")
+        print("[MLflow] Logging model to artifact path 'model'")
         mlflow.sklearn.log_model(ml_pipeline, artifact_path="model")
         
         # ========== Summary ==========
@@ -266,18 +266,18 @@ def main(args):
         print("="*70)
         print(f"\nRun ID: {run_id}")
         print(f"Experiment: {args.experiment}")
-        print(f"\nData:")
+        print("\nData:")
         print(f"  Table: {args.table}")
         print(f"  Samples: {len(df)} total, {len(X_train)} train, {len(X_test)} test")
-        print(f"\nModel:")
-        print(f"  Algorithm: LightGBM Classifier")
+        print("\nModel:")
+        print("  Algorithm: LightGBM Classifier")
         print(f"  Features: {len(feature_names)}")
         print(f"\nPerformance (threshold={args.threshold}):")
         print(f"  Precision: {precision:.4f}")
         print(f"  Recall: {recall:.4f}")
         print(f"  F1-Score: {f1:.4f}")
         print(f"  ROC-AUC: {roc_auc:.4f}")
-        print(f"\nTiming:")
+        print("\nTiming:")
         print(f"  Data extraction: {extract_time:.2f}s")
         print(f"  Hyperparameter tuning: {tune_time:.2f}s")
         print(f"  Model training: {train_time:.2f}s")

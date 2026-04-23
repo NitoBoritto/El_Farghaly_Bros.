@@ -1,8 +1,8 @@
 ## Master Data Transformation Pipeline
 ## import etl functions from extract, preprocess, and to_db_loader & database connection
-from src.data.extract import load_db_table_to_dataframe
-from src.data.preprocess import process_data_pipeline
-from src.data.to_db_loader import load_dataframe_to_db_table
+from database.extract import load_db_table_to_dataframe
+from src.database.preprocess import process_data_pipeline
+from src.database.to_db_loader import load_dataframe_to_db_table
 from database import get_db_engine
 def run_data_pipeline(source_table, target_table):
     """

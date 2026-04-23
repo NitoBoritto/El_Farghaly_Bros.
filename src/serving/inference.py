@@ -19,7 +19,6 @@ import mlflow
 import mlflow.sklearn
 import glob
 
-from src.utils.validate import validate_data
 
 # Model loading configuration
 # IMPORTANT: This path is set during docker container build
@@ -55,11 +54,6 @@ def predict(input_dict: dict) -> str:
     """
     
     df = pd.DataFrame([input_dict])
-    
-    is_valid, error_message = validate_data(df)
-    
-    if not is_valid:
-        raise Exception(f'Data validation failed: {error_message}')
     
     prediction = model.predict(df)
     probability = model.predict_proba(df)

@@ -18,11 +18,6 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-# Import local modules
-from src.data.extract_for_modeling import extract_for_modeling
-from src.features.build_features import build_preprocessing_pipeline, get_output_feature_names
-from src.models.tune import tune_model
-
 from sklearn.metrics import (
     classification_report,
     f1_score,
@@ -39,6 +34,11 @@ import mlflow
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
+
+# Import local modules
+from src.data.extract_for_modeling import extract_for_modeling
+from src.features.build_features import build_preprocessing_pipeline, get_output_feature_names
+from src.models.tune import tune_model
 
 
 def _prepare_target(y_series):
@@ -358,25 +358,26 @@ if __name__ == "__main__":
     main(args)
 
 
-# ============================================================================
-# Usage Examples:
-# ============================================================================
-# Run with defaults:
-#   python scripts/run_pipeline.py
-#
-# Run with custom tuning trials and scoring metric:
-#   python scripts/run_pipeline.py --n_trials 100 --scoring f1
-#
-# Run with custom table, target, and threshold:
-#   python scripts/run_pipeline.py --table Transformed.Bank --target y --threshold 0.35
-#
-# Run with custom test size and MLflow experiment:
-#   python scripts/run_pipeline.py --test_size 0.25 --experiment "Bank Campaign - LGBM v2"
-#
-# Run with all parameters specified:
-#   python scripts/run_pipeline.py --table Transformed.Bank --target y --threshold 0.35 \
-#     --test_size 0.2 --n_trials 50 --scoring recall --experiment "El Farghaly Bros LGBM"
-#
-# Run with custom MLflow tracking URI:
-#   python scripts/run_pipeline.py --mlflow_uri "http://localhost:5000"
-# ============================================================================
+"""
+ Usage Examples:
+ ============================================================================
+ Run with defaults:
+   python scripts/run_pipeline.py
+
+ Run with custom tuning trials and scoring metric:
+   python scripts/run_pipeline.py --n_trials 100 --scoring f1
+
+ Run with custom table, target, and threshold:
+   python scripts/run_pipeline.py --table Transformed.Bank --target y --threshold 0.35
+
+ Run with custom test size and MLflow experiment:
+   python scripts/run_pipeline.py --test_size 0.25 --experiment "Bank Campaign - LGBM v2"
+
+ Run with all parameters specified:
+   python scripts/run_pipeline.py --table Transformed.Bank --target y --threshold 0.5 --test_size 0.2 --n_trials 50 \
+       --scoring recall --experiment "El Farghaly Bros LGBM" --mlflow_uri "file:///D:/ML%20Projects/El_Farghaly_Bros/mlruns"
+
+ Run with custom MLflow tracking URI:
+   python scripts/run_pipeline.py --mlflow_uri "http://localhost:5000"
+
+"""

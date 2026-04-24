@@ -1791,3 +1791,44 @@
 .team-3d-stage {
   height: 560px;
 }
+
+/* 1. التابلت والشاشات المتوسطة (أقل من 1024px) */
+@media (max-width: 1024px) {
+  .parallax-world {
+    gap: 30px;
+  }
+  .person-img {
+    height: 250px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .parallax-world {
+    gap: 20px;
+   
+  }
+  .person-img  {
+    height: 200px;
+    margin-left: -100px;
+  }
+  #p3 {
+    margin-left: -100px;
+  }
+  #p4{
+    margin-left: -100px;
+  }
+}
+
+/* 3. الشاشات الصغيرة جداً (أقل من 480px) */
+@media (max-width: 480px) {
+  .parallax-world {
+    gap: 15px;
+  }
+  .person-img {
+    height: 150px;
+  }
+  .person-tag {
+    font-size: 10px; /* تصغير حجم الخط ليتناسب مع الشاشة */
+  }
+}

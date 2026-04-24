@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from src.serving.inference import predict
 from src.app.schemas import PredictionResponse, bankingdata
@@ -9,13 +13,31 @@ app = FastAPI(
     version = '1.0.0'
 )
 
+basic_dir = Path(__file__).resolve().parent
+statis_dir = basic_dir / 'static'
+html_dir = statis_dir / 'html'
+
+app.mount('/css', StaticFiles(directory=statis_dir / 'css'), name='css')
+app.mount('/js', StaticFiles(directory=statis_dir / 'js'), name='js')
+app.mount('/images', StaticFiles(directory=statis_dir / 'images'), name='images')
+
 @app.get('/')
 def root():
     """
-    Health diagnostic endpoint check
-    
+    Serve dashboard page from backend root route.
+
     """
-    
+
+    return FileResponse(html_dir / 'body.html')
+
+
+@app.get('/health')
+def health_check():
+    """
+    Health diagnostic endpoint check.
+
+    """
+
     return {'status': 'ok'}
 
     

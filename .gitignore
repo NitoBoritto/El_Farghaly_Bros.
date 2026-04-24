@@ -17,3 +17,4 @@ __pycache__/
 !src/serving/model/**
 __init__.py
 notebooks/*.png
+.vscode/

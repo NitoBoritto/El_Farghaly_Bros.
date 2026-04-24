@@ -36,7 +36,7 @@ class bankingdata(BaseModel):
     cons_conf_idx: float = Field(alias='cons.conf.idx', description="Consumer confidence index — monthly indicator")
     cons_price_idx: float = Field(alias='cons.price.idx', description="Consumer price index — monthly indicator")
     euribor3m: float = Field(description="Euribor 3-month rate — daily indicator")
-    nr_employed: int = Field(alias='nr.employed', description="Number of employees — quarterly indicator")
+    nr_employed: float = Field(alias='nr.employed', description="Number of employees — quarterly indicator")
     
     # Target
-    y: int = Field(description="Has client subscribed to term deposit: 0=no, 1=yes")
+    y: str = Field(description="Has client subscribed to term deposit: 0=no, 1=yes")

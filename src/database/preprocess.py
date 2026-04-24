@@ -1,4 +1,59 @@
 import pandas as pd
+from src.app.schemas import bankingdata
+
+
+def _get_schema_type_mapping():
+    """Build a dataframe-column to python-type map from pydantic schema fields."""
+    mapping = {}
+    for field_name, field_info in bankingdata.model_fields.items():
+        expected_type = field_info.annotation
+        mapping[field_name] = expected_type
+        if field_info.alias:
+            mapping[field_info.alias] = expected_type
+
+    # ETL decision: keep integer encoding for temporal columns in transformed table.
+    mapping['month'] = int
+    mapping['day_of_week'] = int
+    return mapping
+
+
+def _coerce_dataframe_to_schema_dtypes(df_input):
+    """Coerce dataframe dtypes to the schema contract where columns are present."""
+    schema_types = _get_schema_type_mapping()
+    df_output = df_input.copy()
+
+    coerced_columns = []
+    conversion_losses = []
+
+    for column_name, expected_type in schema_types.items():
+        if column_name not in df_output.columns:
+            continue
+
+        before_nulls = df_output[column_name].isna().sum()
+
+        if expected_type is int:
+            df_output[column_name] = pd.to_numeric(df_output[column_name], errors='coerce').astype('Int64')
+        elif expected_type is float:
+            df_output[column_name] = pd.to_numeric(df_output[column_name], errors='coerce').astype('float64')
+        elif expected_type is str:
+            df_output[column_name] = df_output[column_name].astype('string')
+
+        after_nulls = df_output[column_name].isna().sum()
+        coerced_columns.append(column_name)
+        if after_nulls > before_nulls:
+            conversion_losses.append(f"{column_name}: +{after_nulls - before_nulls} nulls")
+
+    missing_schema_columns = sorted(set(schema_types.keys()) - set(df_output.columns))
+
+    print(f"[Step 5] Dtype Validation/Coercion: Completed for {len(coerced_columns)} columns.")
+    if missing_schema_columns:
+        print(f"[Step 5] Schema columns not present in dataframe: {missing_schema_columns}")
+    if conversion_losses:
+        print(f"[Step 5] Conversion warnings: {conversion_losses}")
+
+    return df_output
+
+
 def process_data_pipeline(df_input):
     """
     Master Pipeline to apply all string and temporal transformations in sequence
@@ -53,6 +108,12 @@ def process_data_pipeline(df_input):
             labels=['last 3 days', 'last week', 'last 2 weeks', 'last month']
         ).astype(str)
     print("[Step 4] Pdays Grouping Transformation: Completed.")
+
+    # Step 5: Validate/coerce dtypes against application schema contract.
+    df_work = _coerce_dataframe_to_schema_dtypes(df_work)
+    dtype_snapshot = {col: str(df_work[col].dtype) for col in ['month', 'day_of_week'] if col in df_work.columns}
+    if dtype_snapshot:
+        print(f"[Step 5] Temporal dtype check: {dtype_snapshot}")
 
     print("\n=== Pipeline Execution Summary ===")
     print(f"Final Dataset Shape: {df_work.shape}")

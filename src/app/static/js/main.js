@@ -157,54 +157,41 @@ setInterval(() => {
     if (!stage) return;
 
     // Crop each person from the full group image using CSS
-    // Person positions in original 1195x896 image (approx)
-    // Person 1 (leftmost):  x ~85-370,  full height
-    // Person 2 (2nd/leader): x ~340-590, full height
-    // Person 3 (3rd):        x ~555-790, full height
-    // Person 4 (rightmost):  x ~760-1100, full height
-    const crops = [
-      { id: 'personImg1', left: '7.1%',  width: '23.8%' },  // person 1
-      { id: 'personImg2', left: '28.5%', width: '21%'   },  // person 2 (leader)
-      { id: 'personImg3', left: '46.4%', width: '19.7%' },  // person 3
-      { id: 'personImg4', left: '63.6%', width: '28.5%' },  // person 4
-    ];
+// ── Yasser & Mohanad: individual PNG files — no cropping needed
+  // ── personImg3 & personImg4: crop from group photo
+  const groupCrops = [
+    { id: 'personImg3', left: '46.4%', width: '19.7%', wrapW: 108, wrapH: 400 },
+    { id: 'personImg4', left: '63.6%', width: '28.5%', wrapW: 112, wrapH: 385 },
+  ];
 
-    // Apply CSS clip/crop trick: make each img show only its person
-    // We use object-fit + object-position on a fixed-size wrapper
-    crops.forEach(c => {
-      const img = document.getElementById(c.id);
-      if (!img) return;
+  groupCrops.forEach(c => {
+    const img = document.getElementById(c.id);
+    if (!img) return;
+    const wrap = img.parentElement;
+    const scaleW = 100 / parseFloat(c.width);
+    img.style.width    = (scaleW * 100) + '%';
+    img.style.height   = 'auto';
+    img.style.maxWidth = 'none';
+    img.style.position = 'relative';
+    img.style.left     = (-parseFloat(c.left) * scaleW) + '%';
+    wrap.style.overflow = 'hidden';
+    wrap.style.width    = c.wrapW + 'px';
+    wrap.style.height   = c.wrapH + 'px';
+  });
 
-      // Convert % to pixel-ish for object-position
-      // Use a clip-path + wrapper approach
-      const wrap = img.parentElement;
-      const leftPct  = parseFloat(c.left);
-      const widthPct = parseFloat(c.width);
-
-      // We'll set the image wide and clip
-      const scaleW = 100 / widthPct; // how much bigger the full image is vs person width
-      img.style.width  = (scaleW * 100) + '%';
-      img.style.height = 'auto';
-      img.style.maxWidth = 'none';
-      img.style.position = 'relative';
-      img.style.left = (-leftPct * scaleW) + '%';
-
-      wrap.style.overflow = 'hidden';
-      wrap.style.width = '110px'; // will be overridden per person below
-    });
-
-    // Fine-tune wrapper widths per person
-    const widths = { personImg1: 105, personImg2: 115, personImg3: 108, personImg4: 112 };
-    // And heights
-    const heights = { personImg1: 370, personImg2: 420, personImg3: 400, personImg4: 385 };
-
-    Object.entries(widths).forEach(([id, w]) => {
-      const img = document.getElementById(id);
-      if (img) {
-        img.parentElement.style.width  = w + 'px';
-        img.parentElement.style.height = heights[id] + 'px';
-      }
-    });
+  // ── Yasser (personImg2) & Mohanad (personImg1): reset any wrapper constraints
+  ['personImg1', 'personImg2'].forEach(function(id) {
+    const img = document.getElementById(id);
+    if (!img) return;
+    const wrap = img.parentElement;
+    // Clear any previously set inline styles that could clip the image
+    wrap.style.overflow = 'visible';
+    wrap.style.width    = 'auto';
+    wrap.style.height   = 'auto';
+    img.style.position  = 'static';
+    img.style.left      = '0';
+    img.style.maxWidth  = 'none';
+  });
 
     // ── Parallax mouse interaction ──
     const people = [

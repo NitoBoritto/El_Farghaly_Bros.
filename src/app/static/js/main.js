@@ -1,4 +1,3 @@
-
 /* ═══════════════════════════════════════════════
    LOADER
 ═══════════════════════════════════════════════ */
@@ -828,31 +827,487 @@ setInterval(() => {
     drawRevenue(mode);
   };
 
-  window.runPrediction = function() {
-    if (predRunning) return;
-    predRunning = true;
+  /* ═══════════════════════════════════════════════════════
+     PREDICTION MODAL — injects itself once into the DOM
+  ═══════════════════════════════════════════════════════ */
+  const MODAL_ID = 'bankiq-pred-modal';
+
+  const MODAL_CSS = `
+    #${MODAL_ID}-overlay {
+      position: fixed; inset: 0; z-index: 10000;
+      background: rgba(7,13,26,0.88);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    #${MODAL_ID}-overlay.open { opacity: 1; pointer-events: all; }
+    #${MODAL_ID} {
+      background: #0d1829;
+      border: 1px solid rgba(240,180,41,0.22);
+      border-radius: 12px;
+      width: min(94vw, 760px);
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 32px 36px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #c8d8ff;
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+    #${MODAL_ID}-overlay.open #${MODAL_ID} { transform: translateY(0); }
+    .biq-modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem; letter-spacing: 3px;
+      color: #f0b429; margin-bottom: 4px;
+    }
+    .biq-modal-sub {
+      font-size: 10px; color: #4a5a8b; margin-bottom: 24px;
+      letter-spacing: 1px;
+    }
+    .biq-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px 20px; margin-bottom: 24px;
+    }
+    @media (max-width: 520px) { .biq-grid { grid-template-columns: 1fr; } }
+    .biq-field label {
+      display: block; font-size: 9px; letter-spacing: 1.5px;
+      color: #4a6a9b; margin-bottom: 5px; text-transform: uppercase;
+    }
+    .biq-field input, .biq-field select {
+      width: 100%; box-sizing: border-box;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(240,180,41,0.18);
+      border-radius: 6px; padding: 8px 10px;
+      color: #c8d8ff; font-family: inherit; font-size: 12px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .biq-field input:focus, .biq-field select:focus {
+      border-color: rgba(240,180,41,0.55);
+    }
+    .biq-field select option { background: #0d1829; }
+    .biq-section-label {
+      font-size: 9px; letter-spacing: 2px; color: #f0b429;
+      margin: 16px 0 10px; text-transform: uppercase;
+      border-bottom: 1px solid rgba(240,180,41,0.12);
+      padding-bottom: 6px;
+    }
+    .biq-actions {
+      display: flex; gap: 12px; margin-top: 8px;
+      justify-content: flex-end;
+    }
+    .biq-btn-cancel {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #4a5a8b; border-radius: 6px;
+      padding: 10px 22px; font-family: inherit;
+      font-size: 11px; letter-spacing: 1px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .biq-btn-cancel:hover { border-color: rgba(255,255,255,0.3); color: #c8d8ff; }
+    .biq-btn-run {
+      background: #f0b429; color: #070d1a;
+      border: none; border-radius: 6px;
+      padding: 10px 28px; font-family: inherit;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .biq-btn-run:hover { background: #ffe066; }
+    .biq-btn-run:disabled { background: #4a5a8b; color: #070d1a; cursor: not-allowed; }
+    #biq-result-banner {
+      display: none; margin-top: 20px;
+      border-radius: 8px; padding: 18px 20px;
+      border: 1px solid;
+    }
+    #biq-result-banner.show { display: block; }
+    #biq-result-banner.yes {
+      background: rgba(0,229,160,0.08);
+      border-color: rgba(0,229,160,0.35);
+    }
+    #biq-result-banner.no {
+      background: rgba(255,76,106,0.08);
+      border-color: rgba(255,76,106,0.35);
+    }
+    .biq-result-label {
+      font-size: 9px; letter-spacing: 2px; color: #4a5a8b;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .biq-result-prediction {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem; letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+    .biq-result-metrics {
+      display: flex; gap: 24px; flex-wrap: wrap;
+    }
+    .biq-metric { display: flex; flex-direction: column; gap: 2px; }
+    .biq-metric-key {
+      font-size: 8px; letter-spacing: 1.5px; color: #4a5a8b;
+      text-transform: uppercase;
+    }
+    .biq-metric-val {
+      font-size: 15px; font-weight: 600; color: #f0b429;
+    }
+    .biq-error-msg {
+      display: none; margin-top: 14px;
+      background: rgba(255,76,106,0.08);
+      border: 1px solid rgba(255,76,106,0.3);
+      border-radius: 6px; padding: 12px 16px;
+      font-size: 11px; color: #ff7a96;
+    }
+    .biq-error-msg.show { display: block; }
+  `;
+
+  function injectModal() {
+    if (document.getElementById(MODAL_ID + '-overlay')) return;
+
+    // Inject styles
+    const styleEl = document.createElement('style');
+    styleEl.textContent = MODAL_CSS;
+    document.head.appendChild(styleEl);
+
+    // Build modal HTML
+    const overlay = document.createElement('div');
+    overlay.id = MODAL_ID + '-overlay';
+    overlay.innerHTML = `
+      <div id="${MODAL_ID}" role="dialog" aria-modal="true" aria-labelledby="biq-modal-heading">
+        <div class="biq-modal-title" id="biq-modal-heading">⚡ CUSTOMER PREDICTION</div>
+        <div class="biq-modal-sub">// Enter customer data — all fields required</div>
+
+        <div class="biq-section-label">Client Demographics</div>
+        <div class="biq-grid">
+          <div class="biq-field">
+            <label>Age</label>
+            <input type="number" id="biq-age" min="17" max="98" value="42" />
+          </div>
+          <div class="biq-field">
+            <label>Job</label>
+            <select id="biq-job">
+              <option value="admin.">Admin.</option>
+              <option value="blue-collar">Blue-collar</option>
+              <option value="entrepreneur">Entrepreneur</option>
+              <option value="housemaid">Housemaid</option>
+              <option value="management">Management</option>
+              <option value="retired">Retired</option>
+              <option value="self-employed">Self-employed</option>
+              <option value="services">Services</option>
+              <option value="student">Student</option>
+              <option value="technician" selected>Technician</option>
+              <option value="unemployed">Unemployed</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+          <div class="biq-field">
+            <label>Marital Status</label>
+            <select id="biq-marital">
+              <option value="divorced">Divorced</option>
+              <option value="married" selected>Married</option>
+              <option value="single">Single</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+          <div class="biq-field">
+            <label>Education</label>
+            <select id="biq-education">
+              <option value="basic.4y">Basic 4y</option>
+              <option value="basic.6y">Basic 6y</option>
+              <option value="basic.9y">Basic 9y</option>
+              <option value="high.school">High School</option>
+              <option value="illiterate">Illiterate</option>
+              <option value="professional.course">Professional Course</option>
+              <option value="university.degree" selected>University Degree</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+          <div class="biq-field">
+            <label>Credit Default</label>
+            <select id="biq-default">
+              <option value="no" selected>No</option>
+              <option value="yes">Yes</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+          <div class="biq-field">
+            <label>Housing Loan</label>
+            <select id="biq-housing">
+              <option value="no">No</option>
+              <option value="yes" selected>Yes</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+          <div class="biq-field">
+            <label>Personal Loan</label>
+            <select id="biq-loan">
+              <option value="no" selected>No</option>
+              <option value="yes">Yes</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="biq-section-label">Last Contact</div>
+        <div class="biq-grid">
+          <div class="biq-field">
+            <label>Contact Type</label>
+            <select id="biq-contact">
+              <option value="cellular" selected>Cellular</option>
+              <option value="telephone">Telephone</option>
+            </select>
+          </div>
+          <div class="biq-field">
+            <label>Month</label>
+            <select id="biq-month">
+              <option value="jan">Jan</option><option value="feb">Feb</option>
+              <option value="mar">Mar</option><option value="apr">Apr</option>
+              <option value="may" selected>May</option><option value="jun">Jun</option>
+              <option value="jul">Jul</option><option value="aug">Aug</option>
+              <option value="sep">Sep</option><option value="oct">Oct</option>
+              <option value="nov">Nov</option><option value="dec">Dec</option>
+            </select>
+          </div>
+          <div class="biq-field">
+            <label>Day of Week</label>
+            <select id="biq-dow">
+              <option value="mon" selected>Mon</option>
+              <option value="tue">Tue</option><option value="wed">Wed</option>
+              <option value="thu">Thu</option><option value="fri">Fri</option>
+            </select>
+          </div>
+          <div class="biq-field">
+            <label>Duration (seconds)</label>
+            <input type="number" id="biq-duration" min="0" value="261" />
+          </div>
+        </div>
+
+        <div class="biq-section-label">Campaign &amp; History</div>
+        <div class="biq-grid">
+          <div class="biq-field">
+            <label>Contacts This Campaign</label>
+            <input type="number" id="biq-campaign" min="1" value="1" />
+          </div>
+          <div class="biq-field">
+            <label>Days Since Last Contact (999=never)</label>
+            <input type="number" id="biq-pdays" min="0" value="999" />
+          </div>
+          <div class="biq-field">
+            <label>Previous Campaign Contacts</label>
+            <input type="number" id="biq-previous" min="0" value="0" />
+          </div>
+          <div class="biq-field">
+            <label>Previous Outcome</label>
+            <select id="biq-poutcome">
+              <option value="failure">Failure</option>
+              <option value="nonexistent" selected>Nonexistent</option>
+              <option value="success">Success</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="biq-section-label">Social &amp; Economic Context</div>
+        <div class="biq-grid">
+          <div class="biq-field">
+            <label>Emp. Variation Rate</label>
+            <input type="number" id="biq-emp-var-rate" step="0.1" value="-1.8" />
+          </div>
+          <div class="biq-field">
+            <label>Consumer Price Index</label>
+            <input type="number" id="biq-cons-price-idx" step="0.001" value="93.075" />
+          </div>
+          <div class="biq-field">
+            <label>Consumer Confidence Index</label>
+            <input type="number" id="biq-cons-conf-idx" step="0.1" value="-47.1" />
+          </div>
+          <div class="biq-field">
+            <label>Euribor 3M Rate</label>
+            <input type="number" id="biq-euribor3m" step="0.001" value="1.313" />
+          </div>
+          <div class="biq-field">
+            <label>Nr. Employed (thousands)</label>
+            <input type="number" id="biq-nr-employed" step="0.1" value="5099.1" />
+          </div>
+        </div>
+
+        <div id="biq-error-msg" class="biq-error-msg"></div>
+        <div id="biq-result-banner"></div>
+
+        <div class="biq-actions">
+          <button class="biq-btn-cancel" id="biq-cancel-btn">CANCEL</button>
+          <button class="biq-btn-run" id="biq-submit-btn">⚡ RUN PREDICTION</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // Wire close button
+    document.getElementById('biq-cancel-btn').addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Wire submit
+    document.getElementById('biq-submit-btn').addEventListener('click', submitPrediction);
+  }
+
+  function openModal() { 
+    injectModal();
+    const overlay = document.getElementById(MODAL_ID + '-overlay');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Reset result area
+    const result = document.getElementById('biq-result-banner');
+    const err    = document.getElementById('biq-error-msg');
+    if (result) { result.className = ''; result.innerHTML = ''; }
+    if (err)    { err.className = 'biq-error-msg'; err.textContent = ''; }
+  }
+
+  function closeModal() {
+    const overlay = document.getElementById(MODAL_ID + '-overlay');
+    if (overlay) overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    predRunning = false;
     const btn = document.querySelector('.ai-btn.gold');
-    if (btn) { btn.textContent = '⏳ RUNNING...'; btn.style.opacity = '0.6'; }
+    if (btn) { btn.textContent = '⚡ RUN PREDICTION'; btn.style.opacity = '1'; }
+  }
 
-    // Animate KPI updates
-    const newChurn = (18 + Math.random() * 8).toFixed(1);
-    const newRetain = randInt(7400, 8400);
-    const newRisk = randInt(900, 1500);
+  /* ── API base URL: same origin in production, localhost in dev ── */
+  const API_BASE = (function() {
+    if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
+      return 'http://127.0.0.1:8000';
+    }
+    return '';   // same-origin for production deployments
+  })();
 
-    setTimeout(() => {
-      document.getElementById('pkChurn').textContent = newChurn + '%';
-      document.getElementById('pkRetain').textContent = newRetain.toLocaleString();
-      document.getElementById('pkRisk').textContent = newRisk.toLocaleString();
-      drawChurnForecast();
-      drawSegmentChart();
-      drawROC();
-      buildRiskTable();
-      drawAllSparklines();
-      scene3dData = gen3DData(400);
-      const gauge = randInt(35, 85);
-      drawGauge(gauge);
-      if (btn) { btn.textContent = '✓ COMPLETE'; setTimeout(() => { btn.textContent = '⚡ RUN PREDICTION'; btn.style.opacity = '1'; predRunning = false; }, 2000); }
-    }, 1200);
+  async function submitPrediction() {
+    const submitBtn = document.getElementById('biq-submit-btn');
+    const errEl     = document.getElementById('biq-error-msg');
+    const resultEl  = document.getElementById('biq-result-banner');
+
+    // ── Reset UI ──
+    errEl.className    = 'biq-error-msg';
+    resultEl.className = '';
+    resultEl.innerHTML = '';
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ RUNNING…';
+
+    // ── Collect form values ──
+    const payload = {
+      age:        parseInt(document.getElementById('biq-age').value, 10),
+      job:        document.getElementById('biq-job').value,
+      marital:    document.getElementById('biq-marital').value,
+      education:  document.getElementById('biq-education').value,
+      default:    document.getElementById('biq-default').value,
+      housing:    document.getElementById('biq-housing').value,
+      loan:       document.getElementById('biq-loan').value,
+      contact:    document.getElementById('biq-contact').value,
+      month:      document.getElementById('biq-month').value,
+      day_of_week: document.getElementById('biq-dow').value,
+      duration:   parseInt(document.getElementById('biq-duration').value, 10),
+      campaign:   parseInt(document.getElementById('biq-campaign').value, 10),
+      pdays:      parseInt(document.getElementById('biq-pdays').value, 10),
+      previous:   parseInt(document.getElementById('biq-previous').value, 10),
+      poutcome:   document.getElementById('biq-poutcome').value,
+      // Use dot-notation aliases so FastAPI's populate_by_name accepts them
+      'emp.var.rate':  parseFloat(document.getElementById('biq-emp-var-rate').value),
+      'cons.price.idx': parseFloat(document.getElementById('biq-cons-price-idx').value),
+      'cons.conf.idx':  parseFloat(document.getElementById('biq-cons-conf-idx').value),
+      euribor3m:        parseFloat(document.getElementById('biq-euribor3m').value),
+      'nr.employed':    parseFloat(document.getElementById('biq-nr-employed').value),
+    };
+
+    try {
+      const response = await fetch(`${API_BASE}/predict`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // FastAPI validation errors (422) or business errors (503/500)
+        const detail = data.detail ?? JSON.stringify(data);
+        throw new Error(`Server ${response.status}: ${
+          Array.isArray(detail)
+            ? detail.map(d => `${d.loc?.slice(-1)[0] ?? ''}: ${d.msg}`).join('; ')
+            : detail
+        }`);
+      }
+
+      // ── Show result ──
+      const subscribeColor = data.prediction.includes('likely subscribe') &&
+                             !data.prediction.includes('not')
+                             ? '#00e5a0' : '#ff4c6a';
+      const isPositive     = data.prediction.includes('likely subscribe') &&
+                             !data.prediction.includes('not');
+
+      resultEl.className = `show ${isPositive ? 'yes' : 'no'}`;
+      resultEl.innerHTML = `
+        <div class="biq-result-label">// Prediction Result</div>
+        <div class="biq-result-prediction" style="color:${subscribeColor}">
+          ${data.prediction.toUpperCase()}
+        </div>
+        <div class="biq-result-metrics">
+          <div class="biq-metric">
+            <span class="biq-metric-key">Subscribe Probability</span>
+            <span class="biq-metric-val">${(data.probability * 100).toFixed(1)}%</span>
+          </div>
+          <div class="biq-metric">
+            <span class="biq-metric-key">Confidence</span>
+            <span class="biq-metric-val">${data.confidence}</span>
+          </div>
+          <div class="biq-metric">
+            <span class="biq-metric-key">Risk Score</span>
+            <span class="biq-metric-val">${data.risk_score} / 100</span>
+          </div>
+        </div>
+      `;
+
+      // ── Update dashboard KPIs with live result ──
+      _updateDashboardWithResult(data);
+
+    } catch (err) {
+      errEl.className = 'biq-error-msg show';
+      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+        errEl.textContent =
+          '⚠ Cannot reach the API. Make sure the FastAPI server is running on ' + API_BASE;
+      } else {
+        errEl.textContent = '⚠ ' + err.message;
+      }
+    } finally {
+      submitBtn.disabled    = false;
+      submitBtn.textContent = '⚡ RUN PREDICTION';
+    }
+  }
+
+  /* ── Sync live prediction result back to dashboard visuals ── */
+  function _updateDashboardWithResult(data) {
+    // Update gauge with risk score
+    drawGauge(data.risk_score);
+
+    // Update churn forecast + other charts to reflect new inference cycle
+    drawChurnForecast();
+    drawSegmentChart();
+    buildRiskTable();
+    drawAllSparklines();
+    scene3dData = gen3DData(400);
+
+    // Flash the nav status indicator
+    const navStatus = document.querySelector('.nav-status');
+    if (navStatus) {
+      const dot = navStatus.querySelector('.status-dot');
+      const origText = navStatus.textContent.trim();
+      if (dot) dot.style.background = data.risk_score < 40 ? '#00e5a0' : data.risk_score < 65 ? '#f0b429' : '#ff4c6a';
+      navStatus.lastChild.textContent = ' MODEL LIVE';
+      setTimeout(() => { navStatus.lastChild.textContent = ' AWAITING DATA'; }, 5000);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     runPrediction — wires up the "RUN PREDICTION"
+     button to the real backend via the modal.
+  ═══════════════════════════════════════════════ */
+  window.runPrediction = function() {
+    openModal();
   };
 
   window.simulateNewData = function() {
@@ -1008,7 +1463,3 @@ function updateMoneyTheme(isLight) {
     document.head.appendChild(s);
   }
 })();
-
-
-
-

@@ -1454,3 +1454,254 @@ function updateMoneyTheme(isLight) {
     document.head.appendChild(s);
   }
 })();
+/* ═══════════════════════════════════════════════════════
+   PREDICTION ENGINE MODAL — Full Logic
+═══════════════════════════════════════════════════════ */
+(function() {
+  let pmStep = 0;
+  const PM_TOTAL = 4;
+  let pmLastResult = null;
+
+  window.openPredModal = function() {
+    pmStep = 0;
+    pmRenderStep();
+    document.getElementById('pm-results').style.display = 'none';
+    document.getElementById('pm-loading').style.display = 'flex';
+    ['pm-ss0','pm-ss1','pm-ss2','pm-ss3','pm-ss4','pm-ss5'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('lit');
+    });
+    document.getElementById('pred-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closePredModal = function() {
+    document.getElementById('pred-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // Close on overlay click
+  document.getElementById('pred-modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) window.closePredModal();
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') window.closePredModal();
+  });
+
+  function pmRenderStep() {
+    for (let i = 0; i < PM_TOTAL; i++) {
+      const body = document.getElementById('pm-step-' + i);
+      const tab  = document.getElementById('pm-tab-' + i);
+      if (!body || !tab) continue;
+      body.classList.remove('active');
+      tab.classList.remove('active', 'done');
+      if (i < pmStep) tab.classList.add('done');
+    }
+    const activeBody = document.getElementById('pm-step-' + pmStep);
+    const activeTab  = document.getElementById('pm-tab-'  + pmStep);
+    if (activeBody) activeBody.classList.add('active');
+    if (activeTab)  { activeTab.classList.remove('done'); activeTab.classList.add('active'); }
+
+    const pct = ((pmStep + 1) / PM_TOTAL) * 100;
+    document.getElementById('pm-progress-fill').style.width = pct + '%';
+    document.getElementById('pm-step-counter').textContent = 'STEP ' + (pmStep + 1) + ' OF ' + PM_TOTAL;
+
+    const btnBack = document.getElementById('pm-btn-back');
+    const btnNext = document.getElementById('pm-btn-next');
+    btnBack.disabled = pmStep === 0;
+
+    if (pmStep === PM_TOTAL - 1) {
+      btnNext.style.display = 'none';
+      btnBack.disabled = true;
+    } else {
+      btnNext.style.display = 'inline-flex';
+      btnNext.textContent = pmStep === PM_TOTAL - 2 ? '⚡ EXECUTE' : 'NEXT ▶';
+    }
+  }
+
+  window.pmNextStep = function() {
+    if (pmStep < PM_TOTAL - 1) {
+      pmStep++;
+      pmRenderStep();
+      if (pmStep === PM_TOTAL - 1) pmRunPrediction();
+    }
+  };
+
+  window.pmPrevStep = function() {
+    if (pmStep > 0) { pmStep--; pmRenderStep(); }
+  };
+
+  function pmGetInputs() {
+    const g = id => document.getElementById(id);
+    return {
+      age:           parseInt(g('pf-age').value),
+      job:           g('pf-job').value,
+      marital:       g('pf-marital').value,
+      education:     g('pf-education').value,
+      default:       g('pf-default').value,
+      housing:       g('pf-housing').value,
+      loan:          g('pf-loan').value,
+      contact:       g('pf-contact').value,
+      month:         g('pf-month').value,
+      day_of_week:   g('pf-day').value,
+      duration:      parseInt(g('pf-duration').value),
+      campaign:      parseInt(g('pf-campaign').value),
+      pdays:         parseInt(g('pf-pdays').value),
+      previous:      parseInt(g('pf-previous').value),
+      poutcome:      g('pf-poutcome').value,
+      emp_var_rate:  parseFloat(g('pf-emp_var_rate').value),
+      cons_price_idx:parseFloat(g('pf-cons_price_idx').value),
+      cons_conf_idx: parseFloat(g('pf-cons_conf_idx').value),
+      euribor3m:     parseFloat(g('pf-euribor3m').value),
+      nr_employed:   parseFloat(g('pf-nr_employed').value),
+    };
+  }
+
+  function pmSimulate(inp) {
+    if (inp.duration === 0) return { probability: 0.01, prediction: 'no' };
+    let score = 0;
+    score += Math.min(inp.duration / 600, 1.0) * 0.35;
+    if (inp.poutcome === 'success') score += 0.25;
+    else if (inp.poutcome === 'failure') score -= 0.08;
+    if (inp.previous > 0) score += Math.min(inp.previous * 0.03, 0.12);
+    score += (1.5 - inp.emp_var_rate) / 5 * 0.12;
+    score += (5.1 - inp.euribor3m) / 4.5 * 0.10;
+    score += (inp.cons_conf_idx + 50) / 24 * 0.06;
+    const jobBonus = { retired:0.08, student:0.06, 'admin.':0.02, management:0.02, technician:0.01 };
+    score += jobBonus[inp.job] || 0;
+    if (inp.education === 'university.degree') score += 0.05;
+    if (inp.education === 'professional.course') score += 0.03;
+    const monthBonus = { mar:0.08, sep:0.06, oct:0.07, dec:0.05, apr:0.03 };
+    score += monthBonus[inp.month] || 0;
+    score -= Math.min((inp.campaign - 1) * 0.02, 0.08);
+    if (inp.default === 'yes') score -= 0.10;
+    if (inp.housing === 'no' && inp.loan === 'no') score += 0.03;
+    if (inp.age < 30 || inp.age > 60) score += 0.04;
+    const prob = Math.max(0.02, Math.min(0.98, 0.12 + score));
+    return { probability: prob, prediction: prob >= 0.5 ? 'yes' : 'no' };
+  }
+
+  function pmRunPrediction() {
+    const inp = pmGetInputs();
+    const scanLabels = [
+      'LOADING XGBOOST PIPELINE...',
+      'ENCODING CATEGORICAL FEATURES...',
+      'SCALING NUMERICAL FEATURES...',
+      'RUNNING INFERENCE ENGINE...',
+      'COMPUTING SHAP VALUES...',
+      'FINALIZING OUTPUT...',
+    ];
+    const stepIds = ['pm-ss0','pm-ss1','pm-ss2','pm-ss3','pm-ss4','pm-ss5'];
+    stepIds.forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('lit'); });
+    let idx = 0;
+    const iv = setInterval(() => {
+      if (idx < stepIds.length) {
+        if (idx > 0) { const prev = document.getElementById(stepIds[idx-1]); if (prev) prev.classList.remove('lit'); }
+        const el = document.getElementById(stepIds[idx]);
+        if (el) el.classList.add('lit');
+        const lbl = document.getElementById('pm-scan-label');
+        if (lbl) lbl.textContent = scanLabels[idx];
+        idx++;
+      } else {
+        clearInterval(iv);
+        pmShowResults(inp);
+      }
+    }, 420);
+  }
+
+  function pmAnimateNumber(el, from, to, duration, formatter) {
+    if (!el) return;
+    const start = performance.now();
+    function frame(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = formatter(from + (to - from) * eased);
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function pmShowResults(inp) {
+    const sim = pmSimulate(inp);
+    pmLastResult = { inp, sim };
+    const isYes = sim.prediction === 'yes';
+    const prob  = sim.probability;
+    const conf  = isYes ? prob : (1 - prob);
+    const risk  = 1 - prob;
+
+    document.getElementById('pm-loading').style.display = 'none';
+    document.getElementById('pm-results').style.display = 'block';
+
+    // Verdict
+    const banner = document.getElementById('pm-verdict-banner');
+    banner.className = 'pm-verdict ' + (isYes ? 'subscribe' : 'no-subscribe');
+    document.getElementById('pm-verdict-icon').textContent = isYes ? '✓' : '✗';
+    document.getElementById('pm-verdict-text').textContent = isYes ? 'WILL SUBSCRIBE' : 'WILL NOT SUBSCRIBE';
+    document.getElementById('pm-verdict-sub').textContent  = isYes
+      ? 'Client is predicted to subscribe to a term deposit — high value prospect'
+      : 'Client is unlikely to subscribe — consider re-engagement strategy';
+
+    // Prob card
+    const probCard = document.getElementById('pm-prob-card');
+    probCard.className = 'pm-result-card ' + (isYes ? 'positive' : 'negative');
+    const probVal = document.getElementById('pm-prob-value');
+    probVal.className = 'pm-card-value ' + (isYes ? 'positive' : 'negative');
+    pmAnimateNumber(probVal, 0, prob, 1200, v => (v * 100).toFixed(1) + '%');
+
+    // Conf card
+    const confCard = document.getElementById('pm-conf-card');
+    confCard.className = 'pm-result-card ' + (isYes ? 'positive' : 'warn');
+    const confVal = document.getElementById('pm-conf-value');
+    confVal.className = 'pm-card-value ' + (isYes ? 'positive' : 'gold');
+    pmAnimateNumber(confVal, 0, conf, 1200, v => (v * 100).toFixed(1) + '%');
+
+    // KPIs
+    const predEl = document.getElementById('pm-kpi-pred');
+    predEl.textContent = isYes ? 'YES' : 'NO';
+    predEl.style.color = isYes ? '#00e5a0' : '#ff4c6a';
+    const riskEl = document.getElementById('pm-kpi-risk');
+    pmAnimateNumber(riskEl, 0, risk, 1200, v => (v * 100).toFixed(1) + '%');
+    riskEl.style.color = risk > 0.7 ? '#ff4c6a' : risk > 0.4 ? '#f0b429' : '#00e5a0';
+
+    // Prob bar
+    const barFill = document.getElementById('pm-prob-bar-fill');
+    barFill.style.background = isYes ? '#00e5a0' : '#ff4c6a';
+    document.getElementById('pm-prob-bar-pct').textContent = (prob * 100).toFixed(1) + '%';
+    setTimeout(() => { barFill.style.width = (prob * 100) + '%'; }, 80);
+
+    // Chips
+    const chipsEl = document.getElementById('pm-chips');
+    chipsEl.innerHTML = '';
+    [
+      ['Age', inp.age + 'yr'], ['Job', inp.job], ['Marital', inp.marital],
+      ['Education', inp.education], ['Contact', inp.contact], ['Month', inp.month.toUpperCase()],
+      ['Duration', inp.duration + 's'], ['Campaign', inp.campaign + 'x'],
+      ['Poutcome', inp.poutcome], ['EmpVarRate', inp.emp_var_rate.toFixed(1)],
+      ['Euribor3m', inp.euribor3m.toFixed(3)],
+    ].forEach(([k, v]) => {
+      const chip = document.createElement('div');
+      chip.className = 'pm-chip';
+      chip.innerHTML = k + ': <strong>' + v + '</strong>';
+      chipsEl.appendChild(chip);
+    });
+  }
+
+  window.pmResetAndRun = function() {
+    document.getElementById('pm-results').style.display = 'none';
+    document.getElementById('pm-loading').style.display = 'flex';
+    ['pm-ss0','pm-ss1','pm-ss2','pm-ss3','pm-ss4','pm-ss5'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.classList.remove('lit');
+    });
+    pmStep = 0;
+    pmRenderStep();
+  };
+
+  window.pmCopyResult = function() {
+    if (!pmLastResult) return;
+    const { inp, sim } = pmLastResult;
+    const text = `BANKIQ PREDICTION RESULT\nPrediction: ${sim.prediction.toUpperCase()}\nProbability: ${(sim.probability*100).toFixed(1)}%\nAge: ${inp.age} | Job: ${inp.job} | Duration: ${inp.duration}s`;
+    if (navigator.clipboard) navigator.clipboard.writeText(text);
+  };
+})();

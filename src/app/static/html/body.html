@@ -829,25 +829,217 @@
       </div>
     </div>
 
-    <!-- CONTROLS -->
-    <div class="ai-controls reveal">
-      <span class="ai-ctrl-label">FORECAST HORIZON:</span>
-      <button class="ai-btn active" onclick="setHorizon(6,this)">6 MO</button>
-      <button class="ai-btn" onclick="setHorizon(12,this)">12 MO</button>
-      <button class="ai-btn" onclick="setHorizon(24,this)">24 MO</button>
-      <button class="ai-btn" onclick="setHorizon(36,this)">36 MO</button>
-      <div class="ai-divider"></div>
-      <span class="ai-ctrl-label">MODEL:</span>
-      <select class="ai-model-select" id="modelSelect" onchange="switchModel(this.value)">
-        <option value="xgb">XGBoost</option>
-        <option value="rf">Random Forest</option>
-        <option value="lr">Logistic Regression</option>
-        <option value="nn">Neural Network</option>
-      </select>
-      <div class="ai-divider"></div>
-      <button class="ai-btn gold" onclick="runPrediction()">⚡ RUN PREDICTION</button>
-      <button class="ai-btn" onclick="simulateNewData()">↺ SIMULATE DATA</button>
+<!-- CONTROLS -->
+<div class="ai-controls reveal">
+  <span class="ai-ctrl-label">FORECAST HORIZON:</span>
+  <button class="ai-btn active" onclick="setHorizon(6,this)">6 MO</button>
+  <button class="ai-btn" onclick="setHorizon(12,this)">12 MO</button>
+  <button class="ai-btn" onclick="setHorizon(24,this)">24 MO</button>
+  <button class="ai-btn" onclick="setHorizon(36,this)">36 MO</button>
+  <div class="ai-divider"></div>
+  <span class="ai-ctrl-label">MODEL:</span>
+  <select class="ai-model-select" id="modelSelect" onchange="switchModel(this.value)">
+    <option value="xgb">XGBoost</option>
+    <option value="rf">Random Forest</option>
+    <option value="lr">Logistic Regression</option>
+    <option value="nn">Neural Network</option>
+  </select>
+  <div class="ai-divider"></div>
+  <button class="ai-btn gold" onclick="openPredModal()">⚡ RUN PREDICTION</button>
+  <button class="ai-btn" onclick="simulateNewData()">↺ SIMULATE DATA</button>
+</div>
+
+<!-- PREDICTION MODAL -->
+<div id="pred-modal-overlay">
+  <div id="pred-modal">
+    <div class="pm-header">
+      <div class="pm-title">
+        <span class="pm-title-icon">⚡</span>
+        PREDICTION ENGINE
+        <div class="pm-live-badge"><div class="pm-dot"></div>LIVE</div>
+      </div>
+      <button class="pm-close-btn" onclick="closePredModal()">✕ CLOSE</button>
     </div>
+    <div class="pm-stepper">
+      <div class="pm-tab active" id="pm-tab-0"><div class="pm-tab-num">1</div>CONFIGURE</div>
+      <div class="pm-tab" id="pm-tab-1"><div class="pm-tab-num">2</div>CAMPAIGN</div>
+      <div class="pm-tab" id="pm-tab-2"><div class="pm-tab-num">3</div>ECONOMIC</div>
+      <div class="pm-tab" id="pm-tab-3"><div class="pm-tab-num">4</div>EXECUTE</div>
+    </div>
+    <div class="pm-progress-bar"><div class="pm-progress-fill" id="pm-progress-fill" style="width:25%"></div></div>
+
+    <!-- STEP 1 -->
+    <div class="pm-step active" id="pm-step-0">
+      <div class="pm-section-title">// STEP 1 — CLIENT PROFILE DATA</div>
+      <div class="pm-form-grid">
+        <div class="pm-field">
+          <label>Age (years)</label>
+          <div class="pm-range-wrap"><input type="range" min="18" max="90" value="38" step="1" id="pf-age" oninput="document.getElementById('pv-age').textContent=this.value"><span class="pm-range-val" id="pv-age">38</span></div>
+        </div>
+        <div class="pm-field">
+          <label>Job Type</label>
+          <select id="pf-job"><option>admin.</option><option>blue-collar</option><option>entrepreneur</option><option>housemaid</option><option>management</option><option>retired</option><option>self-employed</option><option>services</option><option>student</option><option selected>technician</option><option>unemployed</option><option>unknown</option></select>
+        </div>
+        <div class="pm-field">
+          <label>Marital Status</label>
+          <select id="pf-marital"><option>divorced</option><option selected>married</option><option>single</option><option>unknown</option></select>
+        </div>
+        <div class="pm-field">
+          <label>Education Level</label>
+          <select id="pf-education"><option>basic.4y</option><option>basic.6y</option><option>basic.9y</option><option>high.school</option><option>illiterate</option><option>professional.course</option><option selected>university.degree</option><option>unknown</option></select>
+        </div>
+        <div class="pm-field">
+          <label>Credit Default</label>
+          <select id="pf-default"><option selected>no</option><option>yes</option><option>unknown</option></select>
+        </div>
+        <div class="pm-field">
+          <label>Housing Loan</label>
+          <select id="pf-housing"><option selected>yes</option><option>no</option><option>unknown</option></select>
+        </div>
+        <div class="pm-field">
+          <label>Personal Loan</label>
+          <select id="pf-loan"><option selected>no</option><option>yes</option><option>unknown</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="pm-step" id="pm-step-1">
+      <div class="pm-section-title">// STEP 2 — LAST CONTACT & CAMPAIGN</div>
+      <div class="pm-form-grid">
+        <div class="pm-field">
+          <label>Contact Type</label>
+          <select id="pf-contact"><option selected>cellular</option><option>telephone</option></select>
+        </div>
+        <div class="pm-field">
+          <label>Contact Month</label>
+          <select id="pf-month"><option>jan</option><option>feb</option><option>mar</option><option>apr</option><option selected>may</option><option>jun</option><option>jul</option><option>aug</option><option>sep</option><option>oct</option><option>nov</option><option>dec</option></select>
+        </div>
+        <div class="pm-field">
+          <label>Day of Week</label>
+          <select id="pf-day"><option selected>mon</option><option>tue</option><option>wed</option><option>thu</option><option>fri</option></select>
+        </div>
+        <div class="pm-field">
+          <label>Call Duration (secs)</label>
+          <div class="pm-range-wrap"><input type="range" min="0" max="3000" value="320" step="10" id="pf-duration" oninput="document.getElementById('pv-duration').textContent=this.value+'s'"><span class="pm-range-val" id="pv-duration">320s</span></div>
+          <div class="pm-field-hint">NOTE: 0s → guaranteed no-subscribe</div>
+        </div>
+        <div class="pm-field">
+          <label>Campaign Contacts</label>
+          <div class="pm-range-wrap"><input type="range" min="1" max="30" value="2" step="1" id="pf-campaign" oninput="document.getElementById('pv-campaign').textContent=this.value"><span class="pm-range-val" id="pv-campaign">2</span></div>
+        </div>
+        <div class="pm-field">
+          <label>Days Since Last Contact</label>
+          <div class="pm-range-wrap"><input type="range" min="0" max="999" value="999" step="1" id="pf-pdays" oninput="document.getElementById('pv-pdays').textContent=this.value==999?'Never':this.value+'d'"><span class="pm-range-val" id="pv-pdays">Never</span></div>
+        </div>
+        <div class="pm-field">
+          <label>Previous Contacts</label>
+          <div class="pm-range-wrap"><input type="range" min="0" max="10" value="0" step="1" id="pf-previous" oninput="document.getElementById('pv-previous').textContent=this.value"><span class="pm-range-val" id="pv-previous">0</span></div>
+        </div>
+        <div class="pm-field">
+          <label>Previous Campaign Outcome</label>
+          <select id="pf-poutcome"><option selected>nonexistent</option><option>failure</option><option>success</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="pm-step" id="pm-step-2">
+      <div class="pm-section-title">// STEP 3 — SOCIAL & ECONOMIC INDICATORS</div>
+      <div class="pm-form-grid">
+        <div class="pm-field">
+          <label>Employment Variation Rate</label>
+          <div class="pm-range-wrap"><input type="range" min="-3.5" max="1.5" value="1.1" step="0.1" id="pf-emp_var_rate" oninput="document.getElementById('pv-evr').textContent=parseFloat(this.value).toFixed(1)"><span class="pm-range-val" id="pv-evr">1.1</span></div>
+          <div class="pm-field-hint">Quarterly indicator</div>
+        </div>
+        <div class="pm-field">
+          <label>Consumer Price Index</label>
+          <div class="pm-range-wrap"><input type="range" min="92" max="95" value="93.994" step="0.001" id="pf-cons_price_idx" oninput="document.getElementById('pv-cpi').textContent=parseFloat(this.value).toFixed(3)"><span class="pm-range-val" id="pv-cpi">93.994</span></div>
+          <div class="pm-field-hint">Monthly indicator</div>
+        </div>
+        <div class="pm-field">
+          <label>Consumer Confidence Index</label>
+          <div class="pm-range-wrap"><input type="range" min="-50" max="-26" value="-36.4" step="0.1" id="pf-cons_conf_idx" oninput="document.getElementById('pv-cci').textContent=parseFloat(this.value).toFixed(1)"><span class="pm-range-val" id="pv-cci">-36.4</span></div>
+          <div class="pm-field-hint">Monthly indicator</div>
+        </div>
+        <div class="pm-field">
+          <label>Euribor 3-Month Rate</label>
+          <div class="pm-range-wrap"><input type="range" min="0.6" max="5.1" value="4.857" step="0.001" id="pf-euribor3m" oninput="document.getElementById('pv-eur').textContent=parseFloat(this.value).toFixed(3)"><span class="pm-range-val" id="pv-eur">4.857</span></div>
+          <div class="pm-field-hint">Daily indicator</div>
+        </div>
+        <div class="pm-field">
+          <label>Nr. Employees (thousands)</label>
+          <div class="pm-range-wrap"><input type="range" min="4900" max="5230" value="5191" step="1" id="pf-nr_employed" oninput="document.getElementById('pv-nre').textContent=this.value"><span class="pm-range-val" id="pv-nre">5191</span></div>
+          <div class="pm-field-hint">Quarterly indicator</div>
+        </div>
+      </div>
+      <div class="pm-info-box">⚡ These macro-economic features are among the strongest predictors of term deposit subscription in the UCI Bank Marketing dataset.</div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="pm-step" id="pm-step-3">
+      <div class="pm-loading-state" id="pm-loading">
+        <div class="pm-loader-ring"></div>
+        <div class="pm-scanning-text" id="pm-scan-label">INITIALIZING MODEL...</div>
+        <div class="pm-scanning-steps">
+          <div class="pm-scan-step" id="pm-ss0">▸ Loading XGBoost pipeline...</div>
+          <div class="pm-scan-step" id="pm-ss1">▸ Encoding categorical features...</div>
+          <div class="pm-scan-step" id="pm-ss2">▸ Scaling numerical features...</div>
+          <div class="pm-scan-step" id="pm-ss3">▸ Running inference engine...</div>
+          <div class="pm-scan-step" id="pm-ss4">▸ Computing SHAP values...</div>
+          <div class="pm-scan-step" id="pm-ss5">▸ Finalizing prediction output...</div>
+        </div>
+      </div>
+      <div class="pm-results" id="pm-results">
+        <div class="pm-verdict" id="pm-verdict-banner">
+          <div class="pm-verdict-icon" id="pm-verdict-icon">✓</div>
+          <div>
+            <div class="pm-verdict-main" id="pm-verdict-text">WILL SUBSCRIBE</div>
+            <div class="pm-verdict-sub" id="pm-verdict-sub">Term deposit subscription predicted with high confidence</div>
+          </div>
+        </div>
+        <div class="pm-result-hero">
+          <div class="pm-result-card" id="pm-prob-card">
+            <div class="pm-card-label">SUBSCRIPTION PROBABILITY</div>
+            <div class="pm-card-value" id="pm-prob-value">0.0%</div>
+            <div class="pm-card-sub">Raw model output probability</div>
+          </div>
+          <div class="pm-result-card" id="pm-conf-card">
+            <div class="pm-card-label">CONFIDENCE SCORE</div>
+            <div class="pm-card-value" id="pm-conf-value">0.0%</div>
+            <div class="pm-card-sub">Derived from model probability</div>
+          </div>
+        </div>
+        <div class="pm-kpi-row">
+          <div class="pm-kpi"><div class="pm-kpi-label">PREDICTION</div><div class="pm-kpi-value" id="pm-kpi-pred">—</div></div>
+          <div class="pm-kpi"><div class="pm-kpi-label">RISK SCORE</div><div class="pm-kpi-value" id="pm-kpi-risk">—</div></div>
+          <div class="pm-kpi"><div class="pm-kpi-label">MODEL AUC</div><div class="pm-kpi-value" style="color:var(--cyan,#00d4ff)">0.874</div></div>
+          <div class="pm-kpi"><div class="pm-kpi-label">F1 SCORE</div><div class="pm-kpi-value" style="color:var(--cyan,#00d4ff)">0.812</div></div>
+        </div>
+        <div class="pm-prob-bar-box">
+          <div class="pm-prob-bar-title">PROBABILITY — NO SUBSCRIBE ◀──────────────────── SUBSCRIBE</div>
+          <div class="pm-prob-bar-track"><div class="pm-prob-bar-fill" id="pm-prob-bar-fill"></div></div>
+          <div class="pm-prob-bar-labels"><span>0% — No</span><span id="pm-prob-bar-pct">50%</span><span>100% — Yes</span></div>
+        </div>
+        <div class="pm-input-summary">
+          <div class="pm-input-summary-title">// FEATURE INPUTS USED</div>
+          <div class="pm-chips" id="pm-chips"></div>
+        </div>
+        <div class="pm-result-actions">
+          <button class="pm-action-btn primary" onclick="pmResetAndRun()">⚡ NEW PREDICTION</button>
+          <button class="pm-action-btn" onclick="closePredModal()">✕ CLOSE</button>
+          <button class="pm-action-btn" onclick="pmCopyResult()">⎘ COPY RESULT</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pm-footer">
+      <button class="pm-btn-step" id="pm-btn-back" onclick="pmPrevStep()" disabled>◀ BACK</button>
+      <div class="pm-step-counter" id="pm-step-counter">STEP 1 OF 4</div>
+      <button class="pm-btn-step primary" id="pm-btn-next" onclick="pmNextStep()">NEXT ▶</button>
+    </div>
+  </div>
+</div>
 
     <!-- PREDICTION KPIs -->
     <div class="pred-strip reveal">

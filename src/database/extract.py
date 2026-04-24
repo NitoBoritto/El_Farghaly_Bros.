@@ -11,9 +11,10 @@ def load_db_table_to_dataframe(table_name, engine):
     
     Returns:
     - df: pandas DataFrame containing the loaded data
+    table_name
     """
     try:
-        df = pd.read_sql_table(table_name, con=engine)
+        df = pd.read_sql(f'SELECT * FROM {table_name}', con=engine)
         print(f"Successfully loaded '{table_name}' with shape {df.shape}")
         return df
     except Exception as e:

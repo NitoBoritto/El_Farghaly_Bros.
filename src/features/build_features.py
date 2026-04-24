@@ -51,7 +51,45 @@ default_ohe_cols = [
 	"age_group",
 ]
 
-DEFAULT_SCALE_COLUMNS = ["euribor3m", "econ_cycle", "total_interactions", "macro_stress"]
+default_scale_columns = ["euribor3m", "econ_cycle", "total_interactions", "macro_stress"]
+
+
+class DerivePdaysGroupTransformer(BaseEstimator, TransformerMixin):
+	"""Derive pdays_group from pdays before categorical encoding."""
+
+	def __init__(self, pdays_column: str = "pdays", output_column: str = "pdays_group") -> None:
+		self.pdays_column = pdays_column
+		self.output_column = output_column
+
+	def fit(self, X: pd.DataFrame, y=None):
+		return self
+
+	def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+		df = self._to_dataframe(X)
+		if self.pdays_column not in df.columns:
+			return df
+
+		pdays_numeric = pd.to_numeric(df[self.pdays_column], errors="coerce")
+		pdays_group = pd.Series(pd.NA, index=df.index, dtype="object")
+
+		not_contacted_mask = pdays_numeric == 999
+		pdays_group.loc[not_contacted_mask] = "not contacted"
+
+		binned_mask = pdays_numeric.notna() & ~not_contacted_mask
+		pdays_group.loc[binned_mask] = pd.cut(
+			pdays_numeric.loc[binned_mask],
+			bins=[-1, 3, 7, 14, 30],
+			labels=["last 3 days", "last week", "last 2 weeks", "last month"],
+		).astype("object")
+
+		df[self.output_column] = pdays_group
+		return df
+
+	@staticmethod
+	def _to_dataframe(X) -> pd.DataFrame:
+		if isinstance(X, pd.DataFrame):
+			return X.copy()
+		return pd.DataFrame(X)
 
 
 class DropSelectedFeatures(BaseEstimator, TransformerMixin):
@@ -152,10 +190,11 @@ def build_preprocessing_pipeline(
 	drop_columns = drop_columns or default_dropping_cols
 	target_encode_columns = target_encode_columns or default_te_cols
 	one_hot_columns = one_hot_columns or default_ohe_cols
-	scale_columns = scale_columns or DEFAULT_SCALE_COLUMNS
+	scale_columns = scale_columns or default_scale_columns
 
 	return Pipeline(
 		steps=[
+			("derive_pdays_group", DerivePdaysGroupTransformer()),
 			("drop_features", DropSelectedFeatures(columns_to_drop=drop_columns)),
 			(
 				"impute",

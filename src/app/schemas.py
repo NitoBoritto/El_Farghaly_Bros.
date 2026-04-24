@@ -37,6 +37,12 @@ class bankingdata(BaseModel):
     cons_price_idx: float = Field(alias='cons.price.idx', description="Consumer price index — monthly indicator")
     euribor3m: float = Field(description="Euribor 3-month rate — daily indicator")
     nr_employed: float = Field(alias='nr.employed', description="Number of employees — quarterly indicator")
-    
-    # Target
-    y: str = Field(description="Has client subscribed to term deposit: 0=no, 1=yes")
+
+
+class PredictionResponse(BaseModel):
+    """Response payload returned by the inference endpoint."""
+
+    prediction: str = Field(description="Human-readable class prediction")
+    probability: float = Field(description="Raw subscription probability from 0 to 1")
+    confidence: float = Field(description="Confidence score derived from the model probability")
+    risk_score: float = Field(description="Risk score derived from the inverse probability")

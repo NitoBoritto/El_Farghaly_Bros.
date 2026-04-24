@@ -6,6 +6,6 @@ def extract_for_modeling(table_name: str = "Transformed.Bank") -> pd.DataFrame:
     query = f"SELECT * FROM {table_name}"
     engine = get_db_engine()
     try:
-        return pd.read_sql(query, con=engine)
+        return pd.read_sql(query, con=engine).drop(columns = 'pdays_group')
     finally:
         engine.dispose()

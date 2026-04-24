@@ -60,6 +60,10 @@ def predict(input_dict: dict) -> str:
 
     subscribe_proba = float(probability[0][1])
     prediction_label = 'Likely to subscribe' if prediction[0] == 1 else "Unlikely to subscribe"
+    confidence = round(max(subscribe_proba, 1 - subscribe_proba) * 100, 2)
+    risk_score = round((1 - subscribe_proba) * 100, 2)
     
     return {'prediction': prediction_label,
-            'probability': round(subscribe_proba * 100, 2)}
+            'probability': round(subscribe_proba, 6),
+            'confidence': confidence,
+            'risk_score': risk_score}

@@ -1,8 +1,7 @@
-import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from src.serving.inference import predict
-from src.app.schemas import bankingdata
+from src.app.schemas import PredictionResponse, bankingdata
 
 app = FastAPI(
     title = 'Client term deposit predictor & classifier',
@@ -20,7 +19,7 @@ def root():
     return {'status': 'ok'}
 
     
-@app.post('/predict')
+@app.post('/predict', response_model=PredictionResponse)
 def get_prediction(data: bankingdata):
     """
     Main prediction output function
@@ -31,7 +30,7 @@ def get_prediction(data: bankingdata):
     3. Returns churn prediction in JSON format
     
     Expected Response:
-    - {"prediction": "Will likely subscribe"} or {"prediction": "Will not likely subscribe"}
+    - {"prediction": "Likely to subscribe", "probability": 0.83, "confidence": 83.0, "risk_score": 17.0}
     - {"error": "error_message"} if prediction fails
     
     """
@@ -49,4 +48,11 @@ def get_prediction(data: bankingdata):
         traceback.print_exc()
         print('---------------------------')
         
-        return {'error': str(e)}
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    
+"""
+To Initialize FastAPI:
+uvicorn src.app.main:app --host 127.0.0.1 --port 8000 --reload
+
+"""

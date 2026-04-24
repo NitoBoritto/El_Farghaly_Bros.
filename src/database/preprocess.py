@@ -11,6 +11,9 @@ def _get_schema_type_mapping():
         if field_info.alias:
             mapping[field_info.alias] = expected_type
 
+    # ETL-only validation for the target column, which is not part of inference requests.
+    mapping['y'] = str
+
     # ETL decision: keep integer encoding for temporal columns in transformed table.
     mapping['month'] = int
     mapping['day_of_week'] = int

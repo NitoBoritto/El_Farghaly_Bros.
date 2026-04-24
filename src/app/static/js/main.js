@@ -1169,14 +1169,6 @@ setInterval(() => {
     if (btn) { btn.textContent = '⚡ RUN PREDICTION'; btn.style.opacity = '1'; }
   }
 
-  /* ── API base URL: same origin in production, localhost in dev ── */
-  const API_BASE = (function() {
-    if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
-      return 'http://127.0.0.1:8000';
-    }
-    return '';   // same-origin for production deployments
-  })();
-
   async function submitPrediction() {
     const submitBtn = document.getElementById('biq-submit-btn');
     const errEl     = document.getElementById('biq-error-msg');
@@ -1215,7 +1207,7 @@ setInterval(() => {
     };
 
     try {
-      const response = await fetch(`${API_BASE}/predict`, {
+      const response = await fetch('/predict', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),
@@ -1253,11 +1245,11 @@ setInterval(() => {
           </div>
           <div class="biq-metric">
             <span class="biq-metric-key">Confidence</span>
-            <span class="biq-metric-val">${data.confidence}</span>
+            <span class="biq-metric-val">${Number(data.confidence).toFixed(1)}%</span>
           </div>
           <div class="biq-metric">
             <span class="biq-metric-key">Risk Score</span>
-            <span class="biq-metric-val">${data.risk_score} / 100</span>
+            <span class="biq-metric-val">${Number(data.risk_score).toFixed(1)}%</span>
           </div>
         </div>
       `;
@@ -1268,8 +1260,7 @@ setInterval(() => {
     } catch (err) {
       errEl.className = 'biq-error-msg show';
       if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-        errEl.textContent =
-          '⚠ Cannot reach the API. Make sure the FastAPI server is running on ' + API_BASE;
+        errEl.textContent = '⚠ Cannot reach the API. Make sure the FastAPI server is available on the same origin.';
       } else {
         errEl.textContent = '⚠ ' + err.message;
       }

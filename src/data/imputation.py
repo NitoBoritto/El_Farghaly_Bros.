@@ -82,5 +82,10 @@ class CategoricalKNNImputerTransformer(BaseEstimator, TransformerMixin):
     @staticmethod
     def _to_dataframe(X) -> pd.DataFrame:
         if isinstance(X, pd.DataFrame):
-            return X.copy()
-        return pd.DataFrame(X)
+            df = X.copy()
+        else:
+            df = pd.DataFrame(X)
+
+        # Convert placeholder category values to real missing values before imputation.
+        df = df.replace("unknown", np.nan)
+        return df

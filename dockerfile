@@ -5,7 +5,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Set Python path for imports to ensure modules are found
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app:/app/src:/app/src/app
 
 # Install minimal system dependencies for Python packages (e.g., for SQL drivers)
 RUN apt-get update && apt-get install -y --no-install-recommends \

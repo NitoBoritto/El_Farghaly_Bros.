@@ -1455,111 +1455,40 @@ function updateMoneyTheme(isLight) {
   }
 })();
 /* ═══════════════════════════════════════════════════════
-   PREDICTION ENGINE MODAL — Full Logic
+   PREDICTION ENGINE — INLINE (replaces chart section)
 ═══════════════════════════════════════════════════════ */
 (function() {
-  let pmStep = 0;
-  const PM_TOTAL = 4;
-  let pmLastResult = null;
+  let peStep = 0;
+  const PE_TOTAL = 4;
+  let peLastResult = null;
 
-  window.openPredModal = function() {
-    pmStep = 0;
-    pmRenderStep();
-    document.getElementById('pm-results').style.display = 'none';
-    document.getElementById('pm-loading').style.display = 'flex';
-    ['pm-ss0','pm-ss1','pm-ss2','pm-ss3','pm-ss4','pm-ss5'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.remove('lit');
-    });
-    document.getElementById('pred-modal-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  };
-
-  window.closePredModal = function() {
-    document.getElementById('pred-modal-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-  };
-
-  // Close on overlay click
-  document.getElementById('pred-modal-overlay').addEventListener('click', function(e) {
-    if (e.target === this) window.closePredModal();
-  });
-
-  // Close on Escape
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') window.closePredModal();
-  });
-
-  function pmRenderStep() {
-    for (let i = 0; i < PM_TOTAL; i++) {
-      const body = document.getElementById('pm-step-' + i);
-      const tab  = document.getElementById('pm-tab-' + i);
-      if (!body || !tab) continue;
-      body.classList.remove('active');
-      tab.classList.remove('active', 'done');
-      if (i < pmStep) tab.classList.add('done');
-    }
-    const activeBody = document.getElementById('pm-step-' + pmStep);
-    const activeTab  = document.getElementById('pm-tab-'  + pmStep);
-    if (activeBody) activeBody.classList.add('active');
-    if (activeTab)  { activeTab.classList.remove('done'); activeTab.classList.add('active'); }
-
-    const pct = ((pmStep + 1) / PM_TOTAL) * 100;
-    document.getElementById('pm-progress-fill').style.width = pct + '%';
-    document.getElementById('pm-step-counter').textContent = 'STEP ' + (pmStep + 1) + ' OF ' + PM_TOTAL;
-
-    const btnBack = document.getElementById('pm-btn-back');
-    const btnNext = document.getElementById('pm-btn-next');
-    btnBack.disabled = pmStep === 0;
-
-    if (pmStep === PM_TOTAL - 1) {
-      btnNext.style.display = 'none';
-      btnBack.disabled = true;
-    } else {
-      btnNext.style.display = 'inline-flex';
-      btnNext.textContent = pmStep === PM_TOTAL - 2 ? '⚡ EXECUTE' : 'NEXT ▶';
-    }
-  }
-
-  window.pmNextStep = function() {
-    if (pmStep < PM_TOTAL - 1) {
-      pmStep++;
-      pmRenderStep();
-      if (pmStep === PM_TOTAL - 1) pmRunPrediction();
-    }
-  };
-
-  window.pmPrevStep = function() {
-    if (pmStep > 0) { pmStep--; pmRenderStep(); }
-  };
-
-  function pmGetInputs() {
+  function peGetInputs() {
     const g = id => document.getElementById(id);
     return {
-      age:           parseInt(g('pf-age').value),
-      job:           g('pf-job').value,
-      marital:       g('pf-marital').value,
-      education:     g('pf-education').value,
-      default:       g('pf-default').value,
-      housing:       g('pf-housing').value,
-      loan:          g('pf-loan').value,
-      contact:       g('pf-contact').value,
-      month:         g('pf-month').value,
-      day_of_week:   g('pf-day').value,
-      duration:      parseInt(g('pf-duration').value),
-      campaign:      parseInt(g('pf-campaign').value),
-      pdays:         parseInt(g('pf-pdays').value),
-      previous:      parseInt(g('pf-previous').value),
-      poutcome:      g('pf-poutcome').value,
-      emp_var_rate:  parseFloat(g('pf-emp_var_rate').value),
-      cons_price_idx:parseFloat(g('pf-cons_price_idx').value),
-      cons_conf_idx: parseFloat(g('pf-cons_conf_idx').value),
-      euribor3m:     parseFloat(g('pf-euribor3m').value),
-      nr_employed:   parseFloat(g('pf-nr_employed').value),
+      age:            parseInt(g('pef-age').value),
+      job:            g('pef-job').value,
+      marital:        g('pef-marital').value,
+      education:      g('pef-education').value,
+      default:        g('pef-default').value,
+      housing:        g('pef-housing').value,
+      loan:           g('pef-loan').value,
+      contact:        g('pef-contact').value,
+      month:          g('pef-month').value,
+      day_of_week:    g('pef-day').value,
+      duration:       parseInt(g('pef-duration').value),
+      campaign:       parseInt(g('pef-campaign').value),
+      pdays:          parseInt(g('pef-pdays').value),
+      previous:       parseInt(g('pef-previous').value),
+      poutcome:       g('pef-poutcome').value,
+      emp_var_rate:   parseFloat(g('pef-emp_var_rate').value),
+      cons_price_idx: parseFloat(g('pef-cons_price_idx').value),
+      cons_conf_idx:  parseFloat(g('pef-cons_conf_idx').value),
+      euribor3m:      parseFloat(g('pef-euribor3m').value),
+      nr_employed:    parseFloat(g('pef-nr_employed').value),
     };
   }
 
-  function pmSimulate(inp) {
+  function peSimulate(inp) {
     if (inp.duration === 0) return { probability: 0.01, prediction: 'no' };
     let score = 0;
     score += Math.min(inp.duration / 600, 1.0) * 0.35;
@@ -1583,8 +1512,54 @@ function updateMoneyTheme(isLight) {
     return { probability: prob, prediction: prob >= 0.5 ? 'yes' : 'no' };
   }
 
-  function pmRunPrediction() {
-    const inp = pmGetInputs();
+  function peRenderStep() {
+    for (let i = 0; i < PE_TOTAL; i++) {
+      const body = document.getElementById('pe-step-' + i);
+      const tab  = document.getElementById('pe-tab-'  + i);
+      if (!body || !tab) continue;
+      body.classList.remove('active');
+      tab.classList.remove('active', 'done');
+      if (i < peStep) tab.classList.add('done');
+    }
+    const ab = document.getElementById('pe-step-' + peStep);
+    const at = document.getElementById('pe-tab-'  + peStep);
+    if (ab) ab.classList.add('active');
+    if (at) { at.classList.remove('done'); at.classList.add('active'); }
+
+    const pct = ((peStep + 1) / PE_TOTAL) * 100;
+    const pf = document.getElementById('pe-progress-fill');
+    const sc = document.getElementById('pe-step-counter');
+    if (pf) pf.style.width = pct + '%';
+    if (sc) sc.textContent = 'STEP ' + (peStep + 1) + ' OF ' + PE_TOTAL;
+
+    const btnBack = document.getElementById('pe-btn-back');
+    const btnNext = document.getElementById('pe-btn-next');
+    if (btnBack) btnBack.disabled = peStep === 0;
+    if (btnNext) {
+      if (peStep === PE_TOTAL - 1) {
+        btnNext.style.display = 'none';
+        if (btnBack) btnBack.disabled = true;
+      } else {
+        btnNext.style.display = 'inline-flex';
+        btnNext.textContent = peStep === PE_TOTAL - 2 ? '⚡ EXECUTE' : 'NEXT ▶';
+      }
+    }
+  }
+
+  window.peNextStep = function() {
+    if (peStep < PE_TOTAL - 1) {
+      peStep++;
+      peRenderStep();
+      if (peStep === PE_TOTAL - 1) peRunPrediction();
+    }
+  };
+
+  window.pePrevStep = function() {
+    if (peStep > 0) { peStep--; peRenderStep(); }
+  };
+
+  function peRunPrediction() {
+    const inp = peGetInputs();
     const scanLabels = [
       'LOADING XGBOOST PIPELINE...',
       'ENCODING CATEGORICAL FEATURES...',
@@ -1593,7 +1568,7 @@ function updateMoneyTheme(isLight) {
       'COMPUTING SHAP VALUES...',
       'FINALIZING OUTPUT...',
     ];
-    const stepIds = ['pm-ss0','pm-ss1','pm-ss2','pm-ss3','pm-ss4','pm-ss5'];
+    const stepIds = ['pe-ss0','pe-ss1','pe-ss2','pe-ss3','pe-ss4','pe-ss5'];
     stepIds.forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('lit'); });
     let idx = 0;
     const iv = setInterval(() => {
@@ -1601,107 +1576,117 @@ function updateMoneyTheme(isLight) {
         if (idx > 0) { const prev = document.getElementById(stepIds[idx-1]); if (prev) prev.classList.remove('lit'); }
         const el = document.getElementById(stepIds[idx]);
         if (el) el.classList.add('lit');
-        const lbl = document.getElementById('pm-scan-label');
+        const lbl = document.getElementById('pe-scan-label');
         if (lbl) lbl.textContent = scanLabels[idx];
         idx++;
       } else {
         clearInterval(iv);
-        pmShowResults(inp);
+        peShowResults(inp);
       }
     }, 420);
   }
 
-  function pmAnimateNumber(el, from, to, duration, formatter) {
+  function peAnimNum(el, from, to, duration, formatter) {
     if (!el) return;
     const start = performance.now();
     function frame(now) {
       const t = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      el.textContent = formatter(from + (to - from) * eased);
+      const e = 1 - Math.pow(1 - t, 3);
+      el.textContent = formatter(from + (to - from) * e);
       if (t < 1) requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
   }
 
-  function pmShowResults(inp) {
-    const sim = pmSimulate(inp);
-    pmLastResult = { inp, sim };
+  function peShowResults(inp) {
+    const sim = peSimulate(inp);
+    peLastResult = { inp, sim };
     const isYes = sim.prediction === 'yes';
     const prob  = sim.probability;
     const conf  = isYes ? prob : (1 - prob);
     const risk  = 1 - prob;
 
-    document.getElementById('pm-loading').style.display = 'none';
-    document.getElementById('pm-results').style.display = 'block';
+    const loadEl = document.getElementById('pe-loading');
+    const resEl  = document.getElementById('pe-results');
+    if (loadEl) loadEl.style.display = 'none';
+    if (resEl)  resEl.style.display  = 'block';
 
     // Verdict
-    const banner = document.getElementById('pm-verdict-banner');
-    banner.className = 'pm-verdict ' + (isYes ? 'subscribe' : 'no-subscribe');
-    document.getElementById('pm-verdict-icon').textContent = isYes ? '✓' : '✗';
-    document.getElementById('pm-verdict-text').textContent = isYes ? 'WILL SUBSCRIBE' : 'WILL NOT SUBSCRIBE';
-    document.getElementById('pm-verdict-sub').textContent  = isYes
+    const banner = document.getElementById('pe-verdict-banner');
+    if (banner) banner.className = 'pe-verdict ' + (isYes ? 'subscribe' : 'no-subscribe');
+    const iconEl = document.getElementById('pe-verdict-icon');
+    if (iconEl) iconEl.textContent = isYes ? '✓' : '✗';
+    const textEl = document.getElementById('pe-verdict-text');
+    if (textEl) textEl.textContent = isYes ? 'WILL SUBSCRIBE' : 'WILL NOT SUBSCRIBE';
+    const subEl = document.getElementById('pe-verdict-sub');
+    if (subEl) subEl.textContent = isYes
       ? 'Client is predicted to subscribe to a term deposit — high value prospect'
       : 'Client is unlikely to subscribe — consider re-engagement strategy';
 
     // Prob card
-    const probCard = document.getElementById('pm-prob-card');
-    probCard.className = 'pm-result-card ' + (isYes ? 'positive' : 'negative');
-    const probVal = document.getElementById('pm-prob-value');
-    probVal.className = 'pm-card-value ' + (isYes ? 'positive' : 'negative');
-    pmAnimateNumber(probVal, 0, prob, 1200, v => (v * 100).toFixed(1) + '%');
+    const probCard = document.getElementById('pe-prob-card');
+    if (probCard) probCard.className = 'pe-result-card ' + (isYes ? 'positive' : 'negative');
+    const probVal = document.getElementById('pe-prob-value');
+    if (probVal) { probVal.className = 'pe-card-value ' + (isYes ? 'positive' : 'negative'); peAnimNum(probVal, 0, prob, 1200, v => (v*100).toFixed(1)+'%'); }
 
     // Conf card
-    const confCard = document.getElementById('pm-conf-card');
-    confCard.className = 'pm-result-card ' + (isYes ? 'positive' : 'warn');
-    const confVal = document.getElementById('pm-conf-value');
-    confVal.className = 'pm-card-value ' + (isYes ? 'positive' : 'gold');
-    pmAnimateNumber(confVal, 0, conf, 1200, v => (v * 100).toFixed(1) + '%');
+    const confCard = document.getElementById('pe-conf-card');
+    if (confCard) confCard.className = 'pe-result-card ' + (isYes ? 'positive' : 'warn');
+    const confVal = document.getElementById('pe-conf-value');
+    if (confVal) { confVal.className = 'pe-card-value ' + (isYes ? 'positive' : 'gold'); peAnimNum(confVal, 0, conf, 1200, v => (v*100).toFixed(1)+'%'); }
 
     // KPIs
-    const predEl = document.getElementById('pm-kpi-pred');
-    predEl.textContent = isYes ? 'YES' : 'NO';
-    predEl.style.color = isYes ? '#00e5a0' : '#ff4c6a';
-    const riskEl = document.getElementById('pm-kpi-risk');
-    pmAnimateNumber(riskEl, 0, risk, 1200, v => (v * 100).toFixed(1) + '%');
-    riskEl.style.color = risk > 0.7 ? '#ff4c6a' : risk > 0.4 ? '#f0b429' : '#00e5a0';
+    const predEl = document.getElementById('pe-kpi-pred');
+    if (predEl) { predEl.textContent = isYes ? 'YES' : 'NO'; predEl.style.color = isYes ? '#00e5a0' : '#ff4c6a'; }
+    const riskEl = document.getElementById('pe-kpi-risk');
+    if (riskEl) { peAnimNum(riskEl, 0, risk, 1200, v => (v*100).toFixed(1)+'%'); riskEl.style.color = risk > 0.7 ? '#ff4c6a' : risk > 0.4 ? '#f0b429' : '#00e5a0'; }
 
     // Prob bar
-    const barFill = document.getElementById('pm-prob-bar-fill');
-    barFill.style.background = isYes ? '#00e5a0' : '#ff4c6a';
-    document.getElementById('pm-prob-bar-pct').textContent = (prob * 100).toFixed(1) + '%';
-    setTimeout(() => { barFill.style.width = (prob * 100) + '%'; }, 80);
+    const barFill = document.getElementById('pe-prob-bar-fill');
+    const barPct  = document.getElementById('pe-prob-bar-pct');
+    if (barFill) { barFill.style.background = isYes ? '#00e5a0' : '#ff4c6a'; setTimeout(() => { barFill.style.width = (prob*100)+'%'; }, 80); }
+    if (barPct)  barPct.textContent = (prob*100).toFixed(1)+'%';
 
     // Chips
-    const chipsEl = document.getElementById('pm-chips');
-    chipsEl.innerHTML = '';
-    [
-      ['Age', inp.age + 'yr'], ['Job', inp.job], ['Marital', inp.marital],
-      ['Education', inp.education], ['Contact', inp.contact], ['Month', inp.month.toUpperCase()],
-      ['Duration', inp.duration + 's'], ['Campaign', inp.campaign + 'x'],
-      ['Poutcome', inp.poutcome], ['EmpVarRate', inp.emp_var_rate.toFixed(1)],
-      ['Euribor3m', inp.euribor3m.toFixed(3)],
-    ].forEach(([k, v]) => {
-      const chip = document.createElement('div');
-      chip.className = 'pm-chip';
-      chip.innerHTML = k + ': <strong>' + v + '</strong>';
-      chipsEl.appendChild(chip);
-    });
+    const chipsEl = document.getElementById('pe-chips');
+    if (chipsEl) {
+      chipsEl.innerHTML = '';
+      [
+        ['Age', inp.age+'yr'], ['Job', inp.job], ['Marital', inp.marital],
+        ['Education', inp.education], ['Contact', inp.contact], ['Month', inp.month.toUpperCase()],
+        ['Duration', inp.duration+'s'], ['Campaign', inp.campaign+'x'],
+        ['Poutcome', inp.poutcome], ['EmpVarRate', inp.emp_var_rate.toFixed(1)],
+        ['Euribor3m', inp.euribor3m.toFixed(3)],
+      ].forEach(([k,v]) => {
+        const chip = document.createElement('div');
+        chip.className = 'pe-chip';
+        chip.innerHTML = k + ': <strong>' + v + '</strong>';
+        chipsEl.appendChild(chip);
+      });
+    }
   }
 
-  window.pmResetAndRun = function() {
-    document.getElementById('pm-results').style.display = 'none';
-    document.getElementById('pm-loading').style.display = 'flex';
-    ['pm-ss0','pm-ss1','pm-ss2','pm-ss3','pm-ss4','pm-ss5'].forEach(id => {
+  window.peResetAndRun = function() {
+    const loadEl = document.getElementById('pe-loading');
+    const resEl  = document.getElementById('pe-results');
+    if (loadEl) loadEl.style.display = 'flex';
+    if (resEl)  resEl.style.display  = 'none';
+    ['pe-ss0','pe-ss1','pe-ss2','pe-ss3','pe-ss4','pe-ss5'].forEach(id => {
       const el = document.getElementById(id); if (el) el.classList.remove('lit');
     });
-    pmStep = 0;
-    pmRenderStep();
+    peStep = 0;
+    peRenderStep();
   };
 
-  window.pmCopyResult = function() {
-    if (!pmLastResult) return;
-    const { inp, sim } = pmLastResult;
-    const text = `BANKIQ PREDICTION RESULT\nPrediction: ${sim.prediction.toUpperCase()}\nProbability: ${(sim.probability*100).toFixed(1)}%\nAge: ${inp.age} | Job: ${inp.job} | Duration: ${inp.duration}s`;
+  window.peCopyResult = function() {
+    if (!peLastResult) return;
+    const { inp, sim } = peLastResult;
+    const text = 'BANKIQ PREDICTION RESULT\nPrediction: ' + sim.prediction.toUpperCase() +
+      '\nProbability: ' + (sim.probability*100).toFixed(1) + '%' +
+      '\nAge: ' + inp.age + ' | Job: ' + inp.job + ' | Duration: ' + inp.duration + 's';
     if (navigator.clipboard) navigator.clipboard.writeText(text);
   };
+
+  // Init on load
+  peRenderStep();
 })();

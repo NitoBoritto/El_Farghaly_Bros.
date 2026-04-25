@@ -829,173 +829,246 @@
       </div>
     </div>
 
-<!-- CONTROLS -->
-<div class="ai-controls reveal">
-  <span class="ai-ctrl-label">FORECAST HORIZON:</span>
-  <button class="ai-btn active" onclick="setHorizon(6,this)">6 MO</button>
-  <button class="ai-btn" onclick="setHorizon(12,this)">12 MO</button>
-  <button class="ai-btn" onclick="setHorizon(24,this)">24 MO</button>
-  <button class="ai-btn" onclick="setHorizon(36,this)">36 MO</button>
-  <div class="ai-divider"></div>
-  <span class="ai-ctrl-label">MODEL:</span>
-  <select class="ai-model-select" id="modelSelect" onchange="switchModel(this.value)">
-    <option value="xgb">XGBoost</option>
-    <option value="rf">Random Forest</option>
-    <option value="lr">Logistic Regression</option>
-    <option value="nn">Neural Network</option>
-  </select>
-  <div class="ai-divider"></div>
-  <button class="ai-btn gold" onclick="openPredModal()">⚡ RUN PREDICTION</button>
-  <button class="ai-btn" onclick="simulateNewData()">↺ SIMULATE DATA</button>
-</div>
+<!-- PREDICTION ENGINE — INLINE -->
+    <div class="pred-engine-wrap reveal">
 
-<!-- PREDICTION MODAL -->
-<div id="pred-modal-overlay">
-  <div id="pred-modal">
-    <div class="pm-header">
-      <div class="pm-title">
-        <span class="pm-title-icon">⚡</span>
-        PREDICTION ENGINE
-        <div class="pm-live-badge"><div class="pm-dot"></div>LIVE</div>
+      <!-- STEPPER HEADER -->
+      <div class="pe-header">
+        <div class="pe-title">
+          <span>⚡</span>
+          PREDICTION ENGINE
+          <div class="pe-live-badge"><div class="pe-dot"></div>LIVE</div>
+        </div>
+        <div class="pe-stepper">
+          <div class="pe-tab active" id="pe-tab-0"><div class="pe-tab-num">1</div>CONFIGURE</div>
+          <div class="pe-tab" id="pe-tab-1"><div class="pe-tab-num">2</div>CAMPAIGN</div>
+          <div class="pe-tab" id="pe-tab-2"><div class="pe-tab-num">3</div>ECONOMIC</div>
+          <div class="pe-tab" id="pe-tab-3"><div class="pe-tab-num">4</div>EXECUTE</div>
+        </div>
+        <div class="pe-step-counter" id="pe-step-counter">STEP 1 OF 4</div>
       </div>
-      <button class="pm-close-btn" onclick="closePredModal()">✕ CLOSE</button>
-    </div>
-    <div class="pm-stepper">
-      <div class="pm-tab active" id="pm-tab-0"><div class="pm-tab-num">1</div>CONFIGURE</div>
-      <div class="pm-tab" id="pm-tab-1"><div class="pm-tab-num">2</div>CAMPAIGN</div>
-      <div class="pm-tab" id="pm-tab-2"><div class="pm-tab-num">3</div>ECONOMIC</div>
-      <div class="pm-tab" id="pm-tab-3"><div class="pm-tab-num">4</div>EXECUTE</div>
-    </div>
-    <div class="pm-progress-bar"><div class="pm-progress-fill" id="pm-progress-fill" style="width:25%"></div></div>
+      <div class="pe-progress-bar"><div class="pe-progress-fill" id="pe-progress-fill" style="width:25%"></div></div>
 
-    <!-- STEP 1 -->
-    <div class="pm-step active" id="pm-step-0">
-      <div class="pm-section-title">// STEP 1 — CLIENT PROFILE DATA</div>
-      <div class="pm-form-grid">
-        <div class="pm-field">
-          <label>Age (years)</label>
-          <div class="pm-range-wrap"><input type="range" min="18" max="90" value="38" step="1" id="pf-age" oninput="document.getElementById('pv-age').textContent=this.value"><span class="pm-range-val" id="pv-age">38</span></div>
-        </div>
-        <div class="pm-field">
-          <label>Job Type</label>
-          <select id="pf-job"><option>admin.</option><option>blue-collar</option><option>entrepreneur</option><option>housemaid</option><option>management</option><option>retired</option><option>self-employed</option><option>services</option><option>student</option><option selected>technician</option><option>unemployed</option><option>unknown</option></select>
-        </div>
-        <div class="pm-field">
-          <label>Marital Status</label>
-          <select id="pf-marital"><option>divorced</option><option selected>married</option><option>single</option><option>unknown</option></select>
-        </div>
-        <div class="pm-field">
-          <label>Education Level</label>
-          <select id="pf-education"><option>basic.4y</option><option>basic.6y</option><option>basic.9y</option><option>high.school</option><option>illiterate</option><option>professional.course</option><option selected>university.degree</option><option>unknown</option></select>
-        </div>
-        <div class="pm-field">
-          <label>Credit Default</label>
-          <select id="pf-default"><option selected>no</option><option>yes</option><option>unknown</option></select>
-        </div>
-        <div class="pm-field">
-          <label>Housing Loan</label>
-          <select id="pf-housing"><option selected>yes</option><option>no</option><option>unknown</option></select>
-        </div>
-        <div class="pm-field">
-          <label>Personal Loan</label>
-          <select id="pf-loan"><option selected>no</option><option>yes</option><option>unknown</option></select>
+      <!-- STEP 1 — CLIENT PROFILE -->
+      <div class="pe-step active" id="pe-step-0">
+        <div class="pe-section-title">// STEP 1 — CLIENT PROFILE DATA</div>
+        <div class="pe-form-grid">
+          <div class="pe-field">
+            <label>Age (years)</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="18" max="90" value="38" step="1" id="pef-age" oninput="document.getElementById('pev-age').textContent=this.value">
+              <span class="pe-range-val" id="pev-age">38</span>
+            </div>
+          </div>
+          <div class="pe-field">
+            <label>Job Type</label>
+            <select id="pef-job">
+              <option>admin.</option><option>blue-collar</option><option>entrepreneur</option>
+              <option>housemaid</option><option>management</option><option>retired</option>
+              <option>self-employed</option><option>services</option><option>student</option>
+              <option selected>technician</option><option>unemployed</option><option>unknown</option>
+            </select>
+          </div>
+          <div class="pe-field">
+            <label>Marital Status</label>
+            <select id="pef-marital">
+              <option>divorced</option><option selected>married</option><option>single</option><option>unknown</option>
+            </select>
+          </div>
+          <div class="pe-field">
+            <label>Education Level</label>
+            <select id="pef-education">
+              <option>basic.4y</option><option>basic.6y</option><option>basic.9y</option>
+              <option>high.school</option><option>illiterate</option><option>professional.course</option>
+              <option selected>university.degree</option><option>unknown</option>
+            </select>
+          </div>
+          <div class="pe-field">
+            <label>Credit Default</label>
+            <select id="pef-default"><option selected>no</option><option>yes</option><option>unknown</option></select>
+          </div>
+          <div class="pe-field">
+            <label>Housing Loan</label>
+            <select id="pef-housing"><option selected>yes</option><option>no</option><option>unknown</option></select>
+          </div>
+          <div class="pe-field">
+            <label>Personal Loan</label>
+            <select id="pef-loan"><option selected>no</option><option>yes</option><option>unknown</option></select>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- STEP 2 -->
-    <div class="pm-step" id="pm-step-1">
-      <div class="pm-section-title">// STEP 2 — LAST CONTACT & CAMPAIGN</div>
-      <div class="pm-form-grid">
-        <div class="pm-field">
-          <label>Contact Type</label>
-          <select id="pf-contact"><option selected>cellular</option><option>telephone</option></select>
-        </div>
-        <div class="pm-field">
-          <label>Contact Month</label>
-          <select id="pf-month"><option>jan</option><option>feb</option><option>mar</option><option>apr</option><option selected>may</option><option>jun</option><option>jul</option><option>aug</option><option>sep</option><option>oct</option><option>nov</option><option>dec</option></select>
-        </div>
-        <div class="pm-field">
-          <label>Day of Week</label>
-          <select id="pf-day"><option selected>mon</option><option>tue</option><option>wed</option><option>thu</option><option>fri</option></select>
-        </div>
-        <div class="pm-field">
-          <label>Call Duration (secs)</label>
-          <div class="pm-range-wrap"><input type="range" min="0" max="3000" value="320" step="10" id="pf-duration" oninput="document.getElementById('pv-duration').textContent=this.value+'s'"><span class="pm-range-val" id="pv-duration">320s</span></div>
-          <div class="pm-field-hint">NOTE: 0s → guaranteed no-subscribe</div>
-        </div>
-        <div class="pm-field">
-          <label>Campaign Contacts</label>
-          <div class="pm-range-wrap"><input type="range" min="1" max="30" value="2" step="1" id="pf-campaign" oninput="document.getElementById('pv-campaign').textContent=this.value"><span class="pm-range-val" id="pv-campaign">2</span></div>
-        </div>
-        <div class="pm-field">
-          <label>Days Since Last Contact</label>
-          <div class="pm-range-wrap"><input type="range" min="0" max="999" value="999" step="1" id="pf-pdays" oninput="document.getElementById('pv-pdays').textContent=this.value==999?'Never':this.value+'d'"><span class="pm-range-val" id="pv-pdays">Never</span></div>
-        </div>
-        <div class="pm-field">
-          <label>Previous Contacts</label>
-          <div class="pm-range-wrap"><input type="range" min="0" max="10" value="0" step="1" id="pf-previous" oninput="document.getElementById('pv-previous').textContent=this.value"><span class="pm-range-val" id="pv-previous">0</span></div>
-        </div>
-        <div class="pm-field">
-          <label>Previous Campaign Outcome</label>
-          <select id="pf-poutcome"><option selected>nonexistent</option><option>failure</option><option>success</option></select>
+      <!-- STEP 2 — CAMPAIGN -->
+      <div class="pe-step" id="pe-step-1">
+        <div class="pe-section-title">// STEP 2 — LAST CONTACT & CAMPAIGN</div>
+        <div class="pe-form-grid">
+          <div class="pe-field">
+            <label>Contact Type</label>
+            <select id="pef-contact"><option selected>cellular</option><option>telephone</option></select>
+          </div>
+          <div class="pe-field">
+            <label>Contact Month</label>
+            <select id="pef-month">
+              <option>jan</option><option>feb</option><option>mar</option><option>apr</option>
+              <option selected>may</option><option>jun</option><option>jul</option><option>aug</option>
+              <option>sep</option><option>oct</option><option>nov</option><option>dec</option>
+            </select>
+          </div>
+          <div class="pe-field">
+            <label>Day of Week</label>
+            <select id="pef-day">
+              <option selected>mon</option><option>tue</option><option>wed</option><option>thu</option><option>fri</option>
+            </select>
+          </div>
+          <div class="pe-field">
+            <label>Call Duration (secs)</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="0" max="3000" value="320" step="10" id="pef-duration" oninput="document.getElementById('pev-duration').textContent=this.value+'s'">
+              <span class="pe-range-val" id="pev-duration">320s</span>
+            </div>
+            <div class="pe-field-hint">NOTE: 0s → guaranteed no-subscribe</div>
+          </div>
+          <div class="pe-field">
+            <label>Campaign Contacts</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="1" max="30" value="2" step="1" id="pef-campaign" oninput="document.getElementById('pev-campaign').textContent=this.value">
+              <span class="pe-range-val" id="pev-campaign">2</span>
+            </div>
+          </div>
+          <div class="pe-field">
+            <label>Days Since Last Contact</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="0" max="999" value="999" step="1" id="pef-pdays" oninput="document.getElementById('pev-pdays').textContent=this.value==999?'Never':this.value+'d'">
+              <span class="pe-range-val" id="pev-pdays">Never</span>
+            </div>
+          </div>
+          <div class="pe-field">
+            <label>Previous Contacts</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="0" max="10" value="0" step="1" id="pef-previous" oninput="document.getElementById('pev-previous').textContent=this.value">
+              <span class="pe-range-val" id="pev-previous">0</span>
+            </div>
+          </div>
+          <div class="pe-field">
+            <label>Previous Campaign Outcome</label>
+            <select id="pef-poutcome"><option selected>nonexistent</option><option>failure</option><option>success</option></select>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- STEP 3 -->
-    <div class="pm-step" id="pm-step-2">
-      <div class="pm-section-title">// STEP 3 — SOCIAL & ECONOMIC INDICATORS</div>
-      <div class="pm-form-grid">
-        <div class="pm-field">
-          <label>Employment Variation Rate</label>
-          <div class="pm-range-wrap"><input type="range" min="-3.5" max="1.5" value="1.1" step="0.1" id="pf-emp_var_rate" oninput="document.getElementById('pv-evr').textContent=parseFloat(this.value).toFixed(1)"><span class="pm-range-val" id="pv-evr">1.1</span></div>
-          <div class="pm-field-hint">Quarterly indicator</div>
+      <!-- STEP 3 — ECONOMIC -->
+      <div class="pe-step" id="pe-step-2">
+        <div class="pe-section-title">// STEP 3 — SOCIAL & ECONOMIC INDICATORS</div>
+        <div class="pe-form-grid">
+          <div class="pe-field">
+            <label>Employment Variation Rate</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="-3.5" max="1.5" value="1.1" step="0.1" id="pef-emp_var_rate" oninput="document.getElementById('pev-evr').textContent=parseFloat(this.value).toFixed(1)">
+              <span class="pe-range-val" id="pev-evr">1.1</span>
+            </div>
+            <div class="pe-field-hint">Quarterly indicator</div>
+          </div>
+          <div class="pe-field">
+            <label>Consumer Price Index</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="92" max="95" value="93.994" step="0.001" id="pef-cons_price_idx" oninput="document.getElementById('pev-cpi').textContent=parseFloat(this.value).toFixed(3)">
+              <span class="pe-range-val" id="pev-cpi">93.994</span>
+            </div>
+            <div class="pe-field-hint">Monthly indicator</div>
+          </div>
+          <div class="pe-field">
+            <label>Consumer Confidence Index</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="-50" max="-26" value="-36.4" step="0.1" id="pef-cons_conf_idx" oninput="document.getElementById('pev-cci').textContent=parseFloat(this.value).toFixed(1)">
+              <span class="pe-range-val" id="pev-cci">-36.4</span>
+            </div>
+            <div class="pe-field-hint">Monthly indicator</div>
+          </div>
+          <div class="pe-field">
+            <label>Euribor 3-Month Rate</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="0.6" max="5.1" value="4.857" step="0.001" id="pef-euribor3m" oninput="document.getElementById('pev-eur').textContent=parseFloat(this.value).toFixed(3)">
+              <span class="pe-range-val" id="pev-eur">4.857</span>
+            </div>
+            <div class="pe-field-hint">Daily indicator</div>
+          </div>
+          <div class="pe-field">
+            <label>Nr. Employees</label>
+            <div class="pe-range-wrap">
+              <input type="range" min="4900" max="5230" value="5191" step="1" id="pef-nr_employed" oninput="document.getElementById('pev-nre').textContent=this.value">
+              <span class="pe-range-val" id="pev-nre">5191</span>
+            </div>
+            <div class="pe-field-hint">Quarterly indicator</div>
+          </div>
         </div>
-        <div class="pm-field">
-          <label>Consumer Price Index</label>
-          <div class="pm-range-wrap"><input type="range" min="92" max="95" value="93.994" step="0.001" id="pf-cons_price_idx" oninput="document.getElementById('pv-cpi').textContent=parseFloat(this.value).toFixed(3)"><span class="pm-range-val" id="pv-cpi">93.994</span></div>
-          <div class="pm-field-hint">Monthly indicator</div>
+        <div class="pe-info-box">⚡ These macro-economic features are among the strongest predictors of term deposit subscription in the UCI Bank Marketing dataset.</div>
+      </div>
+
+      <!-- STEP 4 — EXECUTE / RESULTS -->
+      <div class="pe-step" id="pe-step-3">
+        <!-- Loading -->
+        <div class="pe-loading" id="pe-loading">
+          <div class="pe-loader-ring"></div>
+          <div class="pe-scanning-text" id="pe-scan-label">INITIALIZING MODEL...</div>
+          <div class="pe-scanning-steps">
+            <div class="pe-scan-step" id="pe-ss0">▸ Loading XGBoost pipeline...</div>
+            <div class="pe-scan-step" id="pe-ss1">▸ Encoding categorical features...</div>
+            <div class="pe-scan-step" id="pe-ss2">▸ Scaling numerical features...</div>
+            <div class="pe-scan-step" id="pe-ss3">▸ Running inference engine...</div>
+            <div class="pe-scan-step" id="pe-ss4">▸ Computing SHAP values...</div>
+            <div class="pe-scan-step" id="pe-ss5">▸ Finalizing prediction output...</div>
+          </div>
         </div>
-        <div class="pm-field">
-          <label>Consumer Confidence Index</label>
-          <div class="pm-range-wrap"><input type="range" min="-50" max="-26" value="-36.4" step="0.1" id="pf-cons_conf_idx" oninput="document.getElementById('pv-cci').textContent=parseFloat(this.value).toFixed(1)"><span class="pm-range-val" id="pv-cci">-36.4</span></div>
-          <div class="pm-field-hint">Monthly indicator</div>
-        </div>
-        <div class="pm-field">
-          <label>Euribor 3-Month Rate</label>
-          <div class="pm-range-wrap"><input type="range" min="0.6" max="5.1" value="4.857" step="0.001" id="pf-euribor3m" oninput="document.getElementById('pv-eur').textContent=parseFloat(this.value).toFixed(3)"><span class="pm-range-val" id="pv-eur">4.857</span></div>
-          <div class="pm-field-hint">Daily indicator</div>
-        </div>
-        <div class="pm-field">
-          <label>Nr. Employees (thousands)</label>
-          <div class="pm-range-wrap"><input type="range" min="4900" max="5230" value="5191" step="1" id="pf-nr_employed" oninput="document.getElementById('pv-nre').textContent=this.value"><span class="pm-range-val" id="pv-nre">5191</span></div>
-          <div class="pm-field-hint">Quarterly indicator</div>
+        <!-- Results -->
+        <div class="pe-results" id="pe-results">
+          <div class="pe-verdict" id="pe-verdict-banner">
+            <div class="pe-verdict-icon" id="pe-verdict-icon">✓</div>
+            <div>
+              <div class="pe-verdict-main" id="pe-verdict-text">WILL SUBSCRIBE</div>
+              <div class="pe-verdict-sub" id="pe-verdict-sub">Term deposit subscription predicted with high confidence</div>
+            </div>
+          </div>
+          <div class="pe-result-hero">
+            <div class="pe-result-card" id="pe-prob-card">
+              <div class="pe-card-label">SUBSCRIPTION PROBABILITY</div>
+              <div class="pe-card-value" id="pe-prob-value">0.0%</div>
+              <div class="pe-card-sub">Raw model output probability</div>
+            </div>
+            <div class="pe-result-card" id="pe-conf-card">
+              <div class="pe-card-label">CONFIDENCE SCORE</div>
+              <div class="pe-card-value" id="pe-conf-value">0.0%</div>
+              <div class="pe-card-sub">Derived from model probability</div>
+            </div>
+          </div>
+          <div class="pe-kpi-row">
+            <div class="pe-kpi"><div class="pe-kpi-label">PREDICTION</div><div class="pe-kpi-val" id="pe-kpi-pred">—</div></div>
+            <div class="pe-kpi"><div class="pe-kpi-label">RISK SCORE</div><div class="pe-kpi-val" id="pe-kpi-risk">—</div></div>
+            <div class="pe-kpi"><div class="pe-kpi-label">MODEL AUC</div><div class="pe-kpi-val" style="color:#00d4ff">0.874</div></div>
+            <div class="pe-kpi"><div class="pe-kpi-label">F1 SCORE</div><div class="pe-kpi-val" style="color:#00d4ff">0.812</div></div>
+          </div>
+          <div class="pe-prob-bar-box">
+            <div class="pe-prob-bar-title">PROBABILITY — NO SUBSCRIBE ◀──────────────────── SUBSCRIBE</div>
+            <div class="pe-prob-bar-track"><div class="pe-prob-bar-fill" id="pe-prob-bar-fill"></div></div>
+            <div class="pe-prob-bar-labels"><span>0% — No</span><span id="pe-prob-bar-pct">—</span><span>100% — Yes</span></div>
+          </div>
+          <div class="pe-input-summary">
+            <div class="pe-input-summary-title">// FEATURE INPUTS USED</div>
+            <div class="pe-chips" id="pe-chips"></div>
+          </div>
+          <div class="pe-result-actions">
+            <button class="pe-action-btn primary" onclick="peResetAndRun()">⚡ NEW PREDICTION</button>
+            <button class="pe-action-btn" onclick="peCopyResult()">⎘ COPY RESULT</button>
+          </div>
         </div>
       </div>
-      <div class="pm-info-box">⚡ These macro-economic features are among the strongest predictors of term deposit subscription in the UCI Bank Marketing dataset.</div>
-    </div>
 
-    <!-- STEP 4 -->
-    <div class="pm-step" id="pm-step-3">
-      <div class="pm-loading-state" id="pm-loading">
-        <div class="pm-loader-ring"></div>
-        <div class="pm-scanning-text" id="pm-scan-label">INITIALIZING MODEL...</div>
-        <div class="pm-scanning-steps">
-          <div class="pm-scan-step" id="pm-ss0">▸ Loading XGBoost pipeline...</div>
-          <div class="pm-scan-step" id="pm-ss1">▸ Encoding categorical features...</div>
-          <div class="pm-scan-step" id="pm-ss2">▸ Scaling numerical features...</div>
-          <div class="pm-scan-step" id="pm-ss3">▸ Running inference engine...</div>
-          <div class="pm-scan-step" id="pm-ss4">▸ Computing SHAP values...</div>
-          <div class="pm-scan-step" id="pm-ss5">▸ Finalizing prediction output...</div>
-        </div>
+      <!-- FOOTER NAV -->
+      <div class="pe-footer">
+        <button class="pe-btn-step" id="pe-btn-back" onclick="pePrevStep()" disabled>◀ BACK</button>
+        <button class="pe-btn-step primary" id="pe-btn-next" onclick="peNextStep()">NEXT ▶</button>
       </div>
-      <div class="pm-results" id="pm-results">
-        <div class="pm-verdict" id="pm-verdict-banner">
-          <div class="pm-verdict-icon" id="pm-verdict-icon">✓</div>
-          <div>
-            <div class="pm-verdict-main" id="pm-verdict-text">WILL SUBSCRIBE</div>
-            <div class="pm-verdict-sub" id="pm-verdict-sub">Term deposit subscription predicted with high confidence</div>
+
+    </div><!-- /pred-engine-wrap -->
           </div>
         </div>
         <div class="pm-result-hero">

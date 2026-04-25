@@ -12,7 +12,7 @@ if str(project_root) not in sys.path:
 
 from database import get_db_engine
 from src.database.extract import load_db_table_to_dataframe
-from src.database.preprocess import process_data_pipeline
+from src.database.preprocess import process_data_pipeline, build_dashboard_features
 from src.database.to_db_loader import load_dataframe_to_db_table
 
 def run_data_pipeline(source_table_name, target_table_name):
@@ -37,10 +37,13 @@ def run_data_pipeline(source_table_name, target_table_name):
     
     # Step 2: Process Data through Preprocessing Pipeline
     df_transformed = process_data_pipeline(df_raw)
-    
-    # Step 3: Load Transformed Data back to Database
+
+    # Step 3: Generate dashboard-ready features from the transformed data
+    df_dashboard = build_dashboard_features(df_transformed)
+
+    # Step 4: Load dashboard-ready DataFrame back to Database
     print(f'Loading DataFrame to {target_table_name}...')
-    load_dataframe_to_db_table(df_transformed, target_table_name, engine)
+    load_dataframe_to_db_table(df_dashboard, target_table_name, engine)
     
     print("\n=== Data Transformation Pipeline Completed Successfully ===")
     

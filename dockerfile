@@ -1,33 +1,37 @@
-# Stage 1: Runtime stage
+# Using a python docker hardened image
 FROM python:3.11-slim
 
-# Set working directory
+# Setting working directory inside the container
 WORKDIR /app
 
-# Set Python path for imports to ensure modules are found
-ENV PYTHONPATH=/app:/app/src
-
-# Install minimal system dependencies for Python packages (e.g., for SQL drivers)
+# Install system dependencies first
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install dependencies
+# Copy dependencies first for better layer caching
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Copy application source code
-COPY database.py .
-# This maintains the structure /app/src/app/main.py
-COPY src/ src/
+# Copy the entire project
+COPY . .
 
-# Copy ML model artifact to expected runtime location
+# Explicitly ensure the model is where inference.py expects it
 COPY src/serving/model /app/model
 
-# Expose the API port (standardizing on 8000 as you've set in Azure)
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+# Expose FastAPI port
 EXPOSE 8000
 
-# Start the API with uvicorn
-# We use --app-dir src so that 'app.main:app' maps correctly to src/app/main.py
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--app-dir", "src"]
+# Force the script to be an executable
+RUN chmod +x start.sh
+
+# Ensure linux line endings
+RUN sed -i 's/\r$//' start.sh
+
+# Run FastAPI app (pointing to your main.py where 'app = FastAPI()' is)
+CMD ["uvicorn", "src.app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -827,27 +827,40 @@
           Bank Customer Records
           <span id="dataset-table-badge" class="table-badge">NO DATA</span>
         </div>
-        <div class="table-actions">
-          <button class="tbl-btn">⬆ Import CSV</button>
-          <button class="tbl-btn">⬇ Export</button>
-          <button class="tbl-btn">⚙ Filter</button>
+        <div class="table-scroll-control" id="dataset-scroll-control">
+          <span class="table-scroll-label">Columns</span>
+          <input
+            id="dataset-scroll-slider"
+            class="table-scroll-slider"
+            type="range"
+            min="0"
+            max="1000"
+            value="0"
+            aria-label="Scroll dataset columns"
+          />
         </div>
       </div>
-      <table>
-        <thead>
-          <tr id="dataset-table-head-row">
-            <th>Loading columns...</th>
-          </tr>
-        </thead>
-        <tbody id="dataset-table-body">
-          <tr>
-            <td class="cell-empty">Connecting to cloud dataset...</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll" id="dataset-table-scroll">
+        <table>
+          <thead>
+            <tr id="dataset-table-head-row">
+              <th>Loading columns...</th>
+            </tr>
+          </thead>
+          <tbody id="dataset-table-body">
+            <tr>
+              <td class="cell-empty">Connecting to cloud dataset...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="table-footer">
         <span id="dataset-loaded-count">0 records loaded · awaiting data connection</span>
-        <span id="dataset-page-info">Page 1 of —</span>
+        <div class="dataset-pagination">
+          <button id="dataset-prev-page" class="tbl-btn" type="button">◀ Prev</button>
+          <span id="dataset-page-info">Page 1 of —</span>
+          <button id="dataset-next-page" class="tbl-btn" type="button">Next ▶</button>
+        </div>
       </div>
     </div>
   </section>

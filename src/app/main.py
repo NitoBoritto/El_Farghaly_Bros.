@@ -49,7 +49,7 @@ def health_check():
 
 @app.get('/api/dataset/transformed-bank')
 def transformed_bank_preview(
-    limit: int = Query(default=50, ge=1, le=MAX_DATASET_PREVIEW_ROWS)
+    limit: int = Query(default=200, ge=1, le=MAX_DATASET_PREVIEW_ROWS)
 ):
     """
     Return a preview of rows from Transformed.Bank for the dataset explorer.

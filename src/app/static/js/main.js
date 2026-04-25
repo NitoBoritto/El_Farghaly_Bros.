@@ -1460,7 +1460,11 @@ function updateMoneyTheme(isLight) {
    DATASET EXPLORER — live data from Transformed.Bank
 ═══════════════════════════════════════════════════════════ */
 (function () {
-  const DEFAULT_PREVIEW_LIMIT = 50;
+  const DEFAULT_PREVIEW_LIMIT = 200;
+  const DATASET_ROWS_PER_PAGE = 10;
+  let datasetColumns = [];
+  let datasetRows = [];
+  let currentPage = 1;
 
   function normalizeCellValue(value) {
     if (value === null || value === undefined || value === '') return '—';
@@ -1508,11 +1512,172 @@ function updateMoneyTheme(isLight) {
     });
   }
 
+  function getDatasetTotalPages() {
+    return Math.max(1, Math.ceil(datasetRows.length / DATASET_ROWS_PER_PAGE));
+  }
+
+  function updateDatasetPager() {
+    const pageInfo = document.getElementById('dataset-page-info');
+    const prevBtn = document.getElementById('dataset-prev-page');
+    const nextBtn = document.getElementById('dataset-next-page');
+    const totalPages = getDatasetTotalPages();
+
+    if (pageInfo) pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+  }
+
+  function renderCurrentDatasetPage() {
+    const startIndex = (currentPage - 1) * DATASET_ROWS_PER_PAGE;
+    const pageRows = datasetRows.slice(startIndex, startIndex + DATASET_ROWS_PER_PAGE);
+    renderDatasetRows(datasetColumns, pageRows);
+    updateDatasetPager();
+  }
+
+  function goToDatasetPage(page) {
+    const totalPages = getDatasetTotalPages();
+    currentPage = Math.min(Math.max(page, 1), totalPages);
+    renderCurrentDatasetPage();
+  }
+
+  function bindDatasetPagerEvents() {
+    const prevBtn = document.getElementById('dataset-prev-page');
+    const nextBtn = document.getElementById('dataset-next-page');
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        goToDatasetPage(currentPage - 1);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        goToDatasetPage(currentPage + 1);
+      });
+    }
+  }
+
+  function syncDatasetScrollSlider() {
+    const tableScroll = document.getElementById('dataset-table-scroll');
+    const slider = document.getElementById('dataset-scroll-slider');
+    const scrollControl = document.getElementById('dataset-scroll-control');
+    if (!tableScroll || !slider || !scrollControl) return;
+
+    const maxScroll = Math.max(0, tableScroll.scrollWidth - tableScroll.clientWidth);
+    const hasOverflow = maxScroll > 0;
+    scrollControl.style.opacity = hasOverflow ? '1' : '0.75';
+    slider.disabled = false;
+    slider.max = String(Math.max(1, Math.round(maxScroll)));
+
+    if (!hasOverflow) {
+      slider.value = '0';
+      tableScroll.scrollLeft = 0;
+      return;
+    }
+
+    slider.value = String(Math.round(tableScroll.scrollLeft));
+  }
+
+  function bindDatasetScrollControl() {
+    const tableScroll = document.getElementById('dataset-table-scroll');
+    const slider = document.getElementById('dataset-scroll-slider');
+    if (!tableScroll || !slider) return;
+
+    let isDraggingSlider = false;
+
+    function getMaxDatasetScroll() {
+      return Math.max(0, tableScroll.scrollWidth - tableScroll.clientWidth);
+    }
+
+    function setTableScrollFromPointer(clientX) {
+      const rect = slider.getBoundingClientRect();
+      if (!rect.width) return;
+
+      const relative = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      const ratio = relative / rect.width;
+      const maxScroll = getMaxDatasetScroll();
+      tableScroll.scrollLeft = ratio * maxScroll;
+      slider.value = String(Math.round(tableScroll.scrollLeft));
+    }
+
+    function onPointerMove(event) {
+      if (!isDraggingSlider) return;
+      setTableScrollFromPointer(event.clientX);
+    }
+
+    function onPointerUp() {
+      if (!isDraggingSlider) return;
+      isDraggingSlider = false;
+      slider.classList.remove('dragging');
+    }
+
+    slider.addEventListener('input', function () {
+      tableScroll.scrollLeft = Number(slider.value);
+    });
+
+    slider.addEventListener('pointerdown', function (event) {
+      event.preventDefault();
+      isDraggingSlider = true;
+      slider.classList.add('dragging');
+      if (slider.setPointerCapture) {
+        slider.setPointerCapture(event.pointerId);
+      }
+      setTableScrollFromPointer(event.clientX);
+    });
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+
+    slider.addEventListener('touchstart', function (event) {
+      const touch = event.touches && event.touches[0];
+      if (!touch) return;
+      event.preventDefault();
+      isDraggingSlider = true;
+      slider.classList.add('dragging');
+      setTableScrollFromPointer(touch.clientX);
+    }, { passive: false });
+
+    window.addEventListener('touchmove', function (event) {
+      if (!isDraggingSlider) return;
+      const touch = event.touches && event.touches[0];
+      if (!touch) return;
+      event.preventDefault();
+      setTableScrollFromPointer(touch.clientX);
+    }, { passive: false });
+
+    window.addEventListener('touchend', onPointerUp);
+    window.addEventListener('touchcancel', onPointerUp);
+
+    tableScroll.addEventListener('scroll', function () {
+      syncDatasetScrollSlider();
+    });
+
+    window.addEventListener('resize', function () {
+      syncDatasetScrollSlider();
+    });
+
+    const innerTable = tableScroll.querySelector('table');
+    if (window.ResizeObserver && innerTable) {
+      const ro = new ResizeObserver(function () {
+        syncDatasetScrollSlider();
+      });
+      ro.observe(tableScroll);
+      ro.observe(innerTable);
+    }
+
+    // Run multiple passes in case layout/fonts settle after initial paint.
+    requestAnimationFrame(syncDatasetScrollSlider);
+    setTimeout(syncDatasetScrollSlider, 120);
+    setTimeout(syncDatasetScrollSlider, 450);
+  }
+
   async function loadDatasetExplorer(limit = DEFAULT_PREVIEW_LIMIT) {
     const badge = document.getElementById('dataset-table-badge');
     const loadedCount = document.getElementById('dataset-loaded-count');
     const pageInfo = document.getElementById('dataset-page-info');
     const tbody = document.getElementById('dataset-table-body');
+    const prevBtn = document.getElementById('dataset-prev-page');
+    const nextBtn = document.getElementById('dataset-next-page');
 
     if (!badge || !loadedCount || !pageInfo || !tbody) return;
 
@@ -1528,10 +1693,15 @@ function updateMoneyTheme(isLight) {
       const columns = Array.isArray(payload.columns) ? payload.columns : [];
       const rows = Array.isArray(payload.rows) ? payload.rows : [];
 
-      renderDatasetRows(columns, rows);
+      datasetColumns = columns;
+      datasetRows = rows;
+      currentPage = 1;
+
+      renderCurrentDatasetPage();
+      requestAnimationFrame(syncDatasetScrollSlider);
+      setTimeout(syncDatasetScrollSlider, 60);
       badge.textContent = 'LIVE DB';
       loadedCount.textContent = `${payload.preview_rows} records loaded from ${payload.table} · total ${payload.total_rows}`;
-      pageInfo.textContent = 'Page 1 of 1';
     } catch (error) {
       const headRow = document.getElementById('dataset-table-head-row');
       if (headRow) {
@@ -1541,11 +1711,15 @@ function updateMoneyTheme(isLight) {
       badge.textContent = 'NO DATA';
       loadedCount.textContent = '0 records loaded · database connection unavailable';
       pageInfo.textContent = 'Page 1 of —';
+      if (prevBtn) prevBtn.disabled = true;
+      if (nextBtn) nextBtn.disabled = true;
       console.error('Dataset explorer load failed:', error);
     }
   }
 
   window.addEventListener('load', function () {
+    bindDatasetPagerEvents();
+    bindDatasetScrollControl();
     loadDatasetExplorer();
   });
 })();

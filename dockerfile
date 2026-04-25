@@ -32,4 +32,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 EXPOSE 8000
 
+# Debug: verify static dirs exist at runtime
+RUN find /app/src/app/static -type f | head -20 || echo "STATIC DIR MISSING"
+
 CMD ["uvicorn", "src.app.main:app", "--host", "0.0.0.0", "--port", "8000"]

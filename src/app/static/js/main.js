@@ -1454,239 +1454,261 @@ function updateMoneyTheme(isLight) {
     document.head.appendChild(s);
   }
 })();
-/* ═══════════════════════════════════════════════════════
-   PREDICTION ENGINE — INLINE (replaces chart section)
-═══════════════════════════════════════════════════════ */
-(function() {
-  let peStep = 0;
-  const PE_TOTAL = 4;
-  let peLastResult = null;
+/* ═══════════════════════════════════════════════════════════
+   PREDICTION ENGINE — MODAL (definitive)
+═══════════════════════════════════════════════════════════ */
+(function () {
+  let predStep = 0;
+  const PRED_TOTAL = 4;
+  let predLastResult = null;
 
-  function peGetInputs() {
-    const g = id => document.getElementById(id);
+  /* ── open / close ── */
+  window.openPredModal = function () {
+    predStep = 0;
+    predRenderStep();
+    document.getElementById('pred-loading').style.display = 'flex';
+    document.getElementById('pred-results').style.display = 'none';
+    ['pss0','pss1','pss2','pss3','pss4','pss5'].forEach(function(id){
+      var el = document.getElementById(id); if(el) el.classList.remove('lit');
+    });
+    document.getElementById('pred-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closePredModal = function () {
+    document.getElementById('pred-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape') window.closePredModal();
+  });
+
+  /* ── step rendering ── */
+  function predRenderStep() {
+    for (var i = 0; i < PRED_TOTAL; i++) {
+      var s = document.getElementById('pstep-' + i);
+      var t = document.getElementById('ptab-'  + i);
+      var d = document.getElementById('pdot-'  + i);
+      if (s) s.classList.remove('active');
+      if (t) { t.classList.remove('active','done'); if(i < predStep) t.classList.add('done'); }
+      if (d) d.classList.remove('active');
+    }
+    var as = document.getElementById('pstep-' + predStep);
+    var at = document.getElementById('ptab-'  + predStep);
+    var ad = document.getElementById('pdot-'  + predStep);
+    if(as) as.classList.add('active');
+    if(at) { at.classList.remove('done'); at.classList.add('active'); }
+    if(ad) ad.classList.add('active');
+
+    var pct = ((predStep + 1) / PRED_TOTAL) * 100;
+    var pf = document.getElementById('pred-progress-fill');
+    var sc = document.getElementById('pred-step-counter');
+    if(pf) pf.style.width = pct + '%';
+    if(sc) sc.textContent = 'STEP ' + (predStep+1) + ' OF ' + PRED_TOTAL;
+
+    var btnBack = document.getElementById('pred-btn-back');
+    var btnNext = document.getElementById('pred-btn-next');
+    if(btnBack) btnBack.disabled = predStep === 0;
+    if(btnNext) {
+      if(predStep === PRED_TOTAL - 1) {
+        btnNext.style.display = 'none';
+        if(btnBack) btnBack.disabled = true;
+      } else {
+        btnNext.style.display = 'inline-flex';
+        btnNext.textContent = predStep === PRED_TOTAL - 2 ? '⚡ EXECUTE' : 'NEXT ▶';
+        btnNext.className = 'pred-footer-btn next';
+      }
+    }
+  }
+
+  window.predNextStep = function () {
+    if(predStep < PRED_TOTAL - 1) {
+      predStep++;
+      predRenderStep();
+      if(predStep === PRED_TOTAL - 1) predRunPrediction();
+    }
+  };
+
+  window.predPrevStep = function () {
+    if(predStep > 0) { predStep--; predRenderStep(); }
+  };
+
+  /* ── collect inputs ── */
+  function predGetInputs() {
+    function g(id) { return document.getElementById(id); }
     return {
-      age:            parseInt(g('pef-age').value),
-      job:            g('pef-job').value,
-      marital:        g('pef-marital').value,
-      education:      g('pef-education').value,
-      default:        g('pef-default').value,
-      housing:        g('pef-housing').value,
-      loan:           g('pef-loan').value,
-      contact:        g('pef-contact').value,
-      month:          g('pef-month').value,
-      day_of_week:    g('pef-day').value,
-      duration:       parseInt(g('pef-duration').value),
-      campaign:       parseInt(g('pef-campaign').value),
-      pdays:          parseInt(g('pef-pdays').value),
-      previous:       parseInt(g('pef-previous').value),
-      poutcome:       g('pef-poutcome').value,
-      emp_var_rate:   parseFloat(g('pef-emp_var_rate').value),
-      cons_price_idx: parseFloat(g('pef-cons_price_idx').value),
-      cons_conf_idx:  parseFloat(g('pef-cons_conf_idx').value),
-      euribor3m:      parseFloat(g('pef-euribor3m').value),
-      nr_employed:    parseFloat(g('pef-nr_employed').value),
+      age:           parseInt(g('pf-age').value),
+      job:           g('pf-job').value,
+      marital:       g('pf-marital').value,
+      education:     g('pf-education').value,
+      default_:      g('pf-default').value,
+      housing:       g('pf-housing').value,
+      loan:          g('pf-loan').value,
+      contact:       g('pf-contact').value,
+      month:         g('pf-month').value,
+      day:           g('pf-day').value,
+      duration:      parseInt(g('pf-duration').value),
+      campaign:      parseInt(g('pf-campaign').value),
+      pdays:         parseInt(g('pf-pdays').value),
+      previous:      parseInt(g('pf-previous').value),
+      poutcome:      g('pf-poutcome').value,
+      emp:           parseFloat(g('pf-emp').value),
+      cpi:           parseFloat(g('pf-cpi').value),
+      cci:           parseFloat(g('pf-cci').value),
+      eur:           parseFloat(g('pf-eur').value),
+      nre:           parseFloat(g('pf-nre').value),
     };
   }
 
-  function peSimulate(inp) {
+  /* ── simulate prediction ── */
+  function predSimulate(inp) {
     if (inp.duration === 0) return { probability: 0.01, prediction: 'no' };
-    let score = 0;
+    var score = 0;
     score += Math.min(inp.duration / 600, 1.0) * 0.35;
     if (inp.poutcome === 'success') score += 0.25;
     else if (inp.poutcome === 'failure') score -= 0.08;
     if (inp.previous > 0) score += Math.min(inp.previous * 0.03, 0.12);
-    score += (1.5 - inp.emp_var_rate) / 5 * 0.12;
-    score += (5.1 - inp.euribor3m) / 4.5 * 0.10;
-    score += (inp.cons_conf_idx + 50) / 24 * 0.06;
-    const jobBonus = { retired:0.08, student:0.06, 'admin.':0.02, management:0.02, technician:0.01 };
-    score += jobBonus[inp.job] || 0;
+    score += (1.5 - inp.emp) / 5 * 0.12;
+    score += (5.1 - inp.eur) / 4.5 * 0.10;
+    score += (inp.cci + 50) / 24 * 0.06;
+    var jobB = {retired:0.08,student:0.06,'admin.':0.02,management:0.02,technician:0.01};
+    score += jobB[inp.job] || 0;
     if (inp.education === 'university.degree') score += 0.05;
     if (inp.education === 'professional.course') score += 0.03;
-    const monthBonus = { mar:0.08, sep:0.06, oct:0.07, dec:0.05, apr:0.03 };
-    score += monthBonus[inp.month] || 0;
+    var monB = {mar:0.08,sep:0.06,oct:0.07,dec:0.05,apr:0.03};
+    score += monB[inp.month] || 0;
     score -= Math.min((inp.campaign - 1) * 0.02, 0.08);
-    if (inp.default === 'yes') score -= 0.10;
+    if (inp.default_ === 'yes') score -= 0.10;
     if (inp.housing === 'no' && inp.loan === 'no') score += 0.03;
     if (inp.age < 30 || inp.age > 60) score += 0.04;
-    const prob = Math.max(0.02, Math.min(0.98, 0.12 + score));
+    var prob = Math.max(0.02, Math.min(0.98, 0.12 + score));
     return { probability: prob, prediction: prob >= 0.5 ? 'yes' : 'no' };
   }
 
-  function peRenderStep() {
-    for (let i = 0; i < PE_TOTAL; i++) {
-      const body = document.getElementById('pe-step-' + i);
-      const tab  = document.getElementById('pe-tab-'  + i);
-      if (!body || !tab) continue;
-      body.classList.remove('active');
-      tab.classList.remove('active', 'done');
-      if (i < peStep) tab.classList.add('done');
-    }
-    const ab = document.getElementById('pe-step-' + peStep);
-    const at = document.getElementById('pe-tab-'  + peStep);
-    if (ab) ab.classList.add('active');
-    if (at) { at.classList.remove('done'); at.classList.add('active'); }
-
-    const pct = ((peStep + 1) / PE_TOTAL) * 100;
-    const pf = document.getElementById('pe-progress-fill');
-    const sc = document.getElementById('pe-step-counter');
-    if (pf) pf.style.width = pct + '%';
-    if (sc) sc.textContent = 'STEP ' + (peStep + 1) + ' OF ' + PE_TOTAL;
-
-    const btnBack = document.getElementById('pe-btn-back');
-    const btnNext = document.getElementById('pe-btn-next');
-    if (btnBack) btnBack.disabled = peStep === 0;
-    if (btnNext) {
-      if (peStep === PE_TOTAL - 1) {
-        btnNext.style.display = 'none';
-        if (btnBack) btnBack.disabled = true;
-      } else {
-        btnNext.style.display = 'inline-flex';
-        btnNext.textContent = peStep === PE_TOTAL - 2 ? '⚡ EXECUTE' : 'NEXT ▶';
-      }
-    }
-  }
-
-  window.peNextStep = function() {
-    if (peStep < PE_TOTAL - 1) {
-      peStep++;
-      peRenderStep();
-      if (peStep === PE_TOTAL - 1) peRunPrediction();
-    }
-  };
-
-  window.pePrevStep = function() {
-    if (peStep > 0) { peStep--; peRenderStep(); }
-  };
-
-  function peRunPrediction() {
-    const inp = peGetInputs();
-    const scanLabels = [
+  /* ── run + animate ── */
+  function predRunPrediction() {
+    var inp = predGetInputs();
+    var scanLabels = [
       'LOADING XGBOOST PIPELINE...',
       'ENCODING CATEGORICAL FEATURES...',
-      'SCALING NUMERICAL FEATURES...',
+      'SCALING NUMERICAL INPUTS...',
       'RUNNING INFERENCE ENGINE...',
       'COMPUTING SHAP VALUES...',
       'FINALIZING OUTPUT...',
     ];
-    const stepIds = ['pe-ss0','pe-ss1','pe-ss2','pe-ss3','pe-ss4','pe-ss5'];
-    stepIds.forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('lit'); });
-    let idx = 0;
-    const iv = setInterval(() => {
+    var stepIds = ['pss0','pss1','pss2','pss3','pss4','pss5'];
+    stepIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('lit'); });
+    var idx = 0;
+    var iv = setInterval(function(){
       if (idx < stepIds.length) {
-        if (idx > 0) { const prev = document.getElementById(stepIds[idx-1]); if (prev) prev.classList.remove('lit'); }
-        const el = document.getElementById(stepIds[idx]);
-        if (el) el.classList.add('lit');
-        const lbl = document.getElementById('pe-scan-label');
-        if (lbl) lbl.textContent = scanLabels[idx];
+        if(idx>0){var p=document.getElementById(stepIds[idx-1]); if(p) p.classList.remove('lit');}
+        var el=document.getElementById(stepIds[idx]); if(el) el.classList.add('lit');
+        var lb=document.getElementById('pred-scan-label'); if(lb) lb.textContent=scanLabels[idx];
         idx++;
       } else {
         clearInterval(iv);
-        peShowResults(inp);
+        predShowResults(inp);
       }
-    }, 420);
+    }, 430);
   }
 
-  function peAnimNum(el, from, to, duration, formatter) {
-    if (!el) return;
-    const start = performance.now();
-    function frame(now) {
-      const t = Math.min((now - start) / duration, 1);
-      const e = 1 - Math.pow(1 - t, 3);
-      el.textContent = formatter(from + (to - from) * e);
-      if (t < 1) requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
+  function animNum(el, to, dur, fmt) {
+    if(!el) return;
+    var start = performance.now();
+    (function frame(now){
+      var t = Math.min((now-start)/dur, 1);
+      var e = 1 - Math.pow(1-t, 3);
+      el.textContent = fmt(e * to);
+      if(t < 1) requestAnimationFrame(frame);
+    })(performance.now());
   }
 
-  function peShowResults(inp) {
-    const sim = peSimulate(inp);
-    peLastResult = { inp, sim };
-    const isYes = sim.prediction === 'yes';
-    const prob  = sim.probability;
-    const conf  = isYes ? prob : (1 - prob);
-    const risk  = 1 - prob;
+  function predShowResults(inp) {
+    var sim = predSimulate(inp);
+    predLastResult = {inp:inp, sim:sim};
+    var isYes = sim.prediction === 'yes';
+    var prob  = sim.probability;
+    var conf  = isYes ? prob : 1 - prob;
+    var risk  = 1 - prob;
 
-    const loadEl = document.getElementById('pe-loading');
-    const resEl  = document.getElementById('pe-results');
-    if (loadEl) loadEl.style.display = 'none';
-    if (resEl)  resEl.style.display  = 'block';
+    document.getElementById('pred-loading').style.display = 'none';
+    document.getElementById('pred-results').style.display = 'block';
 
-    // Verdict
-    const banner = document.getElementById('pe-verdict-banner');
-    if (banner) banner.className = 'pe-verdict ' + (isYes ? 'subscribe' : 'no-subscribe');
-    const iconEl = document.getElementById('pe-verdict-icon');
-    if (iconEl) iconEl.textContent = isYes ? '✓' : '✗';
-    const textEl = document.getElementById('pe-verdict-text');
-    if (textEl) textEl.textContent = isYes ? 'WILL SUBSCRIBE' : 'WILL NOT SUBSCRIBE';
-    const subEl = document.getElementById('pe-verdict-sub');
-    if (subEl) subEl.textContent = isYes
-      ? 'Client is predicted to subscribe to a term deposit — high value prospect'
+    /* Verdict */
+    var vb = document.getElementById('pred-verdict');
+    if(vb) vb.className = 'pred-verdict ' + (isYes ? 'subscribe' : 'no-subscribe');
+    var vi = document.getElementById('pred-verdict-icon');  if(vi) vi.textContent = isYes ? '✓' : '✗';
+    var vm = document.getElementById('pred-verdict-main');  if(vm) vm.textContent = isYes ? 'WILL SUBSCRIBE' : 'WILL NOT SUBSCRIBE';
+    var vs = document.getElementById('pred-verdict-sub');
+    if(vs) vs.textContent = isYes
+      ? 'Client is predicted to subscribe to a term deposit — high-value prospect'
       : 'Client is unlikely to subscribe — consider re-engagement strategy';
 
-    // Prob card
-    const probCard = document.getElementById('pe-prob-card');
-    if (probCard) probCard.className = 'pe-result-card ' + (isYes ? 'positive' : 'negative');
-    const probVal = document.getElementById('pe-prob-value');
-    if (probVal) { probVal.className = 'pe-card-value ' + (isYes ? 'positive' : 'negative'); peAnimNum(probVal, 0, prob, 1200, v => (v*100).toFixed(1)+'%'); }
+    /* Metric cards */
+    var pCard = document.getElementById('pred-mc-prob');
+    if(pCard) pCard.className = 'pred-metric-card ' + (isYes?'positive':'negative');
+    var pVal = document.getElementById('pred-mc-prob-val');
+    if(pVal) { pVal.className='pred-mc-value '+(isYes?'positive':'negative'); animNum(pVal,prob,1300,function(v){return (v*100).toFixed(1)+'%';}); }
 
-    // Conf card
-    const confCard = document.getElementById('pe-conf-card');
-    if (confCard) confCard.className = 'pe-result-card ' + (isYes ? 'positive' : 'warn');
-    const confVal = document.getElementById('pe-conf-value');
-    if (confVal) { confVal.className = 'pe-card-value ' + (isYes ? 'positive' : 'gold'); peAnimNum(confVal, 0, conf, 1200, v => (v*100).toFixed(1)+'%'); }
+    var cCard = document.getElementById('pred-mc-conf');
+    if(cCard) cCard.className = 'pred-metric-card ' + (isYes?'positive':'warn');
+    var cVal = document.getElementById('pred-mc-conf-val');
+    if(cVal) { cVal.className='pred-mc-value '+(isYes?'positive':'gold'); animNum(cVal,conf,1300,function(v){return (v*100).toFixed(1)+'%';}); }
 
-    // KPIs
-    const predEl = document.getElementById('pe-kpi-pred');
-    if (predEl) { predEl.textContent = isYes ? 'YES' : 'NO'; predEl.style.color = isYes ? '#00e5a0' : '#ff4c6a'; }
-    const riskEl = document.getElementById('pe-kpi-risk');
-    if (riskEl) { peAnimNum(riskEl, 0, risk, 1200, v => (v*100).toFixed(1)+'%'); riskEl.style.color = risk > 0.7 ? '#ff4c6a' : risk > 0.4 ? '#f0b429' : '#00e5a0'; }
+    var rCard = document.getElementById('pred-mc-risk');
+    if(rCard) rCard.className = 'pred-metric-card ' + (risk>0.6?'negative':'warn');
+    var rVal = document.getElementById('pred-mc-risk-val');
+    if(rVal) { rVal.className='pred-mc-value '+(risk>0.6?'negative':'gold'); animNum(rVal,risk,1300,function(v){return (v*100).toFixed(1)+'%';}); }
 
-    // Prob bar
-    const barFill = document.getElementById('pe-prob-bar-fill');
-    const barPct  = document.getElementById('pe-prob-bar-pct');
-    if (barFill) { barFill.style.background = isYes ? '#00e5a0' : '#ff4c6a'; setTimeout(() => { barFill.style.width = (prob*100)+'%'; }, 80); }
-    if (barPct)  barPct.textContent = (prob*100).toFixed(1)+'%';
+    /* KPI */
+    var kp = document.getElementById('pred-kpi-pred');
+    if(kp) { kp.textContent=isYes?'YES':'NO'; kp.style.color=isYes?'#00e5a0':'#ff4c6a'; }
 
-    // Chips
-    const chipsEl = document.getElementById('pe-chips');
-    if (chipsEl) {
-      chipsEl.innerHTML = '';
+    /* Prob bar */
+    var fill   = document.getElementById('pred-prob-fill');
+    var marker = document.getElementById('pred-prob-marker');
+    var barPct = document.getElementById('pred-bar-pct');
+    if(fill)   { fill.style.background = isYes?'#00e5a0':'#ff4c6a'; setTimeout(function(){ fill.style.width=(prob*100)+'%'; },80); }
+    if(marker) { setTimeout(function(){ marker.style.left='calc('+( prob*100)+'% - 9px)'; },80); }
+    if(barPct) barPct.textContent = (prob*100).toFixed(1)+'%';
+
+    /* Chips */
+    var chips = document.getElementById('pred-chips');
+    if(chips) {
+      chips.innerHTML = '';
       [
         ['Age', inp.age+'yr'], ['Job', inp.job], ['Marital', inp.marital],
         ['Education', inp.education], ['Contact', inp.contact], ['Month', inp.month.toUpperCase()],
         ['Duration', inp.duration+'s'], ['Campaign', inp.campaign+'x'],
-        ['Poutcome', inp.poutcome], ['EmpVarRate', inp.emp_var_rate.toFixed(1)],
-        ['Euribor3m', inp.euribor3m.toFixed(3)],
-      ].forEach(([k,v]) => {
-        const chip = document.createElement('div');
-        chip.className = 'pe-chip';
-        chip.innerHTML = k + ': <strong>' + v + '</strong>';
-        chipsEl.appendChild(chip);
+        ['Poutcome', inp.poutcome], ['EmpVar', inp.emp.toFixed(1)], ['Euribor', inp.eur.toFixed(3)],
+        ['CPI', inp.cpi.toFixed(3)], ['CCI', inp.cci.toFixed(1)],
+      ].forEach(function(pair){
+        var chip = document.createElement('div');
+        chip.className = 'pred-chip';
+        chip.innerHTML = pair[0]+': <strong>'+pair[1]+'</strong>';
+        chips.appendChild(chip);
       });
     }
   }
 
-  window.peResetAndRun = function() {
-    const loadEl = document.getElementById('pe-loading');
-    const resEl  = document.getElementById('pe-results');
-    if (loadEl) loadEl.style.display = 'flex';
-    if (resEl)  resEl.style.display  = 'none';
-    ['pe-ss0','pe-ss1','pe-ss2','pe-ss3','pe-ss4','pe-ss5'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.classList.remove('lit');
+  window.predResetAndRun = function() {
+    document.getElementById('pred-results').style.display = 'none';
+    document.getElementById('pred-loading').style.display = 'flex';
+    ['pss0','pss1','pss2','pss3','pss4','pss5'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.classList.remove('lit');
     });
-    peStep = 0;
-    peRenderStep();
+    predStep = 0;
+    predRenderStep();
   };
 
-  window.peCopyResult = function() {
-    if (!peLastResult) return;
-    const { inp, sim } = peLastResult;
-    const text = 'BANKIQ PREDICTION RESULT\nPrediction: ' + sim.prediction.toUpperCase() +
-      '\nProbability: ' + (sim.probability*100).toFixed(1) + '%' +
-      '\nAge: ' + inp.age + ' | Job: ' + inp.job + ' | Duration: ' + inp.duration + 's';
-    if (navigator.clipboard) navigator.clipboard.writeText(text);
+  window.predCopyResult = function() {
+    if(!predLastResult) return;
+    var r = predLastResult;
+    var txt = 'BANKIQ PREDICTION\nResult: '+r.sim.prediction.toUpperCase()+
+      '\nProbability: '+(r.sim.probability*100).toFixed(1)+'%'+
+      '\nAge: '+r.inp.age+' | Job: '+r.inp.job+' | Duration: '+r.inp.duration+'s';
+    if(navigator.clipboard) navigator.clipboard.writeText(txt);
   };
 
-  // Init on load
-  peRenderStep();
 })();

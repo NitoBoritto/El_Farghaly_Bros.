@@ -8,6 +8,95 @@
 
   <link href="/css/style.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  /* ── PRED OVERLAY HIDE BY DEFAULT ── */
+  #pred-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 99999 !important;
+    background: rgba(4,9,18,0.92) !important;
+    backdrop-filter: blur(10px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.4s ease !important;
+  }
+  #pred-overlay.open {
+    opacity: 1 !important;
+    pointer-events: all !important;
+  }
+  #pred-modal {
+    background: #0a1525 !important;
+    border: 1px solid rgba(240,180,41,0.25) !important;
+    border-radius: 12px !important;
+    width: min(1100px, 96vw) !important;
+    max-height: 90vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transform: translateY(40px) scale(0.96) !important;
+    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1) !important;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.7), 0 0 80px rgba(240,180,41,0.08) !important;
+  }
+  #pred-overlay.open #pred-modal {
+    transform: translateY(0) scale(1) !important;
+  }
+
+  /* ── RUN PREDICTION ZONE ── */
+  .ai-run-zone {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 80px 24px 100px !important;
+  }
+  .ai-run-mega-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 22px 56px !important;
+    border: 2px solid #f0b429 !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    color: #f0b429 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 15px !important;
+    letter-spacing: 4px !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: color 0.35s ease, box-shadow 0.35s ease !important;
+    box-shadow: 0 0 30px rgba(240,180,41,0.15) !important;
+  }
+  .ai-run-mega-btn::before {
+    content: '' !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: #f0b429 !important;
+    transform: scaleX(0) !important;
+    transform-origin: left !important;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1) !important;
+    z-index: 0 !important;
+  }
+  .ai-run-mega-btn:hover::before { transform: scaleX(1) !important; }
+  .ai-run-mega-btn:hover { color: #070d1a !important; box-shadow: 0 0 60px rgba(240,180,41,0.45) !important; }
+  .ai-run-mega-btn:active { transform: scale(0.97) !important; }
+  .ai-run-icon, .ai-run-label, .ai-run-arrow { position: relative !important; z-index: 1 !important; }
+  .ai-run-icon  { font-size: 18px !important; }
+  .ai-run-arrow { font-size: 11px !important; opacity: 0.6 !important; }
+  .ai-run-hint {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 9px !important;
+    letter-spacing: 3px !important;
+    color: #2a3f5e !important;
+    text-transform: uppercase !important;
+  }
+</style>
 </head>
 
 <body>
@@ -829,471 +918,406 @@
       </div>
     </div>
 
-<!-- PREDICTION ENGINE — INLINE -->
-    <div class="pred-engine-wrap reveal">
-
-      <!-- STEPPER HEADER -->
-      <div class="pe-header">
-        <div class="pe-title">
-          <span>⚡</span>
-          PREDICTION ENGINE
-          <div class="pe-live-badge"><div class="pe-dot"></div>LIVE</div>
-        </div>
-        <div class="pe-stepper">
-          <div class="pe-tab active" id="pe-tab-0"><div class="pe-tab-num">1</div>CONFIGURE</div>
-          <div class="pe-tab" id="pe-tab-1"><div class="pe-tab-num">2</div>CAMPAIGN</div>
-          <div class="pe-tab" id="pe-tab-2"><div class="pe-tab-num">3</div>ECONOMIC</div>
-          <div class="pe-tab" id="pe-tab-3"><div class="pe-tab-num">4</div>EXECUTE</div>
-        </div>
-        <div class="pe-step-counter" id="pe-step-counter">STEP 1 OF 4</div>
-      </div>
-      <div class="pe-progress-bar"><div class="pe-progress-fill" id="pe-progress-fill" style="width:25%"></div></div>
-
-      <!-- STEP 1 — CLIENT PROFILE -->
-      <div class="pe-step active" id="pe-step-0">
-        <div class="pe-section-title">// STEP 1 — CLIENT PROFILE DATA</div>
-        <div class="pe-form-grid">
-          <div class="pe-field">
-            <label>Age (years)</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="18" max="90" value="38" step="1" id="pef-age" oninput="document.getElementById('pev-age').textContent=this.value">
-              <span class="pe-range-val" id="pev-age">38</span>
-            </div>
-          </div>
-          <div class="pe-field">
-            <label>Job Type</label>
-            <select id="pef-job">
-              <option>admin.</option><option>blue-collar</option><option>entrepreneur</option>
-              <option>housemaid</option><option>management</option><option>retired</option>
-              <option>self-employed</option><option>services</option><option>student</option>
-              <option selected>technician</option><option>unemployed</option><option>unknown</option>
-            </select>
-          </div>
-          <div class="pe-field">
-            <label>Marital Status</label>
-            <select id="pef-marital">
-              <option>divorced</option><option selected>married</option><option>single</option><option>unknown</option>
-            </select>
-          </div>
-          <div class="pe-field">
-            <label>Education Level</label>
-            <select id="pef-education">
-              <option>basic.4y</option><option>basic.6y</option><option>basic.9y</option>
-              <option>high.school</option><option>illiterate</option><option>professional.course</option>
-              <option selected>university.degree</option><option>unknown</option>
-            </select>
-          </div>
-          <div class="pe-field">
-            <label>Credit Default</label>
-            <select id="pef-default"><option selected>no</option><option>yes</option><option>unknown</option></select>
-          </div>
-          <div class="pe-field">
-            <label>Housing Loan</label>
-            <select id="pef-housing"><option selected>yes</option><option>no</option><option>unknown</option></select>
-          </div>
-          <div class="pe-field">
-            <label>Personal Loan</label>
-            <select id="pef-loan"><option selected>no</option><option>yes</option><option>unknown</option></select>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 2 — CAMPAIGN -->
-      <div class="pe-step" id="pe-step-1">
-        <div class="pe-section-title">// STEP 2 — LAST CONTACT & CAMPAIGN</div>
-        <div class="pe-form-grid">
-          <div class="pe-field">
-            <label>Contact Type</label>
-            <select id="pef-contact"><option selected>cellular</option><option>telephone</option></select>
-          </div>
-          <div class="pe-field">
-            <label>Contact Month</label>
-            <select id="pef-month">
-              <option>jan</option><option>feb</option><option>mar</option><option>apr</option>
-              <option selected>may</option><option>jun</option><option>jul</option><option>aug</option>
-              <option>sep</option><option>oct</option><option>nov</option><option>dec</option>
-            </select>
-          </div>
-          <div class="pe-field">
-            <label>Day of Week</label>
-            <select id="pef-day">
-              <option selected>mon</option><option>tue</option><option>wed</option><option>thu</option><option>fri</option>
-            </select>
-          </div>
-          <div class="pe-field">
-            <label>Call Duration (secs)</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="0" max="3000" value="320" step="10" id="pef-duration" oninput="document.getElementById('pev-duration').textContent=this.value+'s'">
-              <span class="pe-range-val" id="pev-duration">320s</span>
-            </div>
-            <div class="pe-field-hint">NOTE: 0s → guaranteed no-subscribe</div>
-          </div>
-          <div class="pe-field">
-            <label>Campaign Contacts</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="1" max="30" value="2" step="1" id="pef-campaign" oninput="document.getElementById('pev-campaign').textContent=this.value">
-              <span class="pe-range-val" id="pev-campaign">2</span>
-            </div>
-          </div>
-          <div class="pe-field">
-            <label>Days Since Last Contact</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="0" max="999" value="999" step="1" id="pef-pdays" oninput="document.getElementById('pev-pdays').textContent=this.value==999?'Never':this.value+'d'">
-              <span class="pe-range-val" id="pev-pdays">Never</span>
-            </div>
-          </div>
-          <div class="pe-field">
-            <label>Previous Contacts</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="0" max="10" value="0" step="1" id="pef-previous" oninput="document.getElementById('pev-previous').textContent=this.value">
-              <span class="pe-range-val" id="pev-previous">0</span>
-            </div>
-          </div>
-          <div class="pe-field">
-            <label>Previous Campaign Outcome</label>
-            <select id="pef-poutcome"><option selected>nonexistent</option><option>failure</option><option>success</option></select>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 3 — ECONOMIC -->
-      <div class="pe-step" id="pe-step-2">
-        <div class="pe-section-title">// STEP 3 — SOCIAL & ECONOMIC INDICATORS</div>
-        <div class="pe-form-grid">
-          <div class="pe-field">
-            <label>Employment Variation Rate</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="-3.5" max="1.5" value="1.1" step="0.1" id="pef-emp_var_rate" oninput="document.getElementById('pev-evr').textContent=parseFloat(this.value).toFixed(1)">
-              <span class="pe-range-val" id="pev-evr">1.1</span>
-            </div>
-            <div class="pe-field-hint">Quarterly indicator</div>
-          </div>
-          <div class="pe-field">
-            <label>Consumer Price Index</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="92" max="95" value="93.994" step="0.001" id="pef-cons_price_idx" oninput="document.getElementById('pev-cpi').textContent=parseFloat(this.value).toFixed(3)">
-              <span class="pe-range-val" id="pev-cpi">93.994</span>
-            </div>
-            <div class="pe-field-hint">Monthly indicator</div>
-          </div>
-          <div class="pe-field">
-            <label>Consumer Confidence Index</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="-50" max="-26" value="-36.4" step="0.1" id="pef-cons_conf_idx" oninput="document.getElementById('pev-cci').textContent=parseFloat(this.value).toFixed(1)">
-              <span class="pe-range-val" id="pev-cci">-36.4</span>
-            </div>
-            <div class="pe-field-hint">Monthly indicator</div>
-          </div>
-          <div class="pe-field">
-            <label>Euribor 3-Month Rate</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="0.6" max="5.1" value="4.857" step="0.001" id="pef-euribor3m" oninput="document.getElementById('pev-eur').textContent=parseFloat(this.value).toFixed(3)">
-              <span class="pe-range-val" id="pev-eur">4.857</span>
-            </div>
-            <div class="pe-field-hint">Daily indicator</div>
-          </div>
-          <div class="pe-field">
-            <label>Nr. Employees</label>
-            <div class="pe-range-wrap">
-              <input type="range" min="4900" max="5230" value="5191" step="1" id="pef-nr_employed" oninput="document.getElementById('pev-nre').textContent=this.value">
-              <span class="pe-range-val" id="pev-nre">5191</span>
-            </div>
-            <div class="pe-field-hint">Quarterly indicator</div>
-          </div>
-        </div>
-        <div class="pe-info-box">⚡ These macro-economic features are among the strongest predictors of term deposit subscription in the UCI Bank Marketing dataset.</div>
-      </div>
-
-      <!-- STEP 4 — EXECUTE / RESULTS -->
-      <div class="pe-step" id="pe-step-3">
-        <!-- Loading -->
-        <div class="pe-loading" id="pe-loading">
-          <div class="pe-loader-ring"></div>
-          <div class="pe-scanning-text" id="pe-scan-label">INITIALIZING MODEL...</div>
-          <div class="pe-scanning-steps">
-            <div class="pe-scan-step" id="pe-ss0">▸ Loading XGBoost pipeline...</div>
-            <div class="pe-scan-step" id="pe-ss1">▸ Encoding categorical features...</div>
-            <div class="pe-scan-step" id="pe-ss2">▸ Scaling numerical features...</div>
-            <div class="pe-scan-step" id="pe-ss3">▸ Running inference engine...</div>
-            <div class="pe-scan-step" id="pe-ss4">▸ Computing SHAP values...</div>
-            <div class="pe-scan-step" id="pe-ss5">▸ Finalizing prediction output...</div>
-          </div>
-        </div>
-        <!-- Results -->
-        <div class="pe-results" id="pe-results">
-          <div class="pe-verdict" id="pe-verdict-banner">
-            <div class="pe-verdict-icon" id="pe-verdict-icon">✓</div>
-            <div>
-              <div class="pe-verdict-main" id="pe-verdict-text">WILL SUBSCRIBE</div>
-              <div class="pe-verdict-sub" id="pe-verdict-sub">Term deposit subscription predicted with high confidence</div>
-            </div>
-          </div>
-          <div class="pe-result-hero">
-            <div class="pe-result-card" id="pe-prob-card">
-              <div class="pe-card-label">SUBSCRIPTION PROBABILITY</div>
-              <div class="pe-card-value" id="pe-prob-value">0.0%</div>
-              <div class="pe-card-sub">Raw model output probability</div>
-            </div>
-            <div class="pe-result-card" id="pe-conf-card">
-              <div class="pe-card-label">CONFIDENCE SCORE</div>
-              <div class="pe-card-value" id="pe-conf-value">0.0%</div>
-              <div class="pe-card-sub">Derived from model probability</div>
-            </div>
-          </div>
-          <div class="pe-kpi-row">
-            <div class="pe-kpi"><div class="pe-kpi-label">PREDICTION</div><div class="pe-kpi-val" id="pe-kpi-pred">—</div></div>
-            <div class="pe-kpi"><div class="pe-kpi-label">RISK SCORE</div><div class="pe-kpi-val" id="pe-kpi-risk">—</div></div>
-            <div class="pe-kpi"><div class="pe-kpi-label">MODEL AUC</div><div class="pe-kpi-val" style="color:#00d4ff">0.874</div></div>
-            <div class="pe-kpi"><div class="pe-kpi-label">F1 SCORE</div><div class="pe-kpi-val" style="color:#00d4ff">0.812</div></div>
-          </div>
-          <div class="pe-prob-bar-box">
-            <div class="pe-prob-bar-title">PROBABILITY — NO SUBSCRIBE ◀──────────────────── SUBSCRIBE</div>
-            <div class="pe-prob-bar-track"><div class="pe-prob-bar-fill" id="pe-prob-bar-fill"></div></div>
-            <div class="pe-prob-bar-labels"><span>0% — No</span><span id="pe-prob-bar-pct">—</span><span>100% — Yes</span></div>
-          </div>
-          <div class="pe-input-summary">
-            <div class="pe-input-summary-title">// FEATURE INPUTS USED</div>
-            <div class="pe-chips" id="pe-chips"></div>
-          </div>
-          <div class="pe-result-actions">
-            <button class="pe-action-btn primary" onclick="peResetAndRun()">⚡ NEW PREDICTION</button>
-            <button class="pe-action-btn" onclick="peCopyResult()">⎘ COPY RESULT</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- FOOTER NAV -->
-      <div class="pe-footer">
-        <button class="pe-btn-step" id="pe-btn-back" onclick="pePrevStep()" disabled>◀ BACK</button>
-        <button class="pe-btn-step primary" id="pe-btn-next" onclick="peNextStep()">NEXT ▶</button>
-      </div>
-
-    </div><!-- /pred-engine-wrap -->
-          </div>
-        </div>
-        <div class="pm-result-hero">
-          <div class="pm-result-card" id="pm-prob-card">
-            <div class="pm-card-label">SUBSCRIPTION PROBABILITY</div>
-            <div class="pm-card-value" id="pm-prob-value">0.0%</div>
-            <div class="pm-card-sub">Raw model output probability</div>
-          </div>
-          <div class="pm-result-card" id="pm-conf-card">
-            <div class="pm-card-label">CONFIDENCE SCORE</div>
-            <div class="pm-card-value" id="pm-conf-value">0.0%</div>
-            <div class="pm-card-sub">Derived from model probability</div>
-          </div>
-        </div>
-        <div class="pm-kpi-row">
-          <div class="pm-kpi"><div class="pm-kpi-label">PREDICTION</div><div class="pm-kpi-value" id="pm-kpi-pred">—</div></div>
-          <div class="pm-kpi"><div class="pm-kpi-label">RISK SCORE</div><div class="pm-kpi-value" id="pm-kpi-risk">—</div></div>
-          <div class="pm-kpi"><div class="pm-kpi-label">MODEL AUC</div><div class="pm-kpi-value" style="color:var(--cyan,#00d4ff)">0.874</div></div>
-          <div class="pm-kpi"><div class="pm-kpi-label">F1 SCORE</div><div class="pm-kpi-value" style="color:var(--cyan,#00d4ff)">0.812</div></div>
-        </div>
-        <div class="pm-prob-bar-box">
-          <div class="pm-prob-bar-title">PROBABILITY — NO SUBSCRIBE ◀──────────────────── SUBSCRIBE</div>
-          <div class="pm-prob-bar-track"><div class="pm-prob-bar-fill" id="pm-prob-bar-fill"></div></div>
-          <div class="pm-prob-bar-labels"><span>0% — No</span><span id="pm-prob-bar-pct">50%</span><span>100% — Yes</span></div>
-        </div>
-        <div class="pm-input-summary">
-          <div class="pm-input-summary-title">// FEATURE INPUTS USED</div>
-          <div class="pm-chips" id="pm-chips"></div>
-        </div>
-        <div class="pm-result-actions">
-          <button class="pm-action-btn primary" onclick="pmResetAndRun()">⚡ NEW PREDICTION</button>
-          <button class="pm-action-btn" onclick="closePredModal()">✕ CLOSE</button>
-          <button class="pm-action-btn" onclick="pmCopyResult()">⎘ COPY RESULT</button>
-        </div>
-      </div>
+<!-- RUN PREDICTION BUTTON -->
+    <div class="ai-run-zone reveal">
+      <button class="ai-run-mega-btn" onclick="openPredModal()">
+        <span class="ai-run-icon">⚡</span>
+        <span class="ai-run-label">RUN PREDICTION</span>
+        <span class="ai-run-arrow">▲</span>
+      </button>
+      <div class="ai-run-hint">CONFIGURE PARAMETERS AND EXECUTE THE AI MODEL PIPELINE</div>
     </div>
 
-    <div class="pm-footer">
-      <button class="pm-btn-step" id="pm-btn-back" onclick="pmPrevStep()" disabled>◀ BACK</button>
-      <div class="pm-step-counter" id="pm-step-counter">STEP 1 OF 4</div>
-      <button class="pm-btn-step primary" id="pm-btn-next" onclick="pmNextStep()">NEXT ▶</button>
-    </div>
-  </div>
-</div>
+    <!-- ══════════════════════════════════════════
+         PREDICTION ENGINE MODAL
+    ══════════════════════════════════════════ -->
+    <div id="pred-overlay" onclick="if(event.target===this)closePredModal()">
+      <div id="pred-modal">
 
-    <!-- PREDICTION KPIs -->
-    <div class="pred-strip reveal">
-      <div class="pred-kpi warn">
-        <div class="pk-label">Predicted Churn Rate</div>
-        <div class="pk-value warn" id="pkChurn">21.4%</div>
-        <div class="pk-delta dn" id="pkChurnDelta">▲ +1.4% vs baseline</div>
-        <canvas class="pk-sparkline" id="spkChurn" height="28"></canvas>
-      </div>
-      <div class="pred-kpi good">
-        <div class="pk-label">Retained Customers</div>
-        <div class="pk-value good" id="pkRetain">7,860</div>
-        <div class="pk-delta up" id="pkRetainDelta">▲ +2.1% with intervention</div>
-        <canvas class="pk-sparkline" id="spkRetain" height="28"></canvas>
-      </div>
-      <div class="pred-kpi">
-        <div class="pk-label">Model AUC Score</div>
-        <div class="pk-value cyan" id="pkAuc">0.874</div>
-        <div class="pk-delta up">▲ Best performer: XGBoost</div>
-        <canvas class="pk-sparkline" id="spkAuc" height="28"></canvas>
-      </div>
-      <div class="pred-kpi warn">
-        <div class="pk-label">High Risk Customers</div>
-        <div class="pk-value warn" id="pkRisk">1,247</div>
-        <div class="pk-delta dn">▼ Needs immediate action</div>
-        <canvas class="pk-sparkline" id="spkRisk" height="28"></canvas>
-      </div>
-      <div class="pred-kpi good">
-        <div class="pk-label">Revenue at Risk</div>
-        <div class="pk-value warn" id="pkRevRisk">$4.2M</div>
-        <div class="pk-delta dn">▼ Annual exposure estimate</div>
-        <canvas class="pk-sparkline" id="spkRev" height="28"></canvas>
-      </div>
-      <div class="pred-kpi">
-        <div class="pk-label">Precision Score</div>
-        <div class="pk-value cyan" id="pkPrec">83.2%</div>
-        <div class="pk-delta up">▲ Low false-positive rate</div>
-        <canvas class="pk-sparkline" id="spkPrec" height="28"></canvas>
-      </div>
-    </div>
+        <!-- SCANLINE EFFECT -->
+        <div class="pred-scanline"></div>
 
-    <!-- MAIN CHARTS GRID -->
-    <div class="ai-grid reveal">
-
-      <!-- CHURN FORECAST LINE CHART (wide) -->
-      <div class="ai-card span8">
-        <div class="ac-head">
-          <div><div class="ac-title">Churn Rate Forecast — Long-Term Trend</div><div class="ac-sub">Predicted monthly churn with confidence intervals · Horizon: <span id="horizonLabel">6 months</span></div></div>
-          <div class="ac-tag live">LIVE SIM</div>
-        </div>
-        <div class="chart-canvas-wrap"><canvas class="ai-chart" id="churnForecastChart" height="220"></canvas></div>
-      </div>
-
-      <!-- RISK GAUGE -->
-      <div class="ai-card span4" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
-        <div class="ac-head" style="width:100%"><div><div class="ac-title">Overall Portfolio Risk</div><div class="ac-sub">Composite risk index</div></div></div>
-        <div class="gauge-wrap">
-          <canvas id="gaugeCanvas" width="220" height="130"></canvas>
-          <div class="gauge-val" id="gaugeVal">62</div>
-          <div class="gauge-label" id="gaugeStatus">MODERATE RISK — ACTION ADVISED</div>
-        </div>
-      </div>
-
-      <!-- CUSTOMER SEGMENT CHURN (stacked bar) -->
-      <div class="ai-card span6">
-        <div class="ac-head"><div><div class="ac-title">Churn Probability by Segment</div><div class="ac-sub">Geographic · Age · Product cross-analysis</div></div><div class="ac-tag">SEGMENT</div></div>
-        <div class="chart-canvas-wrap"><canvas class="ai-chart" id="segmentChart" height="200"></canvas></div>
-      </div>
-
-      <!-- ROC CURVE -->
-      <div class="ai-card span6">
-        <div class="ac-head"><div><div class="ac-title">ROC Curve — Model Comparison</div><div class="ac-sub">True positive rate vs false positive rate</div></div><div class="ac-tag">EVALUATION</div></div>
-        <div class="chart-canvas-wrap"><canvas class="ai-chart" id="rocChart" height="200"></canvas></div>
-      </div>
-
-      <!-- 3D SCATTER — Age/Balance/Churn -->
-      <div class="ai-card span8">
-        <div class="ac-head"><div><div class="ac-title">3D Risk Space — Age · Balance · Churn Probability</div><div class="ac-sub">Drag to rotate · Each point = customer · Color = churn risk</div></div><div class="ac-tag live">3D · INTERACTIVE</div></div>
-        <div class="scene3d-wrap"><canvas id="scene3d"></canvas></div>
-      </div>
-
-      <!-- CONFUSION MATRIX -->
-      <div class="ai-card span4">
-        <div class="ac-head"><div><div class="ac-title">Confusion Matrix</div><div class="ac-sub">XGBoost · Test set</div></div></div>
-        <div class="conf-matrix">
-          <div class="cm-cell cm-tp"><div class="cm-val" id="cmTP">6,104</div><div class="cm-lbl">True Pos</div></div>
-          <div class="cm-cell cm-fp"><div class="cm-val" id="cmFP">312</div><div class="cm-lbl">False Pos</div></div>
-          <div class="cm-cell cm-fn"><div class="cm-val" id="cmFN">428</div><div class="cm-lbl">False Neg</div></div>
-          <div class="cm-cell cm-tn"><div class="cm-val" id="cmTN">1,726</div><div class="cm-lbl">True Neg</div></div>
-        </div>
-      </div>
-
-      <!-- FEATURE IMPORTANCE -->
-      <div class="ai-card span4">
-        <div class="ac-head"><div><div class="ac-title">Feature Importance (SHAP)</div><div class="ac-sub">Top drivers of churn</div></div><div class="ac-tag">SHAP</div></div>
-        <div class="feat-list" id="featList"></div>
-      </div>
-
-      <!-- CUSTOMER RISK TABLE -->
-      <div class="ai-card span8">
-        <div class="ac-head"><div><div class="ac-title">High-Risk Customer Radar</div><div class="ac-sub">Top at-risk accounts requiring immediate retention action</div></div><div class="ac-tag live">LIVE</div></div>
-        <table class="risk-table">
-          <thead><tr><th>ID</th><th>Age</th><th>Country</th><th>Balance</th><th>Tenure</th><th>Churn Prob.</th><th>Risk Level</th><th>Action</th></tr></thead>
-          <tbody id="riskTableBody"></tbody>
-        </table>
-      </div>
-
-      <!-- REVENUE AT RISK AREA CHART -->
-      <div class="ai-card span6">
-        <div class="ac-head"><div><div class="ac-title">Revenue at Risk — 36-Month Projection</div><div class="ac-sub">Without intervention vs. with retention strategy</div></div><div class="ac-tag live">FORECAST</div></div>
-        <div class="timeline-wrap">
-          <div class="tl-tabs">
-            <button class="tl-tab active" onclick="setRevTab('monthly',this)">Monthly</button>
-            <button class="tl-tab" onclick="setRevTab('quarterly',this)">Quarterly</button>
-            <button class="tl-tab" onclick="setRevTab('annual',this)">Annual</button>
+        <!-- MODAL HEADER -->
+        <div class="pred-modal-header">
+          <div class="pred-modal-title">
+            <span class="pred-title-bolt">⚡</span>
+            <span>PREDICTION ENGINE</span>
+            <div class="pred-live-pill">
+              <div class="pred-live-dot"></div>
+              LIVE
+            </div>
           </div>
-          <div class="chart-canvas-wrap"><canvas class="ai-chart" id="revenueChart" height="180"></canvas></div>
+          <div class="pred-header-right">
+            <div class="pred-model-tag">MODEL: XGBoost · AUC 0.874</div>
+            <button class="pred-close-btn" onclick="closePredModal()">✕ CLOSE</button>
+          </div>
         </div>
-      </div>
 
-      <!-- MODEL COMPARISON -->
-      <div class="ai-card span6">
-        <div class="ac-head"><div><div class="ac-title">Model Performance Comparison</div><div class="ac-sub">All classifiers benchmarked on same test set</div></div></div>
-        <table class="model-table">
-          <thead><tr><th>Model</th><th>AUC</th><th>F1</th><th>Prec.</th><th>Recall</th></tr></thead>
-          <tbody id="modelTableBody"></tbody>
-        </table>
-      </div>
-
-      <!-- CHURN BY COUNTRY RADAR -->
-      <div class="ai-card span4">
-        <div class="ac-head"><div><div class="ac-title">Churn by Country</div><div class="ac-sub">Geographic risk breakdown</div></div><div class="ac-tag">GEO</div></div>
-        <div class="chart-canvas-wrap"><canvas class="ai-chart" id="geoChart" height="200"></canvas></div>
-      </div>
-
-      <!-- AGE DISTRIBUTION VIOLIN-STYLE -->
-      <div class="ai-card span4">
-        <div class="ac-head"><div><div class="ac-title">Age Distribution · Churned vs Retained</div><div class="ac-sub">Density comparison</div></div><div class="ac-tag">DISTRIBUTION</div></div>
-        <div class="chart-canvas-wrap"><canvas class="ai-chart" id="ageDistChart" height="200"></canvas></div>
-      </div>
-
-      <!-- BALANCE BUCKET WATERFALL -->
-      <div class="ai-card span4">
-        <div class="ac-head"><div><div class="ac-title">Balance vs Churn Rate</div><div class="ac-sub">Balance brackets · churn probability</div></div></div>
-        <div class="chart-canvas-wrap"><canvas class="ai-chart" id="balanceChart" height="200"></canvas></div>
-      </div>
-
-    </div><!-- /ai-grid -->
-
-    <!-- AI INSIGHTS -->
-    <div class="reveal" style="margin-top:32px">
-      <div class="section-label" style="margin-bottom:20px">// AI-GENERATED INSIGHTS</div>
-      <div class="insights-grid">
-        <div class="insight-card critical">
-          <div class="insight-icon">🚨</div>
-          <div><div class="insight-title">Germany Shows Highest Churn Risk</div><div class="insight-desc">German customers exhibit 32% churn probability — 60% above average. Primary drivers: low product adoption and shorter tenure. Recommend targeted retention campaigns.</div></div>
+        <!-- STEPPER -->
+        <div class="pred-stepper">
+          <div class="pred-tab active" id="ptab-0">
+            <div class="pred-tab-num">1</div>
+            <div class="pred-tab-label">CONFIGURE</div>
+          </div>
+          <div class="pred-tab-connector"></div>
+          <div class="pred-tab" id="ptab-1">
+            <div class="pred-tab-num">2</div>
+            <div class="pred-tab-label">CAMPAIGN</div>
+          </div>
+          <div class="pred-tab-connector"></div>
+          <div class="pred-tab" id="ptab-2">
+            <div class="pred-tab-num">3</div>
+            <div class="pred-tab-label">ECONOMIC</div>
+          </div>
+          <div class="pred-tab-connector"></div>
+          <div class="pred-tab" id="ptab-3">
+            <div class="pred-tab-num">4</div>
+            <div class="pred-tab-label">EXECUTE</div>
+          </div>
+          <div class="pred-step-counter" id="pred-step-counter">STEP 1 OF 4</div>
         </div>
-        <div class="insight-card warning">
-          <div class="insight-icon">⚠️</div>
-          <div><div class="insight-title">Age 40–50 Segment At Risk</div><div class="insight-desc">Mid-career customers with high balances but only 1 product are 2.4× more likely to churn. Cross-sell investment products to deepen engagement.</div></div>
+        <div class="pred-progress-track">
+          <div class="pred-progress-fill" id="pred-progress-fill" style="width:25%"></div>
         </div>
-        <div class="insight-card opportunity">
-          <div class="insight-icon">💡</div>
-          <div><div class="insight-title">Credit Score is a Weak Predictor</div><div class="insight-desc">SHAP analysis reveals credit score has lower predictive power than expected. Balance and number of products are the dominant churn signals.</div></div>
-        </div>
-        <div class="insight-card opportunity">
-          <div class="insight-icon">📈</div>
-          <div><div class="insight-title">Multi-Product Customers Are Loyal</div><div class="insight-desc">Customers with 3+ products have &lt;5% churn probability. Focus acquisition strategy on product bundles to build long-term retention from day one.</div></div>
-        </div>
-        <div class="insight-card warning">
-          <div class="insight-icon">🔄</div>
-          <div><div class="insight-title">Churn Peaks at Year 1 and Year 7</div><div class="insight-desc">Two critical dropout moments identified. Year 1 = early dissatisfaction. Year 7 = relationship fatigue. Design loyalty programs at exactly these touchpoints.</div></div>
-        </div>
-        <div class="insight-card critical">
-          <div class="insight-icon">💰</div>
-          <div><div class="insight-title">$4.2M Annual Revenue at Risk</div><div class="insight-desc">Based on average balance × churn probability × margin model. A 5% churn reduction through targeted intervention would save approximately $1.05M annually.</div></div>
-        </div>
-      </div>
-    </div>
 
-  </section>
+        <!-- SCROLLABLE BODY -->
+        <div class="pred-modal-body">
+
+          <!-- ── STEP 1: CLIENT PROFILE ── -->
+          <div class="pred-step active" id="pstep-0">
+            <div class="pred-step-eyebrow">// STEP 1 OF 4 — CLIENT PROFILE DATA</div>
+            <h3 class="pred-step-heading">Who is this client?</h3>
+            <div class="pred-form-grid">
+
+              <div class="pred-field">
+                <label class="pred-label">Age</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="18" max="90" value="38" step="1" id="pf-age"
+                    oninput="document.getElementById('pv-age').textContent=this.value">
+                  <span class="pred-range-val" id="pv-age">38</span>
+                </div>
+                <div class="pred-field-hint">years old</div>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Job Type</label>
+                <select id="pf-job" class="pred-select">
+                  <option>admin.</option><option>blue-collar</option><option>entrepreneur</option>
+                  <option>housemaid</option><option>management</option><option>retired</option>
+                  <option>self-employed</option><option>services</option><option>student</option>
+                  <option selected>technician</option><option>unemployed</option><option>unknown</option>
+                </select>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Marital Status</label>
+                <select id="pf-marital" class="pred-select">
+                  <option>divorced</option><option selected>married</option>
+                  <option>single</option><option>unknown</option>
+                </select>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Education Level</label>
+                <select id="pf-education" class="pred-select">
+                  <option>basic.4y</option><option>basic.6y</option><option>basic.9y</option>
+                  <option>high.school</option><option>illiterate</option>
+                  <option>professional.course</option>
+                  <option selected>university.degree</option><option>unknown</option>
+                </select>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Credit Default</label>
+                <select id="pf-default" class="pred-select">
+                  <option selected>no</option><option>yes</option><option>unknown</option>
+                </select>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Housing Loan</label>
+                <select id="pf-housing" class="pred-select">
+                  <option selected>yes</option><option>no</option><option>unknown</option>
+                </select>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Personal Loan</label>
+                <select id="pf-loan" class="pred-select">
+                  <option selected>no</option><option>yes</option><option>unknown</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ── STEP 2: CAMPAIGN ── -->
+          <div class="pred-step" id="pstep-1">
+            <div class="pred-step-eyebrow">// STEP 2 OF 4 — LAST CONTACT & CAMPAIGN DATA</div>
+            <h3 class="pred-step-heading">How was the client contacted?</h3>
+            <div class="pred-form-grid">
+
+              <div class="pred-field">
+                <label class="pred-label">Contact Type</label>
+                <select id="pf-contact" class="pred-select">
+                  <option selected>cellular</option><option>telephone</option>
+                </select>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Contact Month</label>
+                <select id="pf-month" class="pred-select">
+                  <option>jan</option><option>feb</option><option>mar</option><option>apr</option>
+                  <option selected>may</option><option>jun</option><option>jul</option><option>aug</option>
+                  <option>sep</option><option>oct</option><option>nov</option><option>dec</option>
+                </select>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Day of Week</label>
+                <select id="pf-day" class="pred-select">
+                  <option selected>mon</option><option>tue</option><option>wed</option>
+                  <option>thu</option><option>fri</option>
+                </select>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Call Duration</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="0" max="3000" value="320" step="10" id="pf-duration"
+                    oninput="document.getElementById('pv-dur').textContent=this.value+'s'">
+                  <span class="pred-range-val" id="pv-dur">320s</span>
+                </div>
+                <div class="pred-field-hint">⚠ 0 seconds = guaranteed NO</div>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Campaign Contacts</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="1" max="30" value="2" step="1" id="pf-campaign"
+                    oninput="document.getElementById('pv-camp').textContent=this.value">
+                  <span class="pred-range-val" id="pv-camp">2</span>
+                </div>
+                <div class="pred-field-hint">times contacted this campaign</div>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Days Since Last Contact</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="0" max="999" value="999" step="1" id="pf-pdays"
+                    oninput="document.getElementById('pv-pdays').textContent=this.value==999?'Never':this.value+'d'">
+                  <span class="pred-range-val" id="pv-pdays">Never</span>
+                </div>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Previous Contacts</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="0" max="10" value="0" step="1" id="pf-previous"
+                    oninput="document.getElementById('pv-prev').textContent=this.value">
+                  <span class="pred-range-val" id="pv-prev">0</span>
+                </div>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Previous Outcome</label>
+                <select id="pf-poutcome" class="pred-select">
+                  <option selected>nonexistent</option><option>failure</option><option>success</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ── STEP 3: ECONOMIC ── -->
+          <div class="pred-step" id="pstep-2">
+            <div class="pred-step-eyebrow">// STEP 3 OF 4 — SOCIAL & ECONOMIC INDICATORS</div>
+            <h3 class="pred-step-heading">What is the economic context?</h3>
+            <div class="pred-eco-note">
+              ⚡ These macro-economic features are the strongest external predictors in the UCI Bank Marketing dataset.
+            </div>
+            <div class="pred-form-grid">
+
+              <div class="pred-field">
+                <label class="pred-label">Employment Variation Rate</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="-3.5" max="1.5" value="1.1" step="0.1" id="pf-emp"
+                    oninput="document.getElementById('pv-emp').textContent=parseFloat(this.value).toFixed(1)">
+                  <span class="pred-range-val" id="pv-emp">1.1</span>
+                </div>
+                <div class="pred-field-hint">quarterly · range –3.4 to 1.4</div>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Consumer Price Index</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="92" max="95" value="93.994" step="0.001" id="pf-cpi"
+                    oninput="document.getElementById('pv-cpi').textContent=parseFloat(this.value).toFixed(3)">
+                  <span class="pred-range-val" id="pv-cpi">93.994</span>
+                </div>
+                <div class="pred-field-hint">monthly indicator</div>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Consumer Confidence Index</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="-50" max="-26" value="-36.4" step="0.1" id="pf-cci"
+                    oninput="document.getElementById('pv-cci').textContent=parseFloat(this.value).toFixed(1)">
+                  <span class="pred-range-val" id="pv-cci">-36.4</span>
+                </div>
+                <div class="pred-field-hint">monthly indicator</div>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Euribor 3-Month Rate</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="0.6" max="5.1" value="4.857" step="0.001" id="pf-eur"
+                    oninput="document.getElementById('pv-eur').textContent=parseFloat(this.value).toFixed(3)">
+                  <span class="pred-range-val" id="pv-eur">4.857</span>
+                </div>
+                <div class="pred-field-hint">daily rate indicator</div>
+              </div>
+
+              <div class="pred-field">
+                <label class="pred-label">Nr. Employees (thousands)</label>
+                <div class="pred-range-wrap">
+                  <input type="range" min="4900" max="5230" value="5191" step="1" id="pf-nre"
+                    oninput="document.getElementById('pv-nre').textContent=this.value">
+                  <span class="pred-range-val" id="pv-nre">5191</span>
+                </div>
+                <div class="pred-field-hint">quarterly indicator</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ── STEP 4: EXECUTE ── -->
+          <div class="pred-step" id="pstep-3">
+
+            <!-- Loading -->
+            <div class="pred-loading" id="pred-loading">
+              <div class="pred-loader-outer">
+                <div class="pred-loader-ring"></div>
+                <div class="pred-loader-inner-dot"></div>
+              </div>
+              <div class="pred-scan-label" id="pred-scan-label">INITIALIZING MODEL...</div>
+              <div class="pred-scan-steps">
+                <div class="pred-scan-step" id="pss0">▸ Loading XGBoost pipeline</div>
+                <div class="pred-scan-step" id="pss1">▸ Encoding categorical features</div>
+                <div class="pred-scan-step" id="pss2">▸ Scaling numerical inputs</div>
+                <div class="pred-scan-step" id="pss3">▸ Running inference engine</div>
+                <div class="pred-scan-step" id="pss4">▸ Computing SHAP importance values</div>
+                <div class="pred-scan-step" id="pss5">▸ Finalizing prediction output</div>
+              </div>
+            </div>
+
+            <!-- Results -->
+            <div class="pred-results" id="pred-results">
+
+              <!-- VERDICT BANNER -->
+              <div class="pred-verdict" id="pred-verdict">
+                <div class="pred-verdict-glow" id="pred-verdict-glow"></div>
+                <div class="pred-verdict-icon" id="pred-verdict-icon">✓</div>
+                <div class="pred-verdict-body">
+                  <div class="pred-verdict-main" id="pred-verdict-main">WILL SUBSCRIBE</div>
+                  <div class="pred-verdict-sub" id="pred-verdict-sub">Client is predicted to subscribe to a term deposit</div>
+                </div>
+              </div>
+
+              <!-- BIG METRIC ROW -->
+              <div class="pred-metric-row">
+                <div class="pred-metric-card" id="pred-mc-prob">
+                  <div class="pred-mc-label">SUBSCRIPTION PROBABILITY</div>
+                  <div class="pred-mc-value" id="pred-mc-prob-val">0.0%</div>
+                  <div class="pred-mc-sub">Raw model output</div>
+                </div>
+                <div class="pred-metric-card" id="pred-mc-conf">
+                  <div class="pred-mc-label">CONFIDENCE SCORE</div>
+                  <div class="pred-mc-value" id="pred-mc-conf-val">0.0%</div>
+                  <div class="pred-mc-sub">Decision certainty</div>
+                </div>
+                <div class="pred-metric-card" id="pred-mc-risk">
+                  <div class="pred-mc-label">RISK SCORE</div>
+                  <div class="pred-mc-value" id="pred-mc-risk-val">0.0%</div>
+                  <div class="pred-mc-sub">Non-subscribe risk</div>
+                </div>
+              </div>
+
+              <!-- KPI STRIP -->
+              <div class="pred-kpi-strip">
+                <div class="pred-kpi-item">
+                  <div class="pred-kpi-label">PREDICTION</div>
+                  <div class="pred-kpi-val" id="pred-kpi-pred">—</div>
+                </div>
+                <div class="pred-kpi-divider"></div>
+                <div class="pred-kpi-item">
+                  <div class="pred-kpi-label">MODEL</div>
+                  <div class="pred-kpi-val" style="color:#00d4ff">XGBoost</div>
+                </div>
+                <div class="pred-kpi-divider"></div>
+                <div class="pred-kpi-item">
+                  <div class="pred-kpi-label">MODEL AUC</div>
+                  <div class="pred-kpi-val" style="color:#00d4ff">0.874</div>
+                </div>
+                <div class="pred-kpi-divider"></div>
+                <div class="pred-kpi-item">
+                  <div class="pred-kpi-label">F1 SCORE</div>
+                  <div class="pred-kpi-val" style="color:#00d4ff">0.812</div>
+                </div>
+                <div class="pred-kpi-divider"></div>
+                <div class="pred-kpi-item">
+                  <div class="pred-kpi-label">PRECISION</div>
+                  <div class="pred-kpi-val" style="color:#00d4ff">0.832</div>
+                </div>
+              </div>
+
+              <!-- PROBABILITY BAR -->
+              <div class="pred-prob-bar-wrap">
+                <div class="pred-prob-bar-labels">
+                  <span>NO SUBSCRIBE — 0%</span>
+                  <span class="pred-prob-bar-center" id="pred-bar-pct">—</span>
+                  <span>100% — SUBSCRIBE</span>
+                </div>
+                <div class="pred-prob-track">
+                  <div class="pred-prob-fill" id="pred-prob-fill"></div>
+                  <div class="pred-prob-marker" id="pred-prob-marker"></div>
+                </div>
+              </div>
+
+              <!-- INPUT SUMMARY -->
+              <div class="pred-input-summary">
+                <div class="pred-input-summary-title">// FEATURE INPUTS USED IN THIS PREDICTION</div>
+                <div class="pred-chips" id="pred-chips"></div>
+              </div>
+
+              <!-- ACTIONS -->
+              <div class="pred-actions">
+                <button class="pred-action-btn primary" onclick="predResetAndRun()">⚡ NEW PREDICTION</button>
+                <button class="pred-action-btn" onclick="predCopyResult()">⎘ COPY RESULT</button>
+                <button class="pred-action-btn" onclick="closePredModal()">✕ CLOSE</button>
+              </div>
+
+            </div><!-- /pred-results -->
+          </div><!-- /pstep-3 -->
+
+        </div><!-- /pred-modal-body -->
+
+        <!-- MODAL FOOTER -->
+        <div class="pred-modal-footer">
+          <button class="pred-footer-btn" id="pred-btn-back" onclick="predPrevStep()" disabled>◀ BACK</button>
+          <div class="pred-footer-dots">
+            <div class="pred-footer-dot active" id="pdot-0"></div>
+            <div class="pred-footer-dot" id="pdot-1"></div>
+            <div class="pred-footer-dot" id="pdot-2"></div>
+            <div class="pred-footer-dot" id="pdot-3"></div>
+          </div>
+          <button class="pred-footer-btn next" id="pred-btn-next" onclick="predNextStep()">NEXT ▶</button>
+        </div>
+
+      </div><!-- /pred-modal -->
+    </div><!-- /pred-overlay -->
+
+  </section><!-- /ai-engine -->
 
 
     <!-- CONNECT CTA -->
@@ -1338,5 +1362,256 @@
 </div><!-- end site-wrapper -->
 
   <script src="/js/main.js"></script>
+
+  <script>
+  /* ── PRED MODAL CRITICAL INLINE FIX ── */
+  var predStep = 0;
+  var PRED_TOTAL = 4;
+  var predLastResult = null;
+
+  window.openPredModal = function() {
+    predStep = 0;
+    predRenderStep();
+    var ld = document.getElementById('pred-loading');
+    var rs = document.getElementById('pred-results');
+    if(ld) ld.style.display = 'flex';
+    if(rs) rs.style.display = 'none';
+    ['pss0','pss1','pss2','pss3','pss4','pss5'].forEach(function(id){
+      var el = document.getElementById(id); if(el) el.classList.remove('lit');
+    });
+    var ov = document.getElementById('pred-overlay');
+    if(ov) { ov.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    else { alert('Modal element #pred-overlay not found! Check body.html.'); }
+  };
+
+  window.closePredModal = function() {
+    var ov = document.getElementById('pred-overlay');
+    if(ov) ov.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') window.closePredModal();
+  });
+
+  function predRenderStep() {
+    for(var i = 0; i < PRED_TOTAL; i++) {
+      var s = document.getElementById('pstep-' + i);
+      var t = document.getElementById('ptab-'  + i);
+      var d = document.getElementById('pdot-'  + i);
+      if(s) s.classList.remove('active');
+      if(t) { t.classList.remove('active','done'); if(i < predStep) t.classList.add('done'); }
+      if(d) d.classList.remove('active');
+    }
+    var as = document.getElementById('pstep-' + predStep);
+    var at = document.getElementById('ptab-'  + predStep);
+    var ad = document.getElementById('pdot-'  + predStep);
+    if(as) as.classList.add('active');
+    if(at) { at.classList.remove('done'); at.classList.add('active'); }
+    if(ad) ad.classList.add('active');
+
+    var pct = ((predStep + 1) / PRED_TOTAL) * 100;
+    var pf  = document.getElementById('pred-progress-fill');
+    var sc  = document.getElementById('pred-step-counter');
+    if(pf) pf.style.width = pct + '%';
+    if(sc) sc.textContent = 'STEP ' + (predStep+1) + ' OF ' + PRED_TOTAL;
+
+    var btnBack = document.getElementById('pred-btn-back');
+    var btnNext = document.getElementById('pred-btn-next');
+    if(btnBack) btnBack.disabled = predStep === 0;
+    if(btnNext) {
+      if(predStep === PRED_TOTAL - 1) {
+        btnNext.style.display = 'none';
+        if(btnBack) btnBack.disabled = true;
+      } else {
+        btnNext.style.display = 'inline-flex';
+        btnNext.textContent = predStep === PRED_TOTAL - 2 ? '⚡ EXECUTE' : 'NEXT ▶';
+        btnNext.className = 'pred-footer-btn next';
+      }
+    }
+  }
+
+  window.predNextStep = function() {
+    if(predStep < PRED_TOTAL - 1) {
+      predStep++;
+      predRenderStep();
+      if(predStep === PRED_TOTAL - 1) predRunPrediction();
+    }
+  };
+
+  window.predPrevStep = function() {
+    if(predStep > 0) { predStep--; predRenderStep(); }
+  };
+
+  function predGetInputs() {
+    function g(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+    return {
+      age:      parseInt(g('pf-age'))      || 38,
+      job:      g('pf-job')      || 'technician',
+      marital:  g('pf-marital')  || 'married',
+      education:g('pf-education')|| 'university.degree',
+      default_: g('pf-default')  || 'no',
+      housing:  g('pf-housing')  || 'yes',
+      loan:     g('pf-loan')     || 'no',
+      contact:  g('pf-contact')  || 'cellular',
+      month:    g('pf-month')    || 'may',
+      day:      g('pf-day')      || 'mon',
+      duration: parseInt(g('pf-duration')) || 320,
+      campaign: parseInt(g('pf-campaign'))|| 2,
+      pdays:    parseInt(g('pf-pdays'))   || 999,
+      previous: parseInt(g('pf-previous'))|| 0,
+      poutcome: g('pf-poutcome') || 'nonexistent',
+      emp:      parseFloat(g('pf-emp'))   || 1.1,
+      cpi:      parseFloat(g('pf-cpi'))   || 93.994,
+      cci:      parseFloat(g('pf-cci'))   || -36.4,
+      eur:      parseFloat(g('pf-eur'))   || 4.857,
+      nre:      parseFloat(g('pf-nre'))   || 5191,
+    };
+  }
+
+  function predSimulate(inp) {
+    if(inp.duration === 0) return { probability: 0.01, prediction: 'no' };
+    var score = 0;
+    score += Math.min(inp.duration / 600, 1.0) * 0.35;
+    if(inp.poutcome === 'success') score += 0.25;
+    else if(inp.poutcome === 'failure') score -= 0.08;
+    if(inp.previous > 0) score += Math.min(inp.previous * 0.03, 0.12);
+    score += (1.5 - inp.emp) / 5 * 0.12;
+    score += (5.1 - inp.eur) / 4.5 * 0.10;
+    score += (inp.cci + 50) / 24 * 0.06;
+    var jobB = {retired:0.08,student:0.06,'admin.':0.02,management:0.02,technician:0.01};
+    score += jobB[inp.job] || 0;
+    if(inp.education === 'university.degree') score += 0.05;
+    if(inp.education === 'professional.course') score += 0.03;
+    var monB = {mar:0.08,sep:0.06,oct:0.07,dec:0.05,apr:0.03};
+    score += monB[inp.month] || 0;
+    score -= Math.min((inp.campaign - 1) * 0.02, 0.08);
+    if(inp.default_ === 'yes') score -= 0.10;
+    if(inp.housing === 'no' && inp.loan === 'no') score += 0.03;
+    if(inp.age < 30 || inp.age > 60) score += 0.04;
+    var prob = Math.max(0.02, Math.min(0.98, 0.12 + score));
+    return { probability: prob, prediction: prob >= 0.5 ? 'yes' : 'no' };
+  }
+
+  function predRunPrediction() {
+    var inp = predGetInputs();
+    var scanLabels = [
+      'LOADING XGBOOST PIPELINE...',
+      'ENCODING CATEGORICAL FEATURES...',
+      'SCALING NUMERICAL INPUTS...',
+      'RUNNING INFERENCE ENGINE...',
+      'COMPUTING SHAP VALUES...',
+      'FINALIZING OUTPUT...',
+    ];
+    var stepIds = ['pss0','pss1','pss2','pss3','pss4','pss5'];
+    stepIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('lit'); });
+    var idx = 0;
+    var iv = setInterval(function(){
+      if(idx < stepIds.length) {
+        if(idx > 0){ var p=document.getElementById(stepIds[idx-1]); if(p) p.classList.remove('lit'); }
+        var el = document.getElementById(stepIds[idx]); if(el) el.classList.add('lit');
+        var lb = document.getElementById('pred-scan-label'); if(lb) lb.textContent = scanLabels[idx];
+        idx++;
+      } else {
+        clearInterval(iv);
+        predShowResults(inp);
+      }
+    }, 430);
+  }
+
+  function animNum(el, to, dur, fmt) {
+    if(!el) return;
+    var start = performance.now();
+    (function frame(now){
+      var t = Math.min((now - start) / dur, 1);
+      var e = 1 - Math.pow(1 - t, 3);
+      el.textContent = fmt(e * to);
+      if(t < 1) requestAnimationFrame(frame);
+    })(performance.now());
+  }
+
+  function predShowResults(inp) {
+    var sim = predSimulate(inp);
+    predLastResult = { inp: inp, sim: sim };
+    var isYes = sim.prediction === 'yes';
+    var prob  = sim.probability;
+    var conf  = isYes ? prob : 1 - prob;
+    var risk  = 1 - prob;
+
+    var ld = document.getElementById('pred-loading'); if(ld) ld.style.display = 'none';
+    var rs = document.getElementById('pred-results');  if(rs) rs.style.display = 'block';
+
+    var vb = document.getElementById('pred-verdict');
+    if(vb) vb.className = 'pred-verdict ' + (isYes ? 'subscribe' : 'no-subscribe');
+    var vi = document.getElementById('pred-verdict-icon'); if(vi) vi.textContent = isYes ? '✓' : '✗';
+    var vm = document.getElementById('pred-verdict-main'); if(vm) vm.textContent = isYes ? 'WILL SUBSCRIBE' : 'WILL NOT SUBSCRIBE';
+    var vs = document.getElementById('pred-verdict-sub');
+    if(vs) vs.textContent = isYes
+      ? 'Client is predicted to subscribe to a term deposit — high-value prospect'
+      : 'Client is unlikely to subscribe — consider re-engagement strategy';
+
+    var pCard = document.getElementById('pred-mc-prob');
+    if(pCard) pCard.className = 'pred-metric-card ' + (isYes ? 'positive' : 'negative');
+    var pVal = document.getElementById('pred-mc-prob-val');
+    if(pVal) { pVal.className = 'pred-mc-value ' + (isYes ? 'positive' : 'negative'); animNum(pVal, prob, 1300, function(v){ return (v*100).toFixed(1)+'%'; }); }
+
+    var cCard = document.getElementById('pred-mc-conf');
+    if(cCard) cCard.className = 'pred-metric-card ' + (isYes ? 'positive' : 'warn');
+    var cVal = document.getElementById('pred-mc-conf-val');
+    if(cVal) { cVal.className = 'pred-mc-value ' + (isYes ? 'positive' : 'gold'); animNum(cVal, conf, 1300, function(v){ return (v*100).toFixed(1)+'%'; }); }
+
+    var rCard = document.getElementById('pred-mc-risk');
+    if(rCard) rCard.className = 'pred-metric-card ' + (risk > 0.6 ? 'negative' : 'warn');
+    var rVal = document.getElementById('pred-mc-risk-val');
+    if(rVal) { rVal.className = 'pred-mc-value ' + (risk > 0.6 ? 'negative' : 'gold'); animNum(rVal, risk, 1300, function(v){ return (v*100).toFixed(1)+'%'; }); }
+
+    var kp = document.getElementById('pred-kpi-pred');
+    if(kp) { kp.textContent = isYes ? 'YES' : 'NO'; kp.style.color = isYes ? '#00e5a0' : '#ff4c6a'; }
+
+    var fill   = document.getElementById('pred-prob-fill');
+    var marker = document.getElementById('pred-prob-marker');
+    var barPct = document.getElementById('pred-bar-pct');
+    if(fill)   { fill.style.background = isYes ? '#00e5a0' : '#ff4c6a'; setTimeout(function(){ fill.style.width = (prob*100)+'%'; }, 80); }
+    if(marker) { setTimeout(function(){ marker.style.left = 'calc('+(prob*100)+'% - 9px)'; }, 80); }
+    if(barPct) barPct.textContent = (prob*100).toFixed(1)+'%';
+
+    var chips = document.getElementById('pred-chips');
+    if(chips) {
+      chips.innerHTML = '';
+      [
+        ['Age', inp.age+'yr'], ['Job', inp.job], ['Marital', inp.marital],
+        ['Education', inp.education], ['Contact', inp.contact], ['Month', inp.month.toUpperCase()],
+        ['Duration', inp.duration+'s'], ['Campaign', inp.campaign+'x'],
+        ['Poutcome', inp.poutcome], ['EmpVar', inp.emp.toFixed(1)], ['Euribor', inp.eur.toFixed(3)],
+        ['CPI', inp.cpi.toFixed(3)], ['CCI', inp.cci.toFixed(1)],
+      ].forEach(function(pair){
+        var chip = document.createElement('div');
+        chip.className = 'pred-chip';
+        chip.innerHTML = pair[0]+': <strong>'+pair[1]+'</strong>';
+        chips.appendChild(chip);
+      });
+    }
+  }
+
+  window.predResetAndRun = function() {
+    var ld = document.getElementById('pred-loading'); if(ld) ld.style.display = 'flex';
+    var rs = document.getElementById('pred-results');  if(rs) rs.style.display = 'none';
+    ['pss0','pss1','pss2','pss3','pss4','pss5'].forEach(function(id){
+      var el = document.getElementById(id); if(el) el.classList.remove('lit');
+    });
+    predStep = 0;
+    predRenderStep();
+  };
+
+  window.predCopyResult = function() {
+    if(!predLastResult) return;
+    var r = predLastResult;
+    var txt = 'BANKIQ PREDICTION\nResult: '+r.sim.prediction.toUpperCase()+
+      '\nProbability: '+(r.sim.probability*100).toFixed(1)+'%'+
+      '\nAge: '+r.inp.age+' | Job: '+r.inp.job+' | Duration: '+r.inp.duration+'s';
+    if(navigator.clipboard) navigator.clipboard.writeText(txt);
+  };
+</script>
+
 </body>
 </html>

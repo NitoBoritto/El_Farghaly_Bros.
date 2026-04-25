@@ -1,1 +1,2 @@
-DROP TABLE dbo.[Transformed.Bank]
+SELECT DISTINCT job
+FROM Transformed.Bank;

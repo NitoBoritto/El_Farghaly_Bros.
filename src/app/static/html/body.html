@@ -9,41 +9,49 @@
   <link href="/css/style.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  /* ── PRED OVERLAY HIDE BY DEFAULT ── */
+  /* ── PRED PANEL HIDE BY DEFAULT ── */
   #pred-overlay {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 99999 !important;
-    background: rgba(4,9,18,0.92) !important;
-    backdrop-filter: blur(10px) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 20px !important;
+    position: relative !important;
+    z-index: 5 !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    display: block !important;
     opacity: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
     pointer-events: none !important;
-    transition: opacity 0.4s ease !important;
+    transition: max-height 0.7s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease, margin-top 0.35s ease !important;
   }
   #pred-overlay.open {
     opacity: 1 !important;
-    pointer-events: all !important;
+    max-height: 5000px !important;
+    margin-top: 28px !important;
+    pointer-events: auto !important;
   }
   #pred-modal {
     background: #0a1525 !important;
     border: 1px solid rgba(240,180,41,0.25) !important;
     border-radius: 12px !important;
-    width: min(1100px, 96vw) !important;
-    max-height: 90vh !important;
+    width: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
     display: flex !important;
     flex-direction: column !important;
     position: relative !important;
-    overflow: hidden !important;
-    transform: translateY(40px) scale(0.96) !important;
+    overflow: visible !important;
+    transform: translateY(18px) scale(0.985) !important;
     transition: transform 0.45s cubic-bezier(0.16,1,0.3,1) !important;
-    box-shadow: 0 40px 120px rgba(0,0,0,0.7), 0 0 80px rgba(240,180,41,0.08) !important;
+    box-shadow: 0 28px 80px rgba(0,0,0,0.55), 0 0 80px rgba(240,180,41,0.08) !important;
   }
   #pred-overlay.open #pred-modal {
     transform: translateY(0) scale(1) !important;
+  }
+  .pred-modal-body {
+    overflow: visible !important;
   }
 
   /* ── RUN PREDICTION ZONE ── */
@@ -817,7 +825,7 @@
       <div class="table-toolbar">
         <div class="table-title">
           Bank Customer Records
-          <span class="table-badge">NO DATA</span>
+          <span id="dataset-table-badge" class="table-badge">NO DATA</span>
         </div>
         <div class="table-actions">
           <button class="tbl-btn">⬆ Import CSV</button>
@@ -827,30 +835,19 @@
       </div>
       <table>
         <thead>
-          <tr>
-            <th>Customer ID</th>
-            <th>Surname</th>
-            <th>Credit Score</th>
-            <th>Geography</th>
-            <th>Gender</th>
-            <th>Age</th>
-            <th>Balance</th>
-            <th>Products</th>
-            <th>Exited</th>
-            <th>Status</th>
+          <tr id="dataset-table-head-row">
+            <th>Loading columns...</th>
           </tr>
         </thead>
-        <tbody>
-          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
-          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
-          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
-          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
-          <tr><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td class="cell-empty">—</td><td><span class="cell-tag pending">Pending</span></td></tr>
+        <tbody id="dataset-table-body">
+          <tr>
+            <td class="cell-empty">Connecting to cloud dataset...</td>
+          </tr>
         </tbody>
       </table>
       <div class="table-footer">
-        <span>0 records loaded · awaiting data connection</span>
-        <span>Page 1 of —</span>
+        <span id="dataset-loaded-count">0 records loaded · awaiting data connection</span>
+        <span id="dataset-page-info">Page 1 of —</span>
       </div>
     </div>
   </section>
@@ -912,9 +909,9 @@
       <div class="ai-header">
         <div>
           <h2 class="section-title" style="font-size:clamp(38px,5vw,60px)">PREDICTIVE<br>INTELLIGENCE</h2>
-          <p class="section-sub">ML-powered churn forecasting, risk scoring, and long-term banking trend analysis. Real-time simulation — connect your dataset to activate live predictions.</p>
+          <p class="section-sub">ML-powered churn forecasting, risk scoring, and long-term banking trend analysis. Real-time inference — connect your dataset to activate live predictions.</p>
         </div>
-        <div class="ai-live-badge"><div class="ai-dot"></div>AI ENGINE ACTIVE · SIMULATION MODE</div>
+        <div class="ai-live-badge"><div class="ai-dot"></div>AI ENGINE ACTIVE · LIVE API MODE</div>
       </div>
     </div>
 
@@ -931,7 +928,7 @@
     <!-- ══════════════════════════════════════════
          PREDICTION ENGINE MODAL
     ══════════════════════════════════════════ -->
-    <div id="pred-overlay" onclick="if(event.target===this)closePredModal()">
+    <div id="pred-overlay">
       <div id="pred-modal">
 
         <!-- SCANLINE EFFECT -->
@@ -948,8 +945,8 @@
             </div>
           </div>
           <div class="pred-header-right">
-            <div class="pred-model-tag">MODEL: XGBoost · AUC 0.874</div>
-            <button class="pred-close-btn" onclick="closePredModal()">✕ CLOSE</button>
+            <div class="pred-model-tag">MODEL: LightGBM · AUC 0.809</div>
+            <button class="pred-close-btn" onclick="closePredModal()">✕ COLLAPSE</button>
           </div>
         </div>
 
@@ -1002,7 +999,7 @@
               <div class="pred-field">
                 <label class="pred-label">Job Type</label>
                 <select id="pf-job" class="pred-select">
-                  <option>admin.</option><option>blue-collar</option><option>entrepreneur</option>
+                  <option>admin</option><option>blue-collar</option><option>entrepreneur</option>
                   <option>housemaid</option><option>management</option><option>retired</option>
                   <option>self-employed</option><option>services</option><option>student</option>
                   <option selected>technician</option><option>unemployed</option><option>unknown</option>
@@ -1252,22 +1249,22 @@
                 <div class="pred-kpi-divider"></div>
                 <div class="pred-kpi-item">
                   <div class="pred-kpi-label">MODEL</div>
-                  <div class="pred-kpi-val" style="color:#00d4ff">XGBoost</div>
+                  <div class="pred-kpi-val" style="color:#00d4ff">LightGBM</div>
                 </div>
                 <div class="pred-kpi-divider"></div>
                 <div class="pred-kpi-item">
                   <div class="pred-kpi-label">MODEL AUC</div>
-                  <div class="pred-kpi-val" style="color:#00d4ff">0.874</div>
+                  <div class="pred-kpi-val" style="color:#00d4ff">0.809</div>
                 </div>
                 <div class="pred-kpi-divider"></div>
                 <div class="pred-kpi-item">
                   <div class="pred-kpi-label">F1 SCORE</div>
-                  <div class="pred-kpi-val" style="color:#00d4ff">0.812</div>
+                  <div class="pred-kpi-val" style="color:#00d4ff">0.667</div>
                 </div>
                 <div class="pred-kpi-divider"></div>
                 <div class="pred-kpi-item">
-                  <div class="pred-kpi-label">PRECISION</div>
-                  <div class="pred-kpi-val" style="color:#00d4ff">0.832</div>
+                  <div class="pred-kpi-label">RECALL</div>
+                  <div class="pred-kpi-val" style="color:#00d4ff">0.750</div>
                 </div>
               </div>
 
@@ -1380,14 +1377,17 @@
       var el = document.getElementById(id); if(el) el.classList.remove('lit');
     });
     var ov = document.getElementById('pred-overlay');
-    if(ov) { ov.classList.add('open'); document.body.style.overflow = 'hidden'; }
-    else { alert('Modal element #pred-overlay not found! Check body.html.'); }
+    if(ov) {
+      ov.classList.add('open');
+      ov.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      alert('Panel element #pred-overlay not found! Check body.html.');
+    }
   };
 
   window.closePredModal = function() {
     var ov = document.getElementById('pred-overlay');
     if(ov) ov.classList.remove('open');
-    document.body.style.overflow = '';
   };
 
   document.addEventListener('keydown', function(e){
@@ -1469,34 +1469,56 @@
     };
   }
 
-  function predSimulate(inp) {
-    if(inp.duration === 0) return { probability: 0.01, prediction: 'no' };
-    var score = 0;
-    score += Math.min(inp.duration / 600, 1.0) * 0.35;
-    if(inp.poutcome === 'success') score += 0.25;
-    else if(inp.poutcome === 'failure') score -= 0.08;
-    if(inp.previous > 0) score += Math.min(inp.previous * 0.03, 0.12);
-    score += (1.5 - inp.emp) / 5 * 0.12;
-    score += (5.1 - inp.eur) / 4.5 * 0.10;
-    score += (inp.cci + 50) / 24 * 0.06;
-    var jobB = {retired:0.08,student:0.06,'admin.':0.02,management:0.02,technician:0.01};
-    score += jobB[inp.job] || 0;
-    if(inp.education === 'university.degree') score += 0.05;
-    if(inp.education === 'professional.course') score += 0.03;
-    var monB = {mar:0.08,sep:0.06,oct:0.07,dec:0.05,apr:0.03};
-    score += monB[inp.month] || 0;
-    score -= Math.min((inp.campaign - 1) * 0.02, 0.08);
-    if(inp.default_ === 'yes') score -= 0.10;
-    if(inp.housing === 'no' && inp.loan === 'no') score += 0.03;
-    if(inp.age < 30 || inp.age > 60) score += 0.04;
-    var prob = Math.max(0.02, Math.min(0.98, 0.12 + score));
-    return { probability: prob, prediction: prob >= 0.5 ? 'yes' : 'no' };
+  function predBuildPayload(inp) {
+    return {
+      age: inp.age,
+      job: inp.job,
+      marital: inp.marital,
+      education: inp.education,
+      default: inp.default_,
+      housing: inp.housing,
+      loan: inp.loan,
+      contact: inp.contact,
+      month: inp.month,
+      day_of_week: inp.day,
+      duration: inp.duration,
+      campaign: inp.campaign,
+      pdays: inp.pdays,
+      previous: inp.previous,
+      poutcome: inp.poutcome,
+      'emp.var.rate': inp.emp,
+      'cons.price.idx': inp.cpi,
+      'cons.conf.idx': inp.cci,
+      euribor3m: inp.eur,
+      'nr.employed': inp.nre,
+    };
+  }
+
+  async function predFetchPrediction(inp) {
+    var response = await fetch('/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(predBuildPayload(inp)),
+    });
+
+    var data = await response.json();
+    if (!response.ok) {
+      var detail = data && data.detail ? data.detail : data;
+      throw new Error(Array.isArray(detail)
+        ? detail.map(function(item) {
+            var field = item.loc && item.loc.length ? item.loc[item.loc.length - 1] : '';
+            return field + ': ' + item.msg;
+          }).join('; ')
+        : String(detail));
+    }
+
+    return data;
   }
 
   function predRunPrediction() {
     var inp = predGetInputs();
     var scanLabels = [
-      'LOADING XGBOOST PIPELINE...',
+      'LOADING LIGHTGBM PIPELINE...',
       'ENCODING CATEGORICAL FEATURES...',
       'SCALING NUMERICAL INPUTS...',
       'RUNNING INFERENCE ENGINE...',
@@ -1514,7 +1536,19 @@
         idx++;
       } else {
         clearInterval(iv);
-        predShowResults(inp);
+        predShowResults(inp).catch(function(err) {
+          var lb = document.getElementById('pred-scan-label');
+          if(lb) lb.textContent = 'PREDICTION FAILED';
+          var ld = document.getElementById('pred-loading');
+          var rs = document.getElementById('pred-results');
+          if(ld) ld.style.display = 'none';
+          if(rs) {
+            rs.style.display = 'block';
+            rs.innerHTML = '<div class="pred-verdict no-subscribe" style="justify-content:center;text-align:center;">' +
+              '<div class="pred-verdict-body"><div class="pred-verdict-main">API ERROR</div>' +
+              '<div class="pred-verdict-sub">' + String(err.message || err) + '</div></div></div>';
+          }
+        });
       }
     }, 430);
   }
@@ -1530,11 +1564,12 @@
     })(performance.now());
   }
 
-  function predShowResults(inp) {
-    var sim = predSimulate(inp);
-    predLastResult = { inp: inp, sim: sim };
-    var isYes = sim.prediction === 'yes';
-    var prob  = sim.probability;
+  async function predShowResults(inp) {
+    var apiResult = await predFetchPrediction(inp);
+    predLastResult = { inp: inp, sim: apiResult };
+    var predText = String(apiResult.prediction || '').toLowerCase();
+    var isYes = predText.indexOf('likely to subscribe') !== -1 && predText.indexOf('unlikely') === -1;
+    var prob  = Number(apiResult.probability) || 0;
     var conf  = isYes ? prob : 1 - prob;
     var risk  = 1 - prob;
 
@@ -1606,8 +1641,8 @@
   window.predCopyResult = function() {
     if(!predLastResult) return;
     var r = predLastResult;
-    var txt = 'BANKIQ PREDICTION\nResult: '+r.sim.prediction.toUpperCase()+
-      '\nProbability: '+(r.sim.probability*100).toFixed(1)+'%'+
+    var txt = 'BANKIQ PREDICTION\nResult: '+String(r.sim.prediction || '').toUpperCase()+
+      '\nProbability: '+(Number(r.sim.probability) * 100).toFixed(1)+'%'+
       '\nAge: '+r.inp.age+' | Job: '+r.inp.job+' | Duration: '+r.inp.duration+'s';
     if(navigator.clipboard) navigator.clipboard.writeText(txt);
   };

@@ -1,4 +1,3 @@
-
 IF OBJECT_ID('Transformed.Bank', 'U') IS NOT NULL
 BEGIN
     DROP TABLE Transformed.Bank;

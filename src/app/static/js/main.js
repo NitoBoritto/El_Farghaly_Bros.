@@ -274,17 +274,14 @@ setInterval(() => {
 
   /* ── State ── */
   let horizon = 6;
-  let currentModel = 'xgb';
+  let currentModel = 'lgbm';
   let chartInstances = {};
   let animFrame;
   let predRunning = false;
 
   /* ── Model performance data ── */
   const modelData = {
-    xgb: { auc: 0.874, f1: 0.812, prec: 0.832, recall: 0.793, color: '#f0b429', name: 'XGBoost' },
-    rf:  { auc: 0.861, f1: 0.798, prec: 0.814, recall: 0.783, color: '#00d4ff', name: 'Random Forest' },
-    lr:  { auc: 0.783, f1: 0.724, prec: 0.751, recall: 0.699, color: '#00e5a0', name: 'Logistic Reg.' },
-    nn:  { auc: 0.856, f1: 0.805, prec: 0.822, recall: 0.789, color: '#ff4c6a', name: 'Neural Network' },
+    lgbm: { auc: 0.809, f1: 0.667, prec: 0.750, recall: 0.750, color: '#f0b429', name: 'LightGBM' }
   };
 
   /* ── Generate forecast data ── */
@@ -588,7 +585,7 @@ setInterval(() => {
       type: 'scatter',
       data: {
         datasets: [
-          { label: 'XGBoost (0.874)', data: rocPoints(0.874), borderColor: '#f0b429', showLine: true, tension: 0.4, pointRadius: 0, borderWidth: 2 },
+          { label: 'LightGBM (0.809)', data: rocPoints(0.809), borderColor: '#f0b429', showLine: true, tension: 0.4, pointRadius: 0, borderWidth: 2 },
           { label: 'Random Forest (0.861)', data: rocPoints(0.861), borderColor: '#00d4ff', showLine: true, tension: 0.4, pointRadius: 0, borderWidth: 1.5 },
           { label: 'Neural Net (0.856)', data: rocPoints(0.856), borderColor: '#ff4c6a', showLine: true, tension: 0.4, pointRadius: 0, borderWidth: 1.5 },
           { label: 'Log. Reg. (0.783)', data: rocPoints(0.783), borderColor: '#00e5a0', showLine: true, tension: 0.4, pointRadius: 0, borderWidth: 1, borderDash: [3,3] },
@@ -1298,6 +1295,10 @@ setInterval(() => {
      button to the real backend via the modal.
   ═══════════════════════════════════════════════ */
   window.runPrediction = function() {
+    if (typeof window.openPredModal === 'function') {
+      window.openPredModal();
+      return;
+    }
     openModal();
   };
 
@@ -1454,261 +1455,106 @@ function updateMoneyTheme(isLight) {
     document.head.appendChild(s);
   }
 })();
+
 /* ═══════════════════════════════════════════════════════════
-   PREDICTION ENGINE — MODAL (definitive)
+   DATASET EXPLORER — live data from Transformed.Bank
 ═══════════════════════════════════════════════════════════ */
 (function () {
-  let predStep = 0;
-  const PRED_TOTAL = 4;
-  let predLastResult = null;
+  const DEFAULT_PREVIEW_LIMIT = 50;
 
-  /* ── open / close ── */
-  window.openPredModal = function () {
-    predStep = 0;
-    predRenderStep();
-    document.getElementById('pred-loading').style.display = 'flex';
-    document.getElementById('pred-results').style.display = 'none';
-    ['pss0','pss1','pss2','pss3','pss4','pss5'].forEach(function(id){
-      var el = document.getElementById(id); if(el) el.classList.remove('lit');
+  function normalizeCellValue(value) {
+    if (value === null || value === undefined || value === '') return '—';
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      if (Math.abs(value) >= 1000) return value.toLocaleString();
+      return String(value);
+    }
+    return String(value);
+  }
+
+  function renderDatasetRows(columns, rows) {
+    const headRow = document.getElementById('dataset-table-head-row');
+    const tbody = document.getElementById('dataset-table-body');
+    if (!headRow || !tbody) return;
+
+    headRow.innerHTML = '';
+    columns.forEach((column) => {
+      const th = document.createElement('th');
+      th.textContent = column;
+      headRow.appendChild(th);
     });
-    document.getElementById('pred-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  };
 
-  window.closePredModal = function () {
-    document.getElementById('pred-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-  };
-
-  document.addEventListener('keydown', function(e){
-    if(e.key==='Escape') window.closePredModal();
-  });
-
-  /* ── step rendering ── */
-  function predRenderStep() {
-    for (var i = 0; i < PRED_TOTAL; i++) {
-      var s = document.getElementById('pstep-' + i);
-      var t = document.getElementById('ptab-'  + i);
-      var d = document.getElementById('pdot-'  + i);
-      if (s) s.classList.remove('active');
-      if (t) { t.classList.remove('active','done'); if(i < predStep) t.classList.add('done'); }
-      if (d) d.classList.remove('active');
+    tbody.innerHTML = '';
+    if (!rows.length) {
+      const emptyRow = document.createElement('tr');
+      const emptyCell = document.createElement('td');
+      emptyCell.colSpan = Math.max(columns.length, 1);
+      emptyCell.className = 'cell-empty';
+      emptyCell.textContent = 'No rows found in table preview.';
+      emptyRow.appendChild(emptyCell);
+      tbody.appendChild(emptyRow);
+      return;
     }
-    var as = document.getElementById('pstep-' + predStep);
-    var at = document.getElementById('ptab-'  + predStep);
-    var ad = document.getElementById('pdot-'  + predStep);
-    if(as) as.classList.add('active');
-    if(at) { at.classList.remove('done'); at.classList.add('active'); }
-    if(ad) ad.classList.add('active');
 
-    var pct = ((predStep + 1) / PRED_TOTAL) * 100;
-    var pf = document.getElementById('pred-progress-fill');
-    var sc = document.getElementById('pred-step-counter');
-    if(pf) pf.style.width = pct + '%';
-    if(sc) sc.textContent = 'STEP ' + (predStep+1) + ' OF ' + PRED_TOTAL;
-
-    var btnBack = document.getElementById('pred-btn-back');
-    var btnNext = document.getElementById('pred-btn-next');
-    if(btnBack) btnBack.disabled = predStep === 0;
-    if(btnNext) {
-      if(predStep === PRED_TOTAL - 1) {
-        btnNext.style.display = 'none';
-        if(btnBack) btnBack.disabled = true;
-      } else {
-        btnNext.style.display = 'inline-flex';
-        btnNext.textContent = predStep === PRED_TOTAL - 2 ? '⚡ EXECUTE' : 'NEXT ▶';
-        btnNext.className = 'pred-footer-btn next';
-      }
-    }
-  }
-
-  window.predNextStep = function () {
-    if(predStep < PRED_TOTAL - 1) {
-      predStep++;
-      predRenderStep();
-      if(predStep === PRED_TOTAL - 1) predRunPrediction();
-    }
-  };
-
-  window.predPrevStep = function () {
-    if(predStep > 0) { predStep--; predRenderStep(); }
-  };
-
-  /* ── collect inputs ── */
-  function predGetInputs() {
-    function g(id) { return document.getElementById(id); }
-    return {
-      age:           parseInt(g('pf-age').value),
-      job:           g('pf-job').value,
-      marital:       g('pf-marital').value,
-      education:     g('pf-education').value,
-      default_:      g('pf-default').value,
-      housing:       g('pf-housing').value,
-      loan:          g('pf-loan').value,
-      contact:       g('pf-contact').value,
-      month:         g('pf-month').value,
-      day:           g('pf-day').value,
-      duration:      parseInt(g('pf-duration').value),
-      campaign:      parseInt(g('pf-campaign').value),
-      pdays:         parseInt(g('pf-pdays').value),
-      previous:      parseInt(g('pf-previous').value),
-      poutcome:      g('pf-poutcome').value,
-      emp:           parseFloat(g('pf-emp').value),
-      cpi:           parseFloat(g('pf-cpi').value),
-      cci:           parseFloat(g('pf-cci').value),
-      eur:           parseFloat(g('pf-eur').value),
-      nre:           parseFloat(g('pf-nre').value),
-    };
-  }
-
-  /* ── simulate prediction ── */
-  function predSimulate(inp) {
-    if (inp.duration === 0) return { probability: 0.01, prediction: 'no' };
-    var score = 0;
-    score += Math.min(inp.duration / 600, 1.0) * 0.35;
-    if (inp.poutcome === 'success') score += 0.25;
-    else if (inp.poutcome === 'failure') score -= 0.08;
-    if (inp.previous > 0) score += Math.min(inp.previous * 0.03, 0.12);
-    score += (1.5 - inp.emp) / 5 * 0.12;
-    score += (5.1 - inp.eur) / 4.5 * 0.10;
-    score += (inp.cci + 50) / 24 * 0.06;
-    var jobB = {retired:0.08,student:0.06,'admin.':0.02,management:0.02,technician:0.01};
-    score += jobB[inp.job] || 0;
-    if (inp.education === 'university.degree') score += 0.05;
-    if (inp.education === 'professional.course') score += 0.03;
-    var monB = {mar:0.08,sep:0.06,oct:0.07,dec:0.05,apr:0.03};
-    score += monB[inp.month] || 0;
-    score -= Math.min((inp.campaign - 1) * 0.02, 0.08);
-    if (inp.default_ === 'yes') score -= 0.10;
-    if (inp.housing === 'no' && inp.loan === 'no') score += 0.03;
-    if (inp.age < 30 || inp.age > 60) score += 0.04;
-    var prob = Math.max(0.02, Math.min(0.98, 0.12 + score));
-    return { probability: prob, prediction: prob >= 0.5 ? 'yes' : 'no' };
-  }
-
-  /* ── run + animate ── */
-  function predRunPrediction() {
-    var inp = predGetInputs();
-    var scanLabels = [
-      'LOADING XGBOOST PIPELINE...',
-      'ENCODING CATEGORICAL FEATURES...',
-      'SCALING NUMERICAL INPUTS...',
-      'RUNNING INFERENCE ENGINE...',
-      'COMPUTING SHAP VALUES...',
-      'FINALIZING OUTPUT...',
-    ];
-    var stepIds = ['pss0','pss1','pss2','pss3','pss4','pss5'];
-    stepIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('lit'); });
-    var idx = 0;
-    var iv = setInterval(function(){
-      if (idx < stepIds.length) {
-        if(idx>0){var p=document.getElementById(stepIds[idx-1]); if(p) p.classList.remove('lit');}
-        var el=document.getElementById(stepIds[idx]); if(el) el.classList.add('lit');
-        var lb=document.getElementById('pred-scan-label'); if(lb) lb.textContent=scanLabels[idx];
-        idx++;
-      } else {
-        clearInterval(iv);
-        predShowResults(inp);
-      }
-    }, 430);
-  }
-
-  function animNum(el, to, dur, fmt) {
-    if(!el) return;
-    var start = performance.now();
-    (function frame(now){
-      var t = Math.min((now-start)/dur, 1);
-      var e = 1 - Math.pow(1-t, 3);
-      el.textContent = fmt(e * to);
-      if(t < 1) requestAnimationFrame(frame);
-    })(performance.now());
-  }
-
-  function predShowResults(inp) {
-    var sim = predSimulate(inp);
-    predLastResult = {inp:inp, sim:sim};
-    var isYes = sim.prediction === 'yes';
-    var prob  = sim.probability;
-    var conf  = isYes ? prob : 1 - prob;
-    var risk  = 1 - prob;
-
-    document.getElementById('pred-loading').style.display = 'none';
-    document.getElementById('pred-results').style.display = 'block';
-
-    /* Verdict */
-    var vb = document.getElementById('pred-verdict');
-    if(vb) vb.className = 'pred-verdict ' + (isYes ? 'subscribe' : 'no-subscribe');
-    var vi = document.getElementById('pred-verdict-icon');  if(vi) vi.textContent = isYes ? '✓' : '✗';
-    var vm = document.getElementById('pred-verdict-main');  if(vm) vm.textContent = isYes ? 'WILL SUBSCRIBE' : 'WILL NOT SUBSCRIBE';
-    var vs = document.getElementById('pred-verdict-sub');
-    if(vs) vs.textContent = isYes
-      ? 'Client is predicted to subscribe to a term deposit — high-value prospect'
-      : 'Client is unlikely to subscribe — consider re-engagement strategy';
-
-    /* Metric cards */
-    var pCard = document.getElementById('pred-mc-prob');
-    if(pCard) pCard.className = 'pred-metric-card ' + (isYes?'positive':'negative');
-    var pVal = document.getElementById('pred-mc-prob-val');
-    if(pVal) { pVal.className='pred-mc-value '+(isYes?'positive':'negative'); animNum(pVal,prob,1300,function(v){return (v*100).toFixed(1)+'%';}); }
-
-    var cCard = document.getElementById('pred-mc-conf');
-    if(cCard) cCard.className = 'pred-metric-card ' + (isYes?'positive':'warn');
-    var cVal = document.getElementById('pred-mc-conf-val');
-    if(cVal) { cVal.className='pred-mc-value '+(isYes?'positive':'gold'); animNum(cVal,conf,1300,function(v){return (v*100).toFixed(1)+'%';}); }
-
-    var rCard = document.getElementById('pred-mc-risk');
-    if(rCard) rCard.className = 'pred-metric-card ' + (risk>0.6?'negative':'warn');
-    var rVal = document.getElementById('pred-mc-risk-val');
-    if(rVal) { rVal.className='pred-mc-value '+(risk>0.6?'negative':'gold'); animNum(rVal,risk,1300,function(v){return (v*100).toFixed(1)+'%';}); }
-
-    /* KPI */
-    var kp = document.getElementById('pred-kpi-pred');
-    if(kp) { kp.textContent=isYes?'YES':'NO'; kp.style.color=isYes?'#00e5a0':'#ff4c6a'; }
-
-    /* Prob bar */
-    var fill   = document.getElementById('pred-prob-fill');
-    var marker = document.getElementById('pred-prob-marker');
-    var barPct = document.getElementById('pred-bar-pct');
-    if(fill)   { fill.style.background = isYes?'#00e5a0':'#ff4c6a'; setTimeout(function(){ fill.style.width=(prob*100)+'%'; },80); }
-    if(marker) { setTimeout(function(){ marker.style.left='calc('+( prob*100)+'% - 9px)'; },80); }
-    if(barPct) barPct.textContent = (prob*100).toFixed(1)+'%';
-
-    /* Chips */
-    var chips = document.getElementById('pred-chips');
-    if(chips) {
-      chips.innerHTML = '';
-      [
-        ['Age', inp.age+'yr'], ['Job', inp.job], ['Marital', inp.marital],
-        ['Education', inp.education], ['Contact', inp.contact], ['Month', inp.month.toUpperCase()],
-        ['Duration', inp.duration+'s'], ['Campaign', inp.campaign+'x'],
-        ['Poutcome', inp.poutcome], ['EmpVar', inp.emp.toFixed(1)], ['Euribor', inp.eur.toFixed(3)],
-        ['CPI', inp.cpi.toFixed(3)], ['CCI', inp.cci.toFixed(1)],
-      ].forEach(function(pair){
-        var chip = document.createElement('div');
-        chip.className = 'pred-chip';
-        chip.innerHTML = pair[0]+': <strong>'+pair[1]+'</strong>';
-        chips.appendChild(chip);
+    rows.forEach((row) => {
+      const tr = document.createElement('tr');
+      columns.forEach((column) => {
+        const td = document.createElement('td');
+        const value = normalizeCellValue(row[column]);
+        td.textContent = value;
+        if (value === '—') td.classList.add('cell-empty');
+        tr.appendChild(td);
       });
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function loadDatasetExplorer(limit = DEFAULT_PREVIEW_LIMIT) {
+    const badge = document.getElementById('dataset-table-badge');
+    const loadedCount = document.getElementById('dataset-loaded-count');
+    const pageInfo = document.getElementById('dataset-page-info');
+    const tbody = document.getElementById('dataset-table-body');
+
+    if (!badge || !loadedCount || !pageInfo || !tbody) return;
+
+    try {
+      const response = await fetch(`/api/dataset/transformed-bank?limit=${limit}`);
+      const payload = await response.json();
+
+      if (!response.ok) {
+        const detail = payload && payload.detail ? payload.detail : 'Unknown server error';
+        throw new Error(String(detail));
+      }
+
+      const columns = Array.isArray(payload.columns) ? payload.columns : [];
+      const rows = Array.isArray(payload.rows) ? payload.rows : [];
+
+      renderDatasetRows(columns, rows);
+      badge.textContent = 'LIVE DB';
+      loadedCount.textContent = `${payload.preview_rows} records loaded from ${payload.table} · total ${payload.total_rows}`;
+      pageInfo.textContent = 'Page 1 of 1';
+    } catch (error) {
+      const headRow = document.getElementById('dataset-table-head-row');
+      if (headRow) {
+        headRow.innerHTML = '<th>Dataset Preview</th>';
+      }
+      tbody.innerHTML = '<tr><td class="cell-empty">Unable to load Transformed.Bank from cloud database.</td></tr>';
+      badge.textContent = 'NO DATA';
+      loadedCount.textContent = '0 records loaded · database connection unavailable';
+      pageInfo.textContent = 'Page 1 of —';
+      console.error('Dataset explorer load failed:', error);
     }
   }
 
-  window.predResetAndRun = function() {
-    document.getElementById('pred-results').style.display = 'none';
-    document.getElementById('pred-loading').style.display = 'flex';
-    ['pss0','pss1','pss2','pss3','pss4','pss5'].forEach(function(id){
-      var el=document.getElementById(id); if(el) el.classList.remove('lit');
-    });
-    predStep = 0;
-    predRenderStep();
-  };
+  window.addEventListener('load', function () {
+    loadDatasetExplorer();
+  });
+})();
 
-  window.predCopyResult = function() {
-    if(!predLastResult) return;
-    var r = predLastResult;
-    var txt = 'BANKIQ PREDICTION\nResult: '+r.sim.prediction.toUpperCase()+
-      '\nProbability: '+(r.sim.probability*100).toFixed(1)+'%'+
-      '\nAge: '+r.inp.age+' | Job: '+r.inp.job+' | Duration: '+r.inp.duration+'s';
-    if(navigator.clipboard) navigator.clipboard.writeText(txt);
-  };
+/* ═══════════════════════════════════════════════════════════
+   PREDICTION ENGINE — MODAL (deprecated duplicate)
+═══════════════════════════════════════════════════════════ */
+(function () {
+  // The active prediction panel is implemented in body.html.
+  // Keeping this placeholder prevents duplicate listeners and execution.
 
 })();

@@ -72,6 +72,7 @@ if __name__ == "__main__":
     run_data_pipeline(args.source_table_name, args.target_table_name)
     
 """
-To run this script: python scripts/ETL_pipeline.py --source_table_name Raw.Bank --target_table_name Transformed.Bank
+To run this script:
+python scripts/ETL_pipeline.py --source_table_name Raw.Bank --target_table_name Transformed.Bank
 
 """

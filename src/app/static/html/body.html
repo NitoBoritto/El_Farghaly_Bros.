@@ -547,191 +547,48 @@
       <div class="chart-card wide">
         <div class="chart-card-header">
           <div>
-            <div class="chart-card-title">Customer Churn by Age Group</div>
-            <div class="chart-card-sub">Segmented churn distribution across demographics</div>
+            <div class="chart-card-title">Personal Loan by Age Group</div>
+            <div class="chart-card-sub">Loan uptake by age segment — Yes vs No</div>
           </div>
           <div class="chart-tag">BAR CHART</div>
         </div>
-        <div class="chart-empty">
-          <div class="chart-skeleton">
-            <div class="empty-bars">
-              <div class="empty-bar" style="height:45%"></div>
-              <div class="empty-bar" style="height:72%"></div>
-              <div class="empty-bar" style="height:58%"></div>
-              <div class="empty-bar" style="height:88%"></div>
-              <div class="empty-bar" style="height:35%"></div>
-              <div class="empty-bar" style="height:62%"></div>
-              <div class="empty-bar" style="height:49%"></div>
-              <div class="empty-bar" style="height:76%"></div>
-              <div class="empty-bar" style="height:55%"></div>
-              <div class="empty-bar" style="height:40%"></div>
-              <div class="empty-bar" style="height:68%"></div>
-              <div class="empty-bar" style="height:82%"></div>
-            </div>
-          </div>
-          <div class="chart-overlay-msg">
-            <div class="lock-icon">📊</div>
-            <p>Connect dataset to render</p>
-          </div>
-        </div>
+        <canvas id="ageDistChart" style="width:100%;max-height:280px;"></canvas>
       </div>
 
-      <!-- CHART 2: NARROW DONUT -->
+      <!-- CHART 2: NARROW PIE -->
       <div class="chart-card narrow">
         <div class="chart-card-header">
           <div>
-            <div class="chart-card-title">Geography Split</div>
-            <div class="chart-card-sub">Customers by country</div>
+            <div class="chart-card-title">Customer financial commitment levels</div>
+            <div class="chart-card-sub">Distribution of the financial_commitment_level field from the database</div>
           </div>
-          <div class="chart-tag">DONUT</div>
+          <div class="chart-tag">PIE CHART</div>
         </div>
-        <div class="chart-empty">
-          <div class="empty-donut"></div>
-          <div class="await-label"><strong>—</strong>Geo data pending</div>
-          <div class="chart-overlay-msg">
-            <div class="lock-icon">🌍</div>
-            <p>Connect dataset to render</p>
-          </div>
-        </div>
+        <canvas id="financialCommitmentChart" style="width:100%;max-height:280px;"></canvas>
       </div>
 
-      <!-- CHART 3: HALF LINE -->
-      <div class="chart-card half">
+      <!-- CHART 3: FULL ROW BAR -->
+      <div class="chart-card full">
         <div class="chart-card-header">
           <div>
-            <div class="chart-card-title">Balance Distribution</div>
-            <div class="chart-card-sub">Account balance density curve</div>
+            <div class="chart-card-title">Defaulted Customers by Job</div>
+            <div class="chart-card-sub">Default status split by job title — Yes vs No</div>
           </div>
-          <div class="chart-tag">LINE / AREA</div>
+          <div class="chart-tag">BAR CHART</div>
         </div>
-        <div class="chart-empty">
-          <div class="empty-line">
-            <svg viewBox="0 0 400 100" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="rgba(240,180,41,0.08)"/>
-                  <stop offset="100%" stop-color="transparent"/>
-                </linearGradient>
-              </defs>
-              <path d="M0,80 C40,80 50,40 80,35 S130,50 160,30 S230,70 280,55 S340,25 400,40 L400,100 L0,100Z" fill="url(#lineGrad)" stroke="none"/>
-              <path d="M0,80 C40,80 50,40 80,35 S130,50 160,30 S230,70 280,55 S340,25 400,40" fill="none" stroke="rgba(240,180,41,0.15)" stroke-width="1.5"/>
-            </svg>
-          </div>
-          <div class="chart-overlay-msg">
-            <div class="lock-icon">📈</div>
-            <p>Connect dataset to render</p>
-          </div>
-        </div>
+        <canvas id="defaultByJobChart" style="width:100%;max-height:320px;"></canvas>
       </div>
 
-      <!-- CHART 4: HALF SCATTER -->
-      <div class="chart-card half">
+      <!-- CHART 5: FULL ROW TIME SERIES -->
+      <div class="chart-card full">
         <div class="chart-card-header">
           <div>
-            <div class="chart-card-title">Age vs. Balance Correlation</div>
-            <div class="chart-card-sub">Scatter plot with regression line</div>
+            <div class="chart-card-title">Campaigns by Month</div>
+            <div class="chart-card-sub">Time series of total campaign contacts (month stored as integer in DB)</div>
           </div>
-          <div class="chart-tag">SCATTER</div>
+          <div class="chart-tag">TIME SERIES</div>
         </div>
-        <div class="chart-empty">
-          <div class="empty-scatter">
-            <svg width="100%" height="140" viewBox="0 0 400 140">
-              <!-- phantom dots -->
-              <circle cx="60" cy="90" r="3" fill="rgba(240,180,41,0.1)"/>
-              <circle cx="120" cy="60" r="4" fill="rgba(240,180,41,0.08)"/>
-              <circle cx="180" cy="75" r="3" fill="rgba(0,212,255,0.08)"/>
-              <circle cx="220" cy="40" r="5" fill="rgba(240,180,41,0.1)"/>
-              <circle cx="280" cy="55" r="3" fill="rgba(0,212,255,0.07)"/>
-              <circle cx="320" cy="30" r="4" fill="rgba(240,180,41,0.09)"/>
-              <circle cx="350" cy="65" r="3" fill="rgba(0,212,255,0.06)"/>
-              <line x1="40" y1="100" x2="380" y2="20" stroke="rgba(240,180,41,0.07)" stroke-width="1" stroke-dasharray="4 4"/>
-            </svg>
-          </div>
-          <div class="chart-overlay-msg">
-            <div class="lock-icon">🔵</div>
-            <p>Connect dataset to render</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- CHART 5: THIRD BAR -->
-      <div class="chart-card third">
-        <div class="chart-card-header">
-          <div>
-            <div class="chart-card-title">Credit Score Bands</div>
-            <div class="chart-card-sub">Risk tier breakdown</div>
-          </div>
-          <div class="chart-tag">HISTOGRAM</div>
-        </div>
-        <div class="chart-empty">
-          <div class="chart-skeleton">
-            <div class="empty-bars" style="height:120px">
-              <div class="empty-bar" style="height:30%"></div>
-              <div class="empty-bar" style="height:65%"></div>
-              <div class="empty-bar" style="height:90%"></div>
-              <div class="empty-bar" style="height:70%"></div>
-              <div class="empty-bar" style="height:45%"></div>
-              <div class="empty-bar" style="height:20%"></div>
-            </div>
-          </div>
-          <div class="chart-overlay-msg">
-            <div class="lock-icon">📉</div>
-            <p>Connect dataset to render</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- CHART 6: THIRD DONUT -->
-      <div class="chart-card third">
-        <div class="chart-card-header">
-          <div>
-            <div class="chart-card-title">Gender Distribution</div>
-            <div class="chart-card-sub">Customer demographics</div>
-          </div>
-          <div class="chart-tag">PIE</div>
-        </div>
-        <div class="chart-empty" style="min-height:160px">
-          <div class="empty-donut"></div>
-          <div class="chart-overlay-msg">
-            <div class="lock-icon">🎂</div>
-            <p>Connect dataset to render</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- CHART 7: THIRD HEATMAP -->
-      <div class="chart-card third">
-        <div class="chart-card-header">
-          <div>
-            <div class="chart-card-title">Tenure vs. Churn</div>
-            <div class="chart-card-sub">Retention heatmap</div>
-          </div>
-          <div class="chart-tag">HEATMAP</div>
-        </div>
-        <div class="chart-empty" style="min-height:160px">
-          <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;width:100%;padding:0 8px">
-            <div style="height:28px;background:rgba(240,180,41,0.04);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(240,180,41,0.06);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(240,180,41,0.03);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(0,212,255,0.04);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(240,180,41,0.08);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(0,212,255,0.05);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(240,180,41,0.03);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(255,76,106,0.04);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(255,76,106,0.05);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(240,180,41,0.07);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(0,212,255,0.03);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(240,180,41,0.05);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(255,76,106,0.06);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(240,180,41,0.04);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(0,212,255,0.07);border-radius:2px"></div>
-            <div style="height:28px;background:rgba(240,180,41,0.09);border-radius:2px"></div>
-          </div>
-          <div class="chart-overlay-msg">
-            <div class="lock-icon">🔥</div>
-            <p>Connect dataset to render</p>
-          </div>
-        </div>
+        <canvas id="campaignsByMonthChart" style="width:100%;max-height:300px;"></canvas>
       </div>
 
     </div>
@@ -872,7 +729,7 @@
     <div class="reveal">
       <div class="section-label">// 05 — Workflow</div>
       <h2 class="section-title">DATA SCIENCE<br>PIPELINE</h2>
-      <p class="section-sub">Your current project status in the analytics pipeline. Steps 1–2 are in progress.</p>
+      <p class="section-sub">Your current project status in the analytics pipeline. All stages are complete and deployment is live.</p>
     </div>
     <div class="pipeline-track reveal">
       <div class="pipe-step">
@@ -882,34 +739,34 @@
         <div class="pipe-step-status done">Complete</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node active">🔬</div>
+        <div class="pipe-node done">🔬</div>
         <div class="pipe-step-title">EDA & Cleaning</div>
-        <div class="pipe-step-desc">Exploratory analysis in progress</div>
-        <div class="pipe-step-status active">In Progress</div>
+        <div class="pipe-step-desc">Exploratory analysis completed</div>
+        <div class="pipe-step-status done">Complete</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node pending">⚙️</div>
+        <div class="pipe-node done">⚙️</div>
         <div class="pipe-step-title">Feature Engineering</div>
         <div class="pipe-step-desc">Transform and encode variables</div>
-        <div class="pipe-step-status pending">Pending</div>
+        <div class="pipe-step-status done">Complete</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node pending">🤖</div>
+        <div class="pipe-node done">🤖</div>
         <div class="pipe-step-title">Model Training</div>
         <div class="pipe-step-desc">Fit classifiers and tune hyperparams</div>
-        <div class="pipe-step-status pending">Pending</div>
+        <div class="pipe-step-status done">Complete</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node pending">📐</div>
+        <div class="pipe-node done">📐</div>
         <div class="pipe-step-title">Evaluation</div>
         <div class="pipe-step-desc">AUC, F1, Precision, Recall</div>
-        <div class="pipe-step-status pending">Pending</div>
+        <div class="pipe-step-status done">Complete</div>
       </div>
       <div class="pipe-step">
-        <div class="pipe-node pending">🚀</div>
+        <div class="pipe-node done">🚀</div>
         <div class="pipe-step-title">Deployment</div>
         <div class="pipe-step-desc">Connect to this dashboard</div>
-        <div class="pipe-step-status pending">Pending</div>
+        <div class="pipe-step-status done">Live</div>
       </div>
     </div>
   </section>
@@ -1212,7 +1069,7 @@
               </div>
               <div class="pred-scan-label" id="pred-scan-label">INITIALIZING MODEL...</div>
               <div class="pred-scan-steps">
-                <div class="pred-scan-step" id="pss0">▸ Loading XGBoost pipeline</div>
+                <div class="pred-scan-step" id="pss0">▸ Loading LightGBM pipeline</div>
                 <div class="pred-scan-step" id="pss1">▸ Encoding categorical features</div>
                 <div class="pred-scan-step" id="pss2">▸ Scaling numerical inputs</div>
                 <div class="pred-scan-step" id="pss3">▸ Running inference engine</div>
@@ -1372,6 +1229,7 @@
 </div><!-- end site-wrapper -->
 
   <script src="/js/main.js"></script>
+  <script src="/js/dashboard.js"></script>
 
   <script>
   /* ── PRED MODAL CRITICAL INLINE FIX ── */

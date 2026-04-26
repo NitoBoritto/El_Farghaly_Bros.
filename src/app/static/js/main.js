@@ -1318,7 +1318,6 @@ setInterval(() => {
     drawROC();
     drawRevenue('monthly');
     drawGeo();
-    drawAgeDist();
     drawBalance();
     buildFeatures();
     buildRiskTable();

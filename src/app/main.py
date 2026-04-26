@@ -85,6 +85,233 @@ def transformed_bank_preview(
         if engine is not None:
             engine.dispose()
 
+
+@app.get('/api/charts/personal-loan-by-age')
+def personal_loan_by_age_chart_data():
+    """
+    Return aggregated personal-loan counts grouped by age segment.
+
+    """
+
+    engine = None
+    try:
+        engine = get_db_engine()
+
+        query = text(
+            f"""
+            SELECT
+                COALESCE(NULLIF(LTRIM(RTRIM(CAST(age_segment AS NVARCHAR(100)))), ''), 'Unknown') AS age_segment,
+                SUM(
+                    CASE
+                        WHEN LOWER(LTRIM(RTRIM(CAST(loan AS NVARCHAR(20))))) IN ('yes', '1', 'true') THEN 1
+                        ELSE 0
+                    END
+                ) AS loan_yes,
+                SUM(
+                    CASE
+                        WHEN LOWER(LTRIM(RTRIM(CAST(loan AS NVARCHAR(20))))) IN ('yes', '1', 'true') THEN 0
+                        ELSE 1
+                    END
+                ) AS loan_no
+            FROM {DATASET_TABLE_NAME}
+            GROUP BY COALESCE(NULLIF(LTRIM(RTRIM(CAST(age_segment AS NVARCHAR(100)))), ''), 'Unknown')
+            ORDER BY CASE
+                WHEN COALESCE(NULLIF(LTRIM(RTRIM(CAST(age_segment AS NVARCHAR(100)))), ''), 'Unknown') = 'Young' THEN 1
+                WHEN COALESCE(NULLIF(LTRIM(RTRIM(CAST(age_segment AS NVARCHAR(100)))), ''), 'Unknown') = 'Middle-aged' THEN 2
+                WHEN COALESCE(NULLIF(LTRIM(RTRIM(CAST(age_segment AS NVARCHAR(100)))), ''), 'Unknown') = 'Senior' THEN 3
+                ELSE 4
+            END
+            """
+        )
+
+        with engine.connect() as connection:
+            rows = connection.execute(query).mappings().all()
+
+        labels = [str(row['age_segment']) for row in rows]
+        loan_yes = [int(row['loan_yes']) for row in rows]
+        loan_no = [int(row['loan_no']) for row in rows]
+
+        return {
+            'table': DATASET_TABLE_NAME,
+            'labels': labels,
+            'loan_yes': loan_yes,
+            'loan_no': loan_no,
+        }
+
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f'Failed to aggregate personal loan chart data: {exc}') from exc
+    finally:
+        if engine is not None:
+            engine.dispose()
+
+
+@app.get('/api/charts/campaigns-by-month')
+def campaigns_by_month_chart_data():
+    """
+    Return total number of campaigns aggregated by month.
+
+    Notes:
+    - The DB stores month as integer.
+    - campaign is coerced to int in SQL to tolerate type drift.
+    """
+
+    engine = None
+    try:
+        engine = get_db_engine()
+
+        query = text(
+            f"""
+            SELECT
+                TRY_CAST([month] AS INT) AS month_num,
+                SUM(COALESCE(TRY_CAST(campaign AS INT), 0)) AS campaigns_total
+            FROM {DATASET_TABLE_NAME}
+            WHERE TRY_CAST([month] AS INT) BETWEEN 1 AND 12
+            GROUP BY TRY_CAST([month] AS INT)
+            ORDER BY month_num
+            """
+        )
+
+        with engine.connect() as connection:
+            rows = connection.execute(query).mappings().all()
+
+        month_names = {
+            1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr',
+            5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug',
+            9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec',
+        }
+
+        campaigns_by_month = {int(row['month_num']): int(row['campaigns_total']) for row in rows}
+        labels = [month_names[m] for m in range(1, 13)]
+        campaigns_total = [campaigns_by_month.get(m, 0) for m in range(1, 13)]
+
+        return {
+            'table': DATASET_TABLE_NAME,
+            'labels': labels,
+            'campaigns_total': campaigns_total,
+        }
+
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f'Failed to aggregate campaigns by month: {exc}') from exc
+    finally:
+        if engine is not None:
+            engine.dispose()
+
+
+@app.get('/api/charts/default-by-job')
+def default_by_job_chart_data():
+    """
+    Return yes/no default counts grouped by job title.
+
+    Notes:
+    - DB datatypes may differ from Pydantic schema, so values are normalized in SQL.
+    - Any non-yes value is counted in the no bucket to preserve a strict yes/no split.
+    """
+
+    engine = None
+    try:
+        engine = get_db_engine()
+
+        query = text(
+            f"""
+            SELECT
+                COALESCE(NULLIF(LTRIM(RTRIM(CAST(job AS NVARCHAR(100)))), ''), 'Unknown') AS job_title,
+                SUM(
+                    CASE
+                        WHEN LOWER(LTRIM(RTRIM(CAST([default] AS NVARCHAR(20))))) IN ('yes', '1', 'true') THEN 1
+                        ELSE 0
+                    END
+                ) AS default_yes,
+                SUM(
+                    CASE
+                        WHEN LOWER(LTRIM(RTRIM(CAST([default] AS NVARCHAR(20))))) IN ('yes', '1', 'true') THEN 0
+                        ELSE 1
+                    END
+                ) AS default_no
+            FROM {DATASET_TABLE_NAME}
+            GROUP BY COALESCE(NULLIF(LTRIM(RTRIM(CAST(job AS NVARCHAR(100)))), ''), 'Unknown')
+            ORDER BY job_title
+            """
+        )
+
+        with engine.connect() as connection:
+            rows = connection.execute(query).mappings().all()
+
+        labels = [str(row['job_title']) for row in rows]
+        default_yes = [int(row['default_yes']) for row in rows]
+        default_no = [int(row['default_no']) for row in rows]
+
+        return {
+            'table': DATASET_TABLE_NAME,
+            'labels': labels,
+            'default_yes': default_yes,
+            'default_no': default_no,
+        }
+
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f'Failed to aggregate default by job: {exc}') from exc
+    finally:
+        if engine is not None:
+            engine.dispose()
+
+
+@app.get('/api/charts/financial-commitment-level')
+def financial_commitment_level_chart_data():
+    """
+    Return customer counts grouped by financial commitment level.
+
+    The chart reads directly from the transformed dataset column
+    financial_commitment_level, which is derived from housing + loan.
+    """
+
+    engine = None
+    try:
+        engine = get_db_engine()
+
+        query = text(
+            f"""
+            SELECT
+                COALESCE(TRY_CAST(financial_commitment_level AS INT), -1) AS commitment_level,
+                COUNT(*) AS customer_count
+            FROM {DATASET_TABLE_NAME}
+            GROUP BY COALESCE(TRY_CAST(financial_commitment_level AS INT), -1)
+            ORDER BY commitment_level
+            """
+        )
+
+        with engine.connect() as connection:
+            rows = connection.execute(query).mappings().all()
+
+        level_labels = {
+            -1: 'Unknown',
+            0: 'Level 0 - No housing or loan commitment',
+            1: 'Level 1 - Single commitment',
+            2: 'Level 2 - Dual commitment',
+        }
+
+        labels = [level_labels.get(int(row['commitment_level']), f'Level {int(row["commitment_level"])}') for row in rows]
+        values = [int(row['customer_count']) for row in rows]
+
+        return {
+            'table': DATASET_TABLE_NAME,
+            'column': 'financial_commitment_level',
+            'labels': labels,
+            'values': values,
+        }
+
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f'Failed to aggregate financial commitment level data: {exc}') from exc
+    finally:
+        if engine is not None:
+            engine.dispose()
+
     
 @app.post('/predict', response_model=PredictionResponse)
 def get_prediction(data: bankingdata):

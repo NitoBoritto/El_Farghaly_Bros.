@@ -1232,6 +1232,50 @@
   <script src="/js/dashboard.js"></script>
 
   <script>
+  (function () {
+    function setMetricValue(id, value, suffix) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = String(value) + (suffix || '');
+      el.classList.remove('empty');
+    }
+
+    function setMetricMeta(id, value) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = value;
+    }
+
+    async function loadOverviewMetrics() {
+      try {
+        var response = await fetch('/api/overview/performance');
+        if (!response.ok) return;
+        var metrics = await response.json();
+
+        setMetricValue('totalCustomersValue', Number(metrics.total_customers || 0).toLocaleString(), '');
+        setMetricMeta('totalCustomersMeta', 'Row count from Transformed.Bank');
+
+        setMetricValue('subscriptionRateValue', Number(metrics.subscription_rate || 0).toFixed(1), '%');
+        setMetricMeta('subscriptionRateMeta', 'Computed from y yes/no split');
+
+        setMetricValue('avgCallDurationValue', Number(metrics.avg_call_duration || 0).toFixed(1), ' s');
+        setMetricMeta('avgCallDurationMeta', 'Average duration from the database');
+
+        setMetricValue('macroEnvironmentLabelValue', metrics.most_frequent_macro_environment || 'Unknown', '');
+        setMetricMeta('macroEnvironmentLabelMeta', 'Mode of macro_environment_label');
+
+        setMetricValue('avgEngagementScoreValue', Number(metrics.avg_engagement_score || 0).toFixed(2), '');
+        setMetricMeta('avgEngagementScoreMeta', 'Average engagement_score from the database');
+      } catch (err) {
+        console.error('[body.html] Overview metrics fallback failed:', err);
+      }
+    }
+
+    window.addEventListener('load', loadOverviewMetrics);
+  })();
+  </script>
+
+  <script>
   /* ── PRED MODAL CRITICAL INLINE FIX ── */
   var predStep = 0;
   var PRED_TOTAL = 4;

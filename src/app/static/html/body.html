@@ -139,7 +139,6 @@
       <li><a href="#features">Features</a></li>
       <li><a href="#pipeline">Pipeline</a></li>
       <li><a href="#ai-engine">AI Engine</a></li>
-      <li><a href="#connect">Connect</a></li>
     </ul>
     <button id="themeToggle" aria-label="Toggle light/dark mode">
       <div class="tt-track">
@@ -150,7 +149,7 @@
     </button>
     <div class="nav-status">
       <div class="status-dot"></div>
-      AWAITING DATA
+      LIVE
     </div>
   </nav>
 
@@ -225,11 +224,11 @@
       <div class="line-gold" style="font-size:0.55em;letter-spacing:12px;color:var(--text-mid)">INTELLIGENCE HUB</div>
     </h1>
     <p class="hero-subtitle">
-      A high-fidelity data science platform for banking analytics. Connect your dataset to unlock predictive insights, customer segmentation, churn analysis, and risk modeling.
+      A high-fidelity data science platform for banking analytics. discover real-time insights, and customer segmentation, while using ml models to predict subscription potential.
     </p>
     <div class="hero-cta-row">
       <a href="#analytics" class="btn-primary">View Dashboard</a>
-      <a href="#connect" class="btn-ghost">Connect Dataset</a>
+      <a href="#ai-engine" class="btn-ghost">Start Predictions</a>
     </div>
     <div class="hero-scroll-hint">
       <div class="scroll-line"></div>
@@ -240,30 +239,30 @@
   <!-- TICKER -->
   <div class="ticker-bar">
     <div class="ticker-track">
-      <div class="ticker-item"><span class="label">CUSTOMERS</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <div class="ticker-item"><span class="label">TOTAL CUSTOMERS</span><span class="value" data-ticker-field="total_customers">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">CHURN RATE</span><span class="value">—</span><span class="badge-dn">AWAITING DATA</span></div>
+      <div class="ticker-item"><span class="label">SUBSCRIPTION RATE</span><span class="value" data-ticker-field="subscription_rate">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">AVG BALANCE</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <div class="ticker-item"><span class="label">AVG CALL DURATION</span><span class="value" data-ticker-field="avg_call_duration">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">ACTIVE PRODUCTS</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <div class="ticker-item"><span class="label">MACRO ENVIRONMENT</span><span class="value" data-ticker-field="macro_environment">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">MODEL ACCURACY</span><span class="value">—</span><span class="badge-up">NOT TRAINED</span></div>
+      <div class="ticker-item"><span class="label">AVG ENGAGEMENT SCORE</span><span class="value" data-ticker-field="avg_engagement_score">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">LAST SYNC</span><span class="value">NOT CONNECTED</span></div>
+      <div class="ticker-item"><span class="label">DATA SOURCE</span><span class="value" data-ticker-field="data_source">—</span></div>
       <span class="ticker-sep">·</span>
       <!-- duplicate for seamless loop -->
-      <div class="ticker-item"><span class="label">CUSTOMERS</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <div class="ticker-item"><span class="label">TOTAL CUSTOMERS</span><span class="value" data-ticker-field="total_customers">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">CHURN RATE</span><span class="value">—</span><span class="badge-dn">AWAITING DATA</span></div>
+      <div class="ticker-item"><span class="label">SUBSCRIPTION RATE</span><span class="value" data-ticker-field="subscription_rate">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">AVG BALANCE</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <div class="ticker-item"><span class="label">AVG CALL DURATION</span><span class="value" data-ticker-field="avg_call_duration">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">ACTIVE PRODUCTS</span><span class="value">—</span><span class="badge-up">PENDING</span></div>
+      <div class="ticker-item"><span class="label">MACRO ENVIRONMENT</span><span class="value" data-ticker-field="macro_environment">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">MODEL ACCURACY</span><span class="value">—</span><span class="badge-up">NOT TRAINED</span></div>
+      <div class="ticker-item"><span class="label">AVG ENGAGEMENT SCORE</span><span class="value" data-ticker-field="avg_engagement_score">—</span></div>
       <span class="ticker-sep">·</span>
-      <div class="ticker-item"><span class="label">LAST SYNC</span><span class="value">NOT CONNECTED</span></div>
+      <div class="ticker-item"><span class="label">DATA SOURCE</span><span class="value" data-ticker-field="data_source">—</span></div>
     </div>
   </div>
 
@@ -487,42 +486,35 @@
         <div class="kpi-label" id="totalCustomersLabel">Total Customers</div>
         <div class="kpi-value empty" id="totalCustomersValue">— — —</div>
         <div class="kpi-meta" id="totalCustomersMeta">Awaiting data source</div>
-        <div class="kpi-pending">pending</div>
+        <div class="kpi-pending">Live</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon">📉</div>
         <div class="kpi-label" id="subscriptionRateLabel">Subscription Rate</div>
         <div class="kpi-value empty" id="subscriptionRateValue">— —%</div>
         <div class="kpi-meta" id="subscriptionRateMeta">Share of y = yes across the dataset</div>
-        <div class="kpi-pending">pending</div>
+        <div class="kpi-pending">Live</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon">💰</div>
         <div class="kpi-label" id="avgCallDurationLabel">Avg. Call Duration</div>
         <div class="kpi-value empty" id="avgCallDurationValue">— — s</div>
         <div class="kpi-meta" id="avgCallDurationMeta">Average duration from the database</div>
-        <div class="kpi-pending">pending</div>
+        <div class="kpi-pending">Live</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon">🌍</div>
         <div class="kpi-label" id="macroEnvironmentLabelTitle">Most Frequent Macro Economic Environment</div>
         <div class="kpi-value empty" id="macroEnvironmentLabelValue">— —</div>
         <div class="kpi-meta" id="macroEnvironmentLabelMeta">Mode of macro_environment_label</div>
-        <div class="kpi-pending">pending</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">📦</div>
-        <div class="kpi-label">Products / Customer</div>
-        <div class="kpi-value empty">—.—</div>
-        <div class="kpi-meta">Cross-sell indicator</div>
-        <div class="kpi-pending">pending</div>
+        <div class="kpi-pending">Live</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon">🤖</div>
         <div class="kpi-label" id="avgEngagementScoreLabel">Avg. Engagement Score</div>
         <div class="kpi-value empty" id="avgEngagementScoreValue">— —</div>
         <div class="kpi-meta" id="avgEngagementScoreMeta">Average engagement_score from the database</div>
-        <div class="kpi-pending">pending</div>
+        <div class="kpi-pending">Live</div>
       </div>
     </div>
   </section>
@@ -537,7 +529,7 @@
       </div>
       <div class="connect-badge">
         <div class="dot"></div>
-        AWAITING DATASET CONNECTION
+        LIVE
       </div>
     </div>
 
@@ -604,68 +596,57 @@
     <div class="features-grid reveal">
       <div class="feature-card">
         <div class="feature-num">01</div>
-        <div class="feature-icon">🔮</div>
-        <div class="feature-title">Churn Prediction Engine</div>
-        <div class="feature-desc">ML-powered models predict which customers are likely to leave, with probability scores and contributing feature importance rankings.</div>
+        <div class="feature-icon">🗄️</div>
+        <div class="feature-title">Live SQL Server Integration</div>
+        <div class="feature-desc">The dashboard reads directly from the transformed bank table in SQL Server, so charts and KPIs always reflect the live database state.</div>
         <div class="feature-tags">
-          <span class="feature-tag">Random Forest</span>
-          <span class="feature-tag">XGBoost</span>
-          <span class="feature-tag">SHAP Values</span>
+          <span class="feature-tag">FastAPI</span>
+          <span class="feature-tag">SQL Server</span>
+          <span class="feature-tag">Transformed.Bank</span>
         </div>
       </div>
       <div class="feature-card">
         <div class="feature-num">02</div>
-        <div class="feature-icon">🎯</div>
-        <div class="feature-title">Customer Segmentation</div>
-        <div class="feature-desc">Cluster analysis groups customers by behavior, balance, and demographics. Identify your most valuable segments automatically.</div>
+        <div class="feature-icon">📈</div>
+        <div class="feature-title">Performance Overview KPIs</div>
+        <div class="feature-desc">Five dashboard metrics summarize the dataset: total customers, subscription rate, call duration, macro environment, and engagement score.</div>
         <div class="feature-tags">
-          <span class="feature-tag">K-Means</span>
-          <span class="feature-tag">PCA</span>
-          <span class="feature-tag">UMAP</span>
+          <span class="feature-tag">Row Counts</span>
+          <span class="feature-tag">Aggregates</span>
+          <span class="feature-tag">Live Metrics</span>
         </div>
       </div>
       <div class="feature-card">
         <div class="feature-num">03</div>
-        <div class="feature-icon">📊</div>
-        <div class="feature-title">Exploratory Analytics</div>
-        <div class="feature-desc">Rich interactive charts for distribution analysis, correlation matrices, feature engineering, and multivariate exploration.</div>
+        <div class="feature-icon">🧠</div>
+        <div class="feature-title">Customer Analytics Views</div>
+        <div class="feature-desc">The analytics panel highlights age, monthly campaigns, job defaults, and financial commitment levels using real DB-driven charts.</div>
         <div class="feature-tags">
-          <span class="feature-tag">Plotly</span>
-          <span class="feature-tag">Seaborn</span>
-          <span class="feature-tag">Pandas</span>
+          <span class="feature-tag">Chart.js</span>
+          <span class="feature-tag">Age Segments</span>
+          <span class="feature-tag">Commitment Levels</span>
         </div>
       </div>
       <div class="feature-card">
         <div class="feature-num">04</div>
-        <div class="feature-icon">⚠️</div>
-        <div class="feature-title">Risk Scoring</div>
-        <div class="feature-desc">Credit risk models evaluate customer profiles and flag high-risk accounts using credit score, tenure, and financial behavior signals.</div>
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Prediction Engine</div>
+        <div class="feature-desc">The AI Engine accepts customer inputs and returns a bank term-deposit prediction with probability, confidence, and risk score.</div>
         <div class="feature-tags">
-          <span class="feature-tag">Logistic Reg.</span>
-          <span class="feature-tag">ROC-AUC</span>
-          <span class="feature-tag">Calibration</span>
+          <span class="feature-tag">Inference API</span>
+          <span class="feature-tag">Probability</span>
+          <span class="feature-tag">Risk Score</span>
         </div>
       </div>
       <div class="feature-card">
         <div class="feature-num">05</div>
-        <div class="feature-icon">🌐</div>
-        <div class="feature-title">Geo Intelligence</div>
-        <div class="feature-desc">Geographic distribution maps reveal regional performance gaps, concentration risks, and market penetration opportunities.</div>
+        <div class="feature-icon">🧾</div>
+        <div class="feature-title">Dataset Explorer</div>
+        <div class="feature-desc">A searchable preview of the transformed bank table lets you inspect columns, rows, and values before analysis or prediction.</div>
         <div class="feature-tags">
-          <span class="feature-tag">Choropleth</span>
-          <span class="feature-tag">Geopandas</span>
-          <span class="feature-tag">Folium</span>
-        </div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-num">06</div>
-        <div class="feature-icon">📤</div>
-        <div class="feature-title">Report Generation</div>
-        <div class="feature-desc">Export full analytical reports as interactive HTML dashboards or PDF documents, ready for stakeholder presentations.</div>
-        <div class="feature-tags">
-          <span class="feature-tag">HTML Export</span>
-          <span class="feature-tag">PDF Report</span>
-          <span class="feature-tag">Notebooks</span>
+          <span class="feature-tag">Preview Rows</span>
+          <span class="feature-tag">Table Explorer</span>
+          <span class="feature-tag">Live Refresh</span>
         </div>
       </div>
     </div>
@@ -1185,45 +1166,11 @@
     </div><!-- /pred-overlay -->
 
   </section><!-- /ai-engine -->
-
-
-    <!-- CONNECT CTA -->
-  <section id="connect">
-    <h2 class="connect-title reveal">
-      <span style="color:var(--gold)">READY</span><br>
-      TO CONNECT?
-    </h2>
-    <p class="connect-sub reveal">
-      Finish your EDA and feature engineering, then plug your processed dataset into this dashboard to unlock all analytics.
-    </p>
-    <div class="connect-steps reveal">
-      <div class="connect-step">
-        <div class="cs-num">01</div>
-        <div class="cs-text">Complete your Jupyter / Python analysis</div>
-      </div>
-      <div class="connect-step">
-        <div class="cs-num">02</div>
-        <div class="cs-text">Export results as JSON or CSV</div>
-      </div>
-      <div class="connect-step">
-        <div class="cs-num">03</div>
-        <div class="cs-text">Update the JS data variables in this file</div>
-      </div>
-      <div class="connect-step">
-        <div class="cs-num">04</div>
-        <div class="cs-text">Charts auto-populate from your data</div>
-      </div>
-    </div>
-    <div class="reveal">
-      <a href="#analytics" class="btn-primary">Explore Dashboard</a>
-    </div>
-  </section>
-
   <!-- FOOTER -->
   <footer>
     <div class="footer-brand">BANKIQ</div>
     <div>DATA INTELLIGENCE PLATFORM · BUILT FOR BANKING ANALYTICS</div>
-    <div>v1.0 · AWAITING DATA</div>
+    <div>v1.0 · LIVE</div>
   </footer>
 
 </div><!-- end site-wrapper -->
@@ -1238,6 +1185,27 @@
       if (!el) return;
       el.textContent = String(value) + (suffix || '');
       el.classList.remove('empty');
+    }
+
+    function setTickerField(field, value) {
+      var nodes = document.querySelectorAll('[data-ticker-field="' + field + '"]');
+      nodes.forEach(function (node) {
+        node.textContent = String(value);
+      });
+    }
+
+    function setTickerMetrics(metrics) {
+      var macroLabel = String(metrics.most_frequent_macro_environment || 'Unknown');
+      if (macroLabel.length > 28) {
+        macroLabel = macroLabel.slice(0, 27) + '…';
+      }
+
+      setTickerField('total_customers', Number(metrics.total_customers || 0).toLocaleString());
+      setTickerField('subscription_rate', Number(metrics.subscription_rate || 0).toFixed(1) + '%');
+      setTickerField('avg_call_duration', Number(metrics.avg_call_duration || 0).toFixed(1) + ' s');
+      setTickerField('macro_environment', macroLabel);
+      setTickerField('avg_engagement_score', Number(metrics.avg_engagement_score || 0).toFixed(2));
+      setTickerField('data_source', String(metrics.table || 'Transformed.Bank'));
     }
 
     function setMetricMeta(id, value) {
@@ -1266,6 +1234,8 @@
 
         setMetricValue('avgEngagementScoreValue', Number(metrics.avg_engagement_score || 0).toFixed(2), '');
         setMetricMeta('avgEngagementScoreMeta', 'Average engagement_score from the database');
+
+        setTickerMetrics(metrics);
       } catch (err) {
         console.error('[body.html] Overview metrics fallback failed:', err);
       }

@@ -392,6 +392,27 @@
     el.textContent = value;
   }
 
+  function setTickerField(field, value) {
+    const nodes = document.querySelectorAll(`[data-ticker-field="${field}"]`);
+    nodes.forEach(node => {
+      node.textContent = String(value);
+    });
+  }
+
+  function setTickerMetrics(metrics) {
+    let macroLabel = String(metrics.most_frequent_macro_environment || 'Unknown');
+    if (macroLabel.length > 28) {
+      macroLabel = `${macroLabel.slice(0, 27)}...`;
+    }
+
+    setTickerField('total_customers', Number(metrics.total_customers || 0).toLocaleString());
+    setTickerField('subscription_rate', `${Number(metrics.subscription_rate || 0).toFixed(1)}%`);
+    setTickerField('avg_call_duration', `${Number(metrics.avg_call_duration || 0).toFixed(1)} s`);
+    setTickerField('macro_environment', macroLabel);
+    setTickerField('avg_engagement_score', Number(metrics.avg_engagement_score || 0).toFixed(2));
+    setTickerField('data_source', String(metrics.table || 'Transformed.Bank'));
+  }
+
   async function initOverviewMetrics() {
     try {
       const metrics = await fetchOverviewMetrics();
@@ -409,6 +430,8 @@
 
       setMetricValue('avgEngagementScoreValue', Number(metrics.avg_engagement_score || 0).toFixed(2), '');
       setMetricMeta('avgEngagementScoreMeta', 'Average engagement_score from the database');
+
+      setTickerMetrics(metrics);
     } catch (err) {
       console.error('[dashboard.js] Failed to load overview metrics:', err);
     }

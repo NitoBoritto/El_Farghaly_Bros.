@@ -329,7 +329,7 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 18px; margin-bottom: 16px;
     }
-    .kpi-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; margin-bottom: 8px; }
+    .kpi-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #f4fbff; font-family: 'JetBrains Mono', monospace; margin-bottom: 8px; text-shadow: 0 0 10px rgba(255,255,255,0.05); }
     .kpi-value {
       font-family: 'Bebas Neue', sans-serif; font-size: 42px;
       letter-spacing: 1px; color: var(--text-bright);
@@ -339,7 +339,7 @@
       font-size: 28px; color: var(--text-dim);
       letter-spacing: 2px;
     }
-    .kpi-meta { font-size: 12px; color: var(--text-dim); margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
+    .kpi-meta { font-size: 12px; color: rgba(235,245,255,.76); margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
     .kpi-pending {
       position: absolute; bottom: 16px; right: 16px;
       font-family: 'JetBrains Mono', monospace; font-size: 9px;
@@ -407,7 +407,7 @@
 
     .chart-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
     .chart-card-title { font-size: 13px; font-weight: 600; color: var(--text-bright); letter-spacing: 0.5px; }
-    .chart-card-sub { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; margin-bottom: 28px; }
+    .chart-card-sub { font-size: 11px; color: rgba(235,245,255,.72); font-family: 'JetBrains Mono', monospace; margin-bottom: 28px; }
     .chart-tag {
       font-family: 'JetBrains Mono', monospace; font-size: 9px;
       letter-spacing: 2px; text-transform: uppercase;
@@ -646,7 +646,7 @@
     th {
       padding: 14px 20px; text-align: left;
       font-family: 'JetBrains Mono', monospace; font-size: 9px;
-      letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim);
+      letter-spacing: 3px; text-transform: uppercase; color: #f4fbff;
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
       min-width: 140px;
@@ -1463,7 +1463,7 @@
     body.light .insight-desc,body.light .feature-desc,
     body.light .kpi-meta,body.light .pk-delta { color:rgba(195,228,255,.78); }
     body.light .ap-title,body.light .feature-title,body.light .mc-title,
-    body.light .ac-title,body.light .kpi-lbl,body.light .pk-label,
+    body.light .ac-title,body.light .kpi-label,body.light .pk-label,
     body.light .r-name,body.light .member-name,body.light .insight-title,
     body.light .cc-title,body.light .chart-card-title { color:#fff; }
 
@@ -1482,7 +1482,7 @@
 
     /* TABLES */
     body.light thead { background:rgba(0,0,0,.22); }
-    body.light th { color:rgba(175,215,255,.68);border-bottom-color:rgba(255,255,255,.12); }
+    body.light th { color:#fff;border-bottom-color:rgba(255,255,255,.12); }
     body.light td { color:rgba(210,235,255,.86);border-bottom-color:rgba(255,255,255,.06); }
     body.light tr:hover td { background:rgba(255,255,255,.08);color:#fff; }
     body.light .tbar { background:rgba(0,0,0,.22);border-bottom-color:rgba(255,255,255,.12); }
@@ -1528,7 +1528,7 @@
     body.light .risk-high { background:rgba(255,80,128,.15);color:#ff5080;border-color:rgba(255,80,128,.34); }
     body.light .risk-med  { background:rgba(0,200,255,.15);color:#00eaff;border-color:rgba(0,200,255,.34); }
     body.light .risk-low  { background:rgba(0,255,180,.12);color:#00ffbe;border-color:rgba(0,255,180,.30); }
-    body.light .risk-table th,body.light .model-table th { color:rgba(175,215,255,.65);border-bottom-color:rgba(255,255,255,.12); }
+    body.light .risk-table th,body.light .model-table th { color:#fff;border-bottom-color:rgba(255,255,255,.12); }
     body.light .risk-table td,body.light .model-table td { color:rgba(210,235,255,.86); }
     body.light .model-best td { background:rgba(0,255,180,.08)!important; }
     body.light .model-best .model-name { color:#00ffbe; }

@@ -6,6 +6,8 @@
 
 (function () {
 
+  const chartTextColor = '#f4fbff';
+
   async function fetchLoanByAgeData() {
     const res = await fetch('/api/charts/personal-loan-by-age');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -69,7 +71,7 @@
         plugins: {
           legend: {
             labels: {
-              color: '#3a4a6b',
+              color: chartTextColor,
               boxWidth: 10,
               font: { size: 9, family: 'JetBrains Mono, monospace' },
             },
@@ -86,15 +88,15 @@
         scales: {
           x: {
             grid: { display: false },
-            ticks: { color: '#3a4a6b', font: { size: 9 } },
+            ticks: { color: chartTextColor, font: { size: 9 } },
           },
           y: {
             grid: { color: 'rgba(240,180,41,0.05)' },
-            ticks: { color: '#3a4a6b' },
+            ticks: { color: chartTextColor },
             title: {
               display: true,
               text: 'Number of Customers',
-              color: '#3a4a6b',
+              color: chartTextColor,
               font: { size: 9 },
             },
           },
@@ -139,7 +141,7 @@
         plugins: {
           legend: {
             labels: {
-              color: '#3a4a6b',
+              color: chartTextColor,
               boxWidth: 10,
               font: { size: 9, family: 'JetBrains Mono, monospace' },
             },
@@ -156,21 +158,21 @@
         scales: {
           x: {
             grid: { color: 'rgba(240,180,41,0.04)' },
-            ticks: { color: '#3a4a6b', font: { size: 9 } },
+            ticks: { color: chartTextColor, font: { size: 9 } },
             title: {
               display: true,
               text: 'Month',
-              color: '#3a4a6b',
+              color: chartTextColor,
               font: { size: 9 },
             },
           },
           y: {
             grid: { color: 'rgba(240,180,41,0.05)' },
-            ticks: { color: '#3a4a6b' },
+            ticks: { color: chartTextColor },
             title: {
               display: true,
               text: 'Campaign Count',
-              color: '#3a4a6b',
+              color: chartTextColor,
               font: { size: 9 },
             },
           },
@@ -218,7 +220,7 @@
         plugins: {
           legend: {
             labels: {
-              color: '#3a4a6b',
+              color: chartTextColor,
               boxWidth: 10,
               font: { size: 9, family: 'JetBrains Mono, monospace' },
             },
@@ -236,7 +238,7 @@
           x: {
             grid: { display: false },
             ticks: {
-              color: '#3a4a6b',
+              color: chartTextColor,
               maxRotation: 35,
               minRotation: 20,
               font: { size: 9 },
@@ -244,17 +246,17 @@
             title: {
               display: true,
               text: 'Job Title',
-              color: '#3a4a6b',
+              color: chartTextColor,
               font: { size: 9 },
             },
           },
           y: {
             grid: { color: 'rgba(240,180,41,0.05)' },
-            ticks: { color: '#3a4a6b' },
+            ticks: { color: chartTextColor },
             title: {
               display: true,
               text: 'Number of Customers',
-              color: '#3a4a6b',
+              color: chartTextColor,
               font: { size: 9 },
             },
           },
@@ -299,7 +301,7 @@
           legend: {
             position: 'bottom',
             labels: {
-              color: '#3a4a6b',
+              color: chartTextColor,
               boxWidth: 10,
               font: { size: 9, family: 'JetBrains Mono, monospace' },
             },
@@ -370,5 +372,48 @@
   } else {
     initDashboard();
   }
+
+  async function fetchOverviewMetrics() {
+    const res = await fetch('/api/overview/performance');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
+
+  function setMetricValue(id, value, suffix) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = `${value}${suffix || ''}`;
+    el.classList.remove('empty');
+  }
+
+  function setMetricMeta(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = value;
+  }
+
+  async function initOverviewMetrics() {
+    try {
+      const metrics = await fetchOverviewMetrics();
+      setMetricValue('totalCustomersValue', Number(metrics.total_customers || 0).toLocaleString(), '');
+      setMetricMeta('totalCustomersMeta', 'Row count from Transformed.Bank');
+
+      setMetricValue('subscriptionRateValue', Number(metrics.subscription_rate || 0).toFixed(1), '%');
+      setMetricMeta('subscriptionRateMeta', 'Computed from y yes/no split');
+
+      setMetricValue('avgCallDurationValue', Number(metrics.avg_call_duration || 0).toFixed(1), ' s');
+      setMetricMeta('avgCallDurationMeta', 'Average duration from the database');
+
+      setMetricValue('macroEnvironmentLabelValue', metrics.most_frequent_macro_environment || 'Unknown', '');
+      setMetricMeta('macroEnvironmentLabelMeta', 'Mode of macro_environment_label');
+
+      setMetricValue('avgEngagementScoreValue', Number(metrics.avg_engagement_score || 0).toFixed(2), '');
+      setMetricMeta('avgEngagementScoreMeta', 'Average engagement_score from the database');
+    } catch (err) {
+      console.error('[dashboard.js] Failed to load overview metrics:', err);
+    }
+  }
+
+  initOverviewMetrics();
 
 })();

@@ -505,7 +505,7 @@ setInterval(() => {
   /* ── Chart.js defaults ── */
   function chartDefaults() {
     if (!window.Chart) return;
-    Chart.defaults.color = '#3a4a6b';
+    Chart.defaults.color = '#f4fbff';
     Chart.defaults.borderColor = 'rgba(240,180,41,0.08)';
     Chart.defaults.font.family = "'JetBrains Mono', monospace";
     Chart.defaults.font.size = 10;
@@ -539,10 +539,10 @@ setInterval(() => {
       options: {
         responsive: true, animation: { duration: 800 },
         interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { display: true, labels: { color: '#3a4a6b', boxWidth: 10, font: { size: 9 } } }, tooltip: { backgroundColor: '#0a1223', borderColor: 'rgba(240,180,41,0.3)', borderWidth: 1 } },
+        plugins: { legend: { display: true, labels: { color: '#f4fbff', boxWidth: 10, font: { size: 9 } } }, tooltip: { backgroundColor: '#0a1223', borderColor: 'rgba(240,180,41,0.3)', borderWidth: 1 } },
         scales: {
-          x: { grid: { color: 'rgba(240,180,41,0.04)' }, ticks: { maxRotation: 45 } },
-          y: { grid: { color: 'rgba(240,180,41,0.06)' }, ticks: { callback: v => v + '%' }, title: { display: true, text: 'Churn Rate %', color: '#3a4a6b' } }
+          x: { grid: { color: 'rgba(240,180,41,0.04)' }, ticks: { maxRotation: 45, color: '#f4fbff' } },
+          y: { grid: { color: 'rgba(240,180,41,0.06)' }, ticks: { callback: v => v + '%', color: '#f4fbff' }, title: { display: true, text: 'Churn Rate %', color: '#f4fbff' } }
         }
       }
     });
@@ -561,7 +561,7 @@ setInterval(() => {
       options: {
         responsive: true, animation: { duration: 900 },
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + '% churn rate' } } },
-        scales: { x: { grid: { display: false }, ticks: { maxRotation: 60, font: { size: 8 } } }, y: { grid: { color: 'rgba(240,180,41,0.05)' }, ticks: { callback: v => v + '%' } } }
+        scales: { x: { grid: { display: false }, ticks: { maxRotation: 60, font: { size: 8 }, color: '#f4fbff' } }, y: { grid: { color: 'rgba(240,180,41,0.05)' }, ticks: { callback: v => v + '%', color: '#f4fbff' } } }
       }
     });
   }
@@ -637,7 +637,7 @@ setInterval(() => {
       },
       options: {
         responsive: true, animation: { duration: 800 },
-        plugins: { legend: { position: 'bottom', labels: { color: '#3a4a6b', font: { size: 9 }, padding: 10 } }, tooltip: { callbacks: { label: ctx => ' Churn rate: ' + ctx.label } } },
+        plugins: { legend: { position: 'bottom', labels: { color: '#f4fbff', font: { size: 9 }, padding: 10 } }, tooltip: { callbacks: { label: ctx => ' Churn rate: ' + ctx.label } } },
         cutout: '60%'
       }
     });
@@ -659,8 +659,8 @@ setInterval(() => {
       },
       options: {
         responsive: true, animation: { duration: 800 },
-        plugins: { legend: { labels: { color: '#3a4a6b', boxWidth: 10, font: { size: 9 } } } },
-        scales: { x: { grid: { display: false }, ticks: { font: { size: 8 }, maxRotation: 60 } }, y: { grid: { color: 'rgba(240,180,41,0.05)' }, stacked: false } }
+        plugins: { legend: { labels: { color: '#f4fbff', boxWidth: 10, font: { size: 9 } } } },
+        scales: { x: { grid: { display: false }, ticks: { font: { size: 8 }, maxRotation: 60, color: '#f4fbff' } }, y: { grid: { color: 'rgba(240,180,41,0.05)' }, stacked: false, ticks: { color: '#f4fbff' } } }
       }
     });
   }
@@ -678,7 +678,7 @@ setInterval(() => {
       options: {
         responsive: true, animation: { duration: 800 },
         plugins: { legend: { display: false } },
-        scales: { x: { grid: { display: false }, ticks: { font: { size: 8 } } }, y: { grid: { color: 'rgba(240,180,41,0.05)' }, ticks: { callback: v => v + '%' } } }
+        scales: { x: { grid: { display: false }, ticks: { font: { size: 8 }, color: '#f4fbff' } }, y: { grid: { color: 'rgba(240,180,41,0.05)' }, ticks: { callback: v => v + '%', color: '#f4fbff' } } }
       }
     });
   }
@@ -1357,7 +1357,7 @@ setInterval(() => {
     }
     /* particle canvas: CSS handles opacity & hue-rotate via body.light class */
     if (window.Chart) {
-      Chart.defaults.color        = isLight ? '#7ab8d4' : '#3a4a6b';
+      Chart.defaults.color        = isLight ? '#ffffff' : '#f4fbff';
       Chart.defaults.borderColor  = isLight ? 'rgba(0,150,200,0.1)' : 'rgba(240,180,41,0.08)';
     }
     try { localStorage.setItem('bankiq-theme', isLight ? 'light' : 'dark'); } catch(e){}

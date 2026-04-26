@@ -312,6 +312,75 @@ def financial_commitment_level_chart_data():
         if engine is not None:
             engine.dispose()
 
+
+@app.get('/api/overview/performance')
+def performance_overview_metrics():
+    """
+    Return the key performance overview metrics for the KPI cards.
+    """
+
+    engine = None
+    try:
+        engine = get_db_engine()
+
+        query = text(
+            f"""
+            WITH cleaned AS (
+                SELECT
+                    TRY_CAST(y AS NVARCHAR(20)) AS y_value,
+                    TRY_CAST(duration AS FLOAT) AS duration_value,
+                    COALESCE(NULLIF(LTRIM(RTRIM(CAST(macro_environment_label AS NVARCHAR(100)))), ''), 'Unknown') AS macro_environment_label_value,
+                    TRY_CAST(engagement_score AS FLOAT) AS engagement_score_value
+                FROM {DATASET_TABLE_NAME}
+            )
+            SELECT
+                COUNT(*) AS total_customers,
+                SUM(CASE WHEN LOWER(LTRIM(RTRIM(COALESCE(y_value, '')))) IN ('yes', '1', 'true') THEN 1 ELSE 0 END) AS subscription_yes,
+                SUM(CASE WHEN LOWER(LTRIM(RTRIM(COALESCE(y_value, '')))) IN ('yes', '1', 'true') THEN 0 ELSE 1 END) AS subscription_no,
+                AVG(duration_value) AS avg_call_duration,
+                AVG(engagement_score_value) AS avg_engagement_score
+            FROM cleaned;
+            """
+        )
+
+        with engine.connect() as connection:
+            overview_row = connection.execute(query).mappings().one()
+
+            macro_query = text(
+                f"""
+                SELECT TOP 1
+                    COALESCE(NULLIF(LTRIM(RTRIM(CAST(macro_environment_label AS NVARCHAR(100)))), ''), 'Unknown') AS macro_environment_label,
+                    COUNT(*) AS label_count
+                FROM {DATASET_TABLE_NAME}
+                GROUP BY COALESCE(NULLIF(LTRIM(RTRIM(CAST(macro_environment_label AS NVARCHAR(100)))), ''), 'Unknown')
+                ORDER BY COUNT(*) DESC, macro_environment_label ASC;
+                """
+            )
+            macro_row = connection.execute(macro_query).mappings().first()
+
+        total_customers = int(overview_row['total_customers'] or 0)
+        subscription_yes = int(overview_row['subscription_yes'] or 0)
+        subscription_no = int(overview_row['subscription_no'] or 0)
+        subscription_total = subscription_yes + subscription_no
+        subscription_rate = (subscription_yes / subscription_total * 100.0) if subscription_total else 0.0
+
+        return {
+            'table': DATASET_TABLE_NAME,
+            'total_customers': total_customers,
+            'subscription_rate': round(subscription_rate, 2),
+            'avg_call_duration': round(float(overview_row['avg_call_duration'] or 0.0), 2),
+            'most_frequent_macro_environment': str((macro_row or {}).get('macro_environment_label', 'Unknown')),
+            'avg_engagement_score': round(float(overview_row['avg_engagement_score'] or 0.0), 2),
+        }
+
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f'Failed to load performance overview metrics: {exc}') from exc
+    finally:
+        if engine is not None:
+            engine.dispose()
+
     
 @app.post('/predict', response_model=PredictionResponse)
 def get_prediction(data: bankingdata):

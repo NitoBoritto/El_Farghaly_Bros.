@@ -38,8 +38,7 @@ The engineering challenge: **maximize recall on the positive class** (capture as
 
 | Component | URL |
 |-----------|-----|
-| 📖 API Docs (Swagger UI) | ?? |
-| 📊 Live Dashboard | ?? |
+| 📊 Live Dashboard | [Click Here](https://farghali-subscription-predictor-arcgaqh5hrd3gpdt.uaenorth-01.azurewebsites.net) |
 
 
 ---
@@ -56,7 +55,7 @@ The system follows a fully automated MLOps lifecycle — from raw data ingestion
                        │  ODBC / SQLAlchemy
                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                 AZURE SQL DATABASE                                │
+│                 AZURE SQL DATABASE                               │
 │        Structured storage · versioned ingestion · audit trail    │
 └──────────────────────┬───────────────────────────────────────────┘
                        │
@@ -69,7 +68,7 @@ The system follows a fully automated MLOps lifecycle — from raw data ingestion
                        │
                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                 MODEL TRAINING                                    │
+│                 MODEL TRAINING                                   │
 │   LightGBM Classifier                                            │
 │   Optuna HPO  (TPE Sampler · Stratified K-Fold CV)               │
 │   MLflow  →  experiment registry · artifact storage              │
@@ -78,20 +77,20 @@ The system follows a fully automated MLOps lifecycle — from raw data ingestion
                        │
                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                  FASTAPI BACKEND                                  │
+│                  FASTAPI BACKEND                                 │
 │   /predict  ·  /health  ·  /metrics   (Uvicorn ASGI)             │
 │   Pydantic schemas · typed request/response models               │
 └──────────────────────┬───────────────────────────────────────────┘
                        │
                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                  JS SPA DASHBOARD                                 │
+│                  JS SPA DASHBOARD                                │
 │   Chart.js visualizations · live API calls · real-time metrics   │
 └──────────────────────┬───────────────────────────────────────────┘
                        │
                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│              CONTAINERIZATION & DEPLOYMENT                        │
+│              CONTAINERIZATION & DEPLOYMENT                       │
 │   Docker → GitHub Actions → Docker Hub → Azure Webhook           │
 │   Rolling deploy · zero-downtime · secret injection              │
 └──────────────────────────────────────────────────────────────────┘
@@ -108,11 +107,9 @@ The system follows a fully automated MLOps lifecycle — from raw data ingestion
 | **Algorithm** | LightGBM |
 | **HPO** | Optuna (TPE Sampler) |
 | **CV Strategy** | Stratified K-Fold |
-| **ROC-AUC** | ?? |
-| **F1 — positive class** | ?? |
-| **Precision** | ?? |
-| **Recall** | ?? |
-| **Optimized Threshold** | ?? |
+| **ROC-AUC** | 80.9% |
+| **F1** | 66.7% |
+| **Recall** | 75% |
 
 > 💡 **How to fill these in:** after running `python src/train.py`, check your MLflow UI or the output of `src/evaluate.py` — the final metrics are logged there. Paste them here once you have them.
 

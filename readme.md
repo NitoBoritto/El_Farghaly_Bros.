@@ -386,10 +386,10 @@ The economic indicator features (`euribor3m`, `emp_var_rate`, `cons_price_idx`, 
 
 | Name | GitHub | Role |
 |------|--------|------|
-| Yasser Mogahed | [@Yasser-Mogahed](https://github.com/Yasser-Mogahed) | Team Leader · ML Engineering · UIUX Developer · Data Scientist |
+| Yasser Mogahed | [@Yasser-Mogahed](https://github.com/Yasser-Mogahed) | Team Leader · UIUX Developer · Data Scientist |
 | Abdallah Ali | [@abdallah-farahat](https://github.com/abdallah-farahat) | Data Engineer |
 | Mohanad Ibrahim | [@Mohanad234128](https://github.com/Mohanad234128) | Data Analyst |
-| Ahmed Walid | [@NitoBoritto](https://github.com/NitoBoritto) | Data Scientist · ML Engineering |
+| Ahmed Walid | [@NitoBoritto](https://github.com/NitoBoritto) | Data Scientist · ML Engineer |
 
 
 

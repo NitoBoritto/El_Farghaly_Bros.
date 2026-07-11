@@ -15,16 +15,36 @@
 
 <br/>
 
-> **End-to-end production ML system** for predicting whether a bank client will subscribe to a term deposit.  
-> Built on the UCI Bank Marketing dataset · LightGBM + Optuna HPO · FastAPI backend · Azure-deployed via Docker & CI/CD.
+[![Datathon](https://img.shields.io/badge/🏆_Datathon-1st_Place-e94560?style=for-the-badge)](#-competition--team-story)
+[![Built In](https://img.shields.io/badge/Built_In-1_Week-a8b2d8?style=for-the-badge)](#-competition--team-story)
 
 <br/>
 
-[🚀 Live Demo](#-live-demo) · [📐 Architecture](#-architecture) · [📊 Model Performance](#-model-performance) · [⚡ Quickstart](#-quickstart) · [🔌 API Reference](#-api-reference)
+> **End-to-end production ML system** for predicting whether a bank client will subscribe to a term deposit.  
+> Built on the UCI Bank Marketing dataset · LightGBM + Optuna HPO · FastAPI backend · Azure-deployed via Docker & CI/CD.
+>
+> 🏆 **1st Place — Data Science Track, Bank Analytics Datathon.** Designed, built, and deployed in just **one week**, by a team of four 3rd-year students competing against — and beating — senior teams.
+
+<br/>
+
+[🏆 Competition Story](#-competition--team-story) · [🚀 Live Demo](#-live-demo) · [📐 Architecture](#-architecture) · [📊 Model Performance](#-model-performance) · [⚡ Quickstart](#-quickstart) · [🔌 API Reference](#-api-reference)
 
 </div>
 
 ---
+
+## 🏆 Competition & Team Story
+
+This project was built for the **Bank Analytics Datathon**, where it placed **1st in the Data Science track** — and we were the **only 3rd-year team in the entire competition**, going up against senior teams in their final year.
+
+The entire system — data pipeline, model, API, and dashboard — was designed and shipped in **one week**. What made that possible wasn't luck; it was four people fully owning four different lanes and trusting each other completely.
+
+
+
+No overlap, no bottlenecks — just four people who trusted each other's lane, which is what let a 3rd-year team go head-to-head with seniors and win.
+
+---
+
 
 ## 🎯 Problem Statement
 
@@ -384,20 +404,23 @@ The economic indicator features (`euribor3m`, `emp_var_rate`, `cons_price_idx`, 
 
 ## 👥 Team
 
-| Name | GitHub | Role |
-|------|--------|------|
-| Yasser Mogahed | [@Yasser-Mogahed](https://github.com/Yasser-Mogahed) | Team Leader · UIUX Developer · Data Scientist |
-| Abdallah Ali | [@abdallah-farahat](https://github.com/abdallah-farahat) | Data Engineer |
-| Mohanad Ibrahim | [@Mohanad234128](https://github.com/Mohanad234128) | Data Analyst |
-| Ahmed Walid | [@NitoBoritto](https://github.com/NitoBoritto) | Data Scientist · ML Engineer |
+**El Farghaly Bros.** — 🏆 1st Place, Data Science Track, Bank Analytics Datathon · built in 1 week · the only 3rd-year team in the competition.
 
+| Name | GitHub | Role | What they owned |
+|------|--------|------|------------------|
+| Yasser Mogahed | [@Yasser-Mogahed](https://github.com/Yasser-Mogahed) | Team Leader · Frontend Developer | Led the team end-to-end and built the entire front end (HTML/CSS/JS) — the live prediction dashboard and its integration with the FastAPI backend |
+| Abdallah Ali | [@abdallah-farahat](https://github.com/abdallah-farahat) | Data Engineer | Full data engineering pipeline: ingestion, cleaning, and structuring the raw banking data |
+| Ahmed Walid | [@NitoBoritto](https://github.com/NitoBoritto) | Data Scientist · ML Engineer | All data science and modeling work — EDA, feature engineering, and the LightGBM + Optuna model |
+| Mohanad Ibrahim | [@Mohanad234128](https://github.com/Mohanad234128) | Data Analyst | Business-facing data analysis — the insights and patterns that shaped the modeling strategy and final presentation |
+
+See the full story in [Competition & Team Story](#-competition--team-story) above.
 
 
 ---
 
 
 
----
+
 
 <div align="center">
 
